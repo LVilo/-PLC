@@ -384,6 +384,7 @@ public partial class MainWindow : Window
     #region Настройка
     public async Task CheckVoltage()
     {
+        devices.CreateMessege(devices.info[201]);
         float value = 0f;
         value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
         if (value <= 24.1 && value >= 23.9)
@@ -405,11 +406,12 @@ public partial class MainWindow : Window
         value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
         if (value >= 24.1 || value <= 23.9)
         {
-            throw new Exception($"Регистр напряжения (99) показывает {value} после настройки. Настройка остановлена");
+            throw new Exception(devices.info[200] + $"Регистр напряжения (99) показывает {value} после настройки. Настройка остановлена");
         }
     }
     public async Task Seting_IEPE()
     {
+        devices.CreateMessege(devices.info[202]);
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             var dialog = new Dialog("Соберите схему для настройки IEPE", "IEPE");
@@ -459,15 +461,16 @@ public partial class MainWindow : Window
         //провверка настиройки 
         devices.Average(0.05);
         IEPE_1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
-        if (IEPE_1 > 0.0505 || IEPE_1 < 0.0495) devices.CreateMessege($"Регистр IEPE (1) показывает некоректные значение {IEPE_1} после настройки");
+        if (IEPE_1 > 0.0505 || IEPE_1 < 0.0495) devices.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_1} после настройки");
         devices.Average(0.25);
         IEPE_2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
-        if (IEPE_2 > 0.2525 || IEPE_2 < 0.2475) devices.CreateMessege($"Регистр IEPE (1) показывает некоректные значение {IEPE_2} после настройки");
+        if (IEPE_2 > 0.2525 || IEPE_2 < 0.2475) devices.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_2} после настройки");
 
         //провверка настиройки 
     }
     public async Task Setting_4_20_Input()
     {
+        devices.CreateMessege(devices.info[203]);
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             var dialog = new Dialog("Соберите схему для настройки 4-20 входного", "4-20 входное");
@@ -544,11 +547,12 @@ public partial class MainWindow : Window
         float mA_reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
         if (mA_reg < (mA - 0.2) || mA_reg > (mA + 0.2))
         {
-            devices.CreateMessege($"При заданном значении в {mA} датчик показывает не корректные {mA_reg}");
+            devices.CreateMessege(devices.info[200] + $"При заданном значении в {mA} датчик показывает не корректные {mA_reg}");
         }
     }
     public async Task Setting_4_20_Output()
     {
+        devices.CreateMessege(devices.info[204]);
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             var dialog = new Dialog("Соберите схему для настройки 4-20 выходного", "4-20 выходное");
@@ -604,13 +608,14 @@ public partial class MainWindow : Window
         reg_4_20 /= 10;
         if (reg_4_20 < (mA - 0.2) || reg_4_20 > (mA + 0.2))
         {
-            devices.CreateMessege($"При заданном значении в {mA} мультиметр показывает не корректные {reg_4_20}");
+            devices.CreateMessege(devices.info[200] + $"При заданном значении в {mA} мультиметр показывает не корректные {reg_4_20}");
         }
     }
     private TimeSpan _elapsedTime;
     private CountdownWindow _countdownWindow;
     private async Task Settig_485()
     {
+        devices.CreateMessege(devices.info[205]);
         float ErCRC = 0f;
         float ErTimeOut = 0f;
         devices.WtiteSwFloat(Registers.REGISTER_ADRESS_SPEED, Registers.SPEED);
@@ -654,6 +659,7 @@ public partial class MainWindow : Window
     #region Файл
     public async Task MakeReportAsync(string PLC)
     {
+        devices.CreateMessege("Сохранение Регистров");
         string date = String.Format("{0}.{1}.{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
         string time = String.Format("{0}:{1}", DateTime.Now.Hour, DateTime.Now.Minute);
         string serialNum = "";
@@ -943,7 +949,7 @@ public partial class MainWindow : Window
 "[HART / TWD] Номер регистра;" +
 "[HART / TWD] Количество регистров;" +
 "[HART / TWD] Задержка Transmit DMA;" +
-"[HART / TWD] Значение регистра" +
+"[HART / TWD] Значение регистра;" +
 "[ОСНОВНЫЕ] Автоотключение дисплея, мин.;" +
 "[485 / MASTER] Включить - 1 / Выключить - 0(канал 485);" +
 "[485 / MASTER] Номер рег.для индикации на гл.экране;" +
