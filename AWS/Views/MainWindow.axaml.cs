@@ -1,9 +1,12 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Dialogs;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using AWS.ViewModels;
+using DocumentFormat.OpenXml.EMMA;
 using PortsWork;
 using System;
 using System.Collections.Generic;
@@ -14,10 +17,9 @@ using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
-using AWS.ViewModels;
-using Avalonia;
 
 namespace AWS.Views;
 
@@ -105,9 +107,9 @@ public partial class MainWindow : Window
             devices.PLC.SetParameters(115200, (StopBits)1);
             if (devices.PLC.OpenPort())
             {
-                devices.CreateMessege("Датчик подключен");
+                devices.CreateMessege(devices.info[103]);
             }
-            else devices.CreateMessege("Датчик не подключен");
+            else devices.CreateMessege(devices.info[113]);
             // OpenPort(devices.PLC, Port_Name_Agiletn.SelectedItem.ToString());
         }
         catch (Exception ex)
@@ -122,7 +124,7 @@ public partial class MainWindow : Window
             devices.generator = (PortGenerator)devices.SetMeasureDeviceName(devices.generator, Port_Name_Generator.SelectedItem.ToString());
             if (devices.generator.OpenPort())
             {
-                devices.CreateMessege("Генератор подключен");
+                devices.CreateMessege(devices.info[101]);
                 devices.gen_is_open = true;
                 if (Option1.IsChecked == true)
                 {
@@ -134,7 +136,7 @@ public partial class MainWindow : Window
                 }
             }
 
-            else devices.CreateMessege("Генератор не подключен");
+            else devices.CreateMessege(devices.info[111]);
             // OpenPort(devices.generator, Port_Name_Agiletn.SelectedItem.ToString());
         }
         catch (Exception ex)
@@ -150,11 +152,11 @@ public partial class MainWindow : Window
             devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
             if (devices.multimeter.OpenPort())
             {
-                devices.CreateMessege("Мультиметр подключен");
+                devices.CreateMessege(devices.info[102]);
                 devices.mult_is_open = true;
                 Start_DC_Read_Work();
             }
-            else devices.CreateMessege("Мультиметр не подключен");
+            else devices.CreateMessege(devices.info[112]);
             // OpenPort(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
         }
         catch (Exception ex)
@@ -165,20 +167,20 @@ public partial class MainWindow : Window
     private void Button_Close_Port_PLC(object? sender, RoutedEventArgs e)
     {
         devices.PLC.ClosePort();
-        devices.CreateMessege("Датчик отключен");
+        devices.CreateMessege(devices.info[133]);
     }
 
     private void Button_Close_Port_Generator(object? sender, RoutedEventArgs e)
     {
         devices.generator.ClosePort();
         devices.gen_is_open = false;
-        devices.CreateMessege("генератор отключен");
+        devices.CreateMessege(devices.info[131]);
     }
     private void Button_Close_Port_Agilent(object? sender, RoutedEventArgs e)
     {
         devices.multimeter.ClosePort();
         devices.mult_is_open = false;
-        devices.CreateMessege("Мультимтер отключен");
+        devices.CreateMessege(devices.info[132]);
     }
 
     private void Button_Update_Ports(object? sender, RoutedEventArgs e)
@@ -240,7 +242,7 @@ public partial class MainWindow : Window
         }
     }
     #endregion
-
+    
     private async void Do_Work(int code)
     {
         await (Task.Run(async () =>
@@ -250,29 +252,29 @@ public partial class MainWindow : Window
                 switch (code)
                 {
                     case 0://настройка напряжения
-                        if (!devices.PLC.IsOpen) throw new Exception("Датчик не подключен");
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await CheckVoltage();
                         break;
                     case 1: // IEPE
-                        if (!devices.PLC.IsOpen) throw new Exception("Датчик не подключен");
-                        if (!devices.mult_is_open) throw new Exception("Мультиметр не подключен");
-                        if (!devices.generator.IsOpen) throw new Exception("Генератор не подключен");
+                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
+                        if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await Seting_IEPE();
                         break;
 
                     case 2:// 4-20
-                        if (!devices.PLC.IsOpen) throw new Exception("Датчик не подключен");
-                        if (!devices.mult_is_open) throw new Exception("Мультиметр не подключен");
+                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await Setting_4_20_Input();
                         await Setting_4_20_Output();
                         break;
 
                     case 3:
-                        if (!devices.PLC.IsOpen) throw new Exception("Датчик не подключен");
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await Settig_485();
                         break;
                     case 4:
-                        if (!devices.PLC.IsOpen) throw new Exception("Датчик не подключен");
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await MakeReportAsync(Name_PLC.SelectionBoxItem.ToString());
                         break;
                 }
@@ -291,24 +293,24 @@ public partial class MainWindow : Window
             {
                 switch (PLC)
                 {
-                    case "PLC 112"://настройка напряжения
-                        if (!devices.PLC.IsOpen) throw new Exception("Датчик не подключен");
-                        if (!devices.mult_is_open) throw new Exception("Мультиметр не подключен");
+                    case "PLC 112":
+                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await CheckVoltage();
                         await Setting_4_20_Input();
                         await Setting_4_20_Output();
                         break;
-                    case "PLC 121": // IEPE
-                        if (!devices.PLC.IsOpen) throw new Exception("Датчик не подключен");
-                        if (!devices.mult_is_open) throw new Exception("Мультиметр не подключен");
-                        if (!devices.generator.IsOpen) throw new Exception("Генератор не подключен");
+                    case "PLC 121": 
+                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
+                        if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await CheckVoltage();
                         await Seting_IEPE(); break;
 
-                    case "PLC 481":// 4-20
-                        if (!devices.PLC.IsOpen) throw new Exception("Датчик не подключен");
-                        if (!devices.mult_is_open) throw new Exception("Мультиметр не подключен");
-                        if (!devices.generator.IsOpen) throw new Exception("Генератор не подключен");
+                    case "PLC 481":
+                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
+                        if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await CheckVoltage();
                         await Seting_IEPE();
                         await Setting_4_20_Input();
@@ -316,7 +318,7 @@ public partial class MainWindow : Window
                         break;
 
                     case "PLC 991":
-                        if (!devices.PLC.IsOpen) throw new Exception("Датчик не подключен");
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await CheckVoltage();
                         await Settig_485();
                         break;
@@ -739,8 +741,27 @@ public partial class MainWindow : Window
         if (!File.Exists(fileName))
         {
             File.WriteAllBytes(fileName, new byte[3] { 0xEF, 0xBB, 0xBF }); //указание на utf-8
-            File.AppendAllText(fileName, "Дата;Время;№ заказа;Серийный №;PLC;Коэф Напряжения;IEPE;Коэфф А;Коэфф В;" +
-                "4-20 входное;Коэфф А;Коэфф В;4-20 выходное;Коэфф А;Коэфф В;RS-485;Сумма ошибок;Время проверки\r\n");
+            File.AppendAllText(fileName, "Дата;Время;№ заказа;Серийный №;PLC;" +
+                "Коэф. К;" +
+                " Коэф. B;" +
+                "Уставка предупр;" +
+                "Уставка авар;" +
+                "Флаг обрыва датчика;" +
+                "Коэф. датчика;" +
+                "Коэф. усиления;" +
+                "Коэф. смещения;" +
+                "Режим цифрового фильтра;" +
+                " Выбор параметра для работы по уставкам;" +
+"Включить - 1 / Выключить - 0  канал IEPE" +
+"Пороговое значение для фильтра от шума АЦП" +
+"Устанавливаемое значение для фильтра от шума АЦП" +
+"Тип сглаживающего фильтра(0 - нет, 1 - SMA, 2 - EMA, 3 - от шумов)" +
+"Длина окна SMA(Simple Moving Average(1..255))" +
+"Коэффициент EMA" +
+                "Коэфф В;" +
+                "RS-485;" +
+                "Сумма ошибок;" +
+                "Время проверки\r\n");
         }
         try
         {
