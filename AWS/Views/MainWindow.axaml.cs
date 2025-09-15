@@ -7,6 +7,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using AWS.ViewModels;
 using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Spreadsheet;
 using PortsWork;
 using System;
 using System.Collections.Generic;
@@ -187,7 +188,7 @@ public partial class MainWindow : Window
     {
         PortsListReload();
     }
-    
+
     private async void Button_Setting_Volt(object? sender, RoutedEventArgs e)
     {
         Do_Work(0);
@@ -213,13 +214,13 @@ public partial class MainWindow : Window
     {
         Do_Work(Name_PLC.SelectionBoxItem.ToString());
     }
-    
+
     private async void Combo_Setting(object? sender, RoutedEventArgs e)
     {
         if (Setting_Volt.IsVisible == false)
         {
             Combo_Setting_Button.Content = "Скрыть отдельные настройки";
-            
+
             Setting_Volt.IsVisible = true;
             Setting_IEPE.IsVisible = true;
             Setting_4_20.IsVisible = true;
@@ -231,7 +232,7 @@ public partial class MainWindow : Window
         else
         {
             Combo_Setting_Button.Content = "Открыть отдельные настройки";
-            
+
             Setting_Volt.IsVisible = false;
             Setting_IEPE.IsVisible = false;
             Setting_4_20.IsVisible = false;
@@ -242,7 +243,7 @@ public partial class MainWindow : Window
         }
     }
     #endregion
-    
+
     private async void Do_Work(int code)
     {
         await (Task.Run(async () =>
@@ -300,7 +301,7 @@ public partial class MainWindow : Window
                         await Setting_4_20_Input();
                         await Setting_4_20_Output();
                         break;
-                    case "PLC 121": 
+                    case "PLC 121":
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
@@ -323,7 +324,7 @@ public partial class MainWindow : Window
                         await Settig_485();
                         break;
                 }
-               await MakeReportAsync(PLC);
+                await MakeReportAsync(PLC);
             }
             catch (Exception ex)
             {
@@ -331,7 +332,7 @@ public partial class MainWindow : Window
             }
         }));
     }
-    
+
     private void PortsListReload()
     {
         InitializeAllComboBoxes(devices.GetAllPorts());
@@ -378,7 +379,7 @@ public partial class MainWindow : Window
     }
     private void Order_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
     {
-        
+
     }
     #region Настройка
     public async Task CheckVoltage()
@@ -526,9 +527,9 @@ public partial class MainWindow : Window
         devices.CreateMessege("Настройка 4-20 входного закончена");
         //проверка настройки
         devices.DC_Read = true;
-        for (float mA = 4;mA <=20 ;mA+=2)
+        for (float mA = 4; mA <= 20; mA += 2)
         {
-           await Check_Setting_4_20_Input(mA);
+            await Check_Setting_4_20_Input(mA);
         }
         devices.DC_Read = false;
         //проверка настройки
@@ -559,7 +560,7 @@ public partial class MainWindow : Window
         devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, Registers.Coef_1);
         devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT, Registers.Coef_0);
         devices.WtiteInt(Registers.REGISTER_ADRESS_SOURCE_SIGNAL, Registers.OFF);
-     
+
         devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, 4f);
         for (int i = 0; i < 10; i++)
         {
@@ -608,7 +609,7 @@ public partial class MainWindow : Window
     }
     private TimeSpan _elapsedTime;
     private CountdownWindow _countdownWindow;
-    private  async Task Settig_485()
+    private async Task Settig_485()
     {
         float ErCRC = 0f;
         float ErTimeOut = 0f;
@@ -620,7 +621,7 @@ public partial class MainWindow : Window
         devices.WtiteInt(Registers.REGISTER_ADRESS_NUMBER, Registers.NUM_REG);
         devices.WtiteInt(Registers.REGISTER_ADRESS_CODE_FUNCTION, Registers.NUM_FUNC);
         devices.WtiteInt(Registers.REGISTER_ADRESS_TYPE_DATA, Registers.OFF);
-        
+
         devices.WtiteSwFloat(Registers.REGISTER_ADRESS_A, Registers.Coef_1);
         devices.WtiteSwFloat(Registers.REGISTER_ADRESS_B, Registers.Coef_0);
 
@@ -651,7 +652,7 @@ public partial class MainWindow : Window
     }
     #endregion
     #region Файл
-    public async Task MakeReportAsync( string PLC)
+    public async Task MakeReportAsync(string PLC)
     {
         string date = String.Format("{0}.{1}.{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
         string time = String.Format("{0}:{1}", DateTime.Now.Hour, DateTime.Now.Minute);
@@ -664,63 +665,137 @@ public partial class MainWindow : Window
         });
         if (serialNum == "") serialNum = "Не указано";
 
-        string plcType = "---";
         string coef_volt = devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE).ToString();
 
 
-        string a1 = "---";
-        string b1 = "---";
+        //string a1 = "---";
+        //string b1 = "---";
 
-        string a2 = "---";
-        string b2 = "---";
-        string a3 = "---";
-        string b3 = "---";
-        string a4 = "---";
-        string b4 = "---";
+        //string a2 = "---";
+        //string b2 = "---";
+        //string a3 = "---";
+        //string b3 = "---";
+        //string a4 = "---";
+        //string b4 = "---";
 
-        string type1 = "---";
-        string type2 = "---";
-        string type3 = "---";
-        string type4 = "---";
+        //string type1 = "---";
+        //string type2 = "---";
+        //string type3 = "---";
+        //string type4 = "---";
 
-        switch (PLC)
-        {
-            case "PLC 112": //112
-                type2 = "4-20 Входное";
-                a2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT).ToString();
-                b2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT).ToString();
-                type3 = "4-20 Выходное";
-                a3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT).ToString();
-                b3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT).ToString();
-                break;
-            case "PLC 121": //121
-                plcType = "121";
-                type1 = "IEPE";
-                a1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A).ToString();
-                b1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B).ToString();
-                break;
-            case "PLC 481": //481
-                type1 = "IEPE";
-                a1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A).ToString();
-                b1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B).ToString();
-                type2 = "4-20 Входное";
-                a2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT).ToString();
-                b2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT).ToString();
-                type3 = "4-20 Выходное";
-                a3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT).ToString();
-                b3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT).ToString();
-                type4 = "RS-485";
-                a4 = (devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_CRC) + devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_TIMEOUT)).ToString();
-                b4 = _elapsedTime.ToString();
-                break;
-            case "PLC 991": //991
-                type4 = "RS-485";
-                a4 = (devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_CRC) + devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_TIMEOUT)).ToString();
-                b4 =  _elapsedTime.ToString();
+        //switch (PLC)
+        //{
+        //    case "PLC 112": //112
+        //        type2 = "4-20 Входное";
+        //        a2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT).ToString();
+        //        b2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT).ToString();
+        //        type3 = "4-20 Выходное";
+        //        a3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT).ToString();
+        //        b3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT).ToString();
+        //        break;
+        //    case "PLC 121": //121
+        //        plcType = "121";
+        //        type1 = "IEPE";
+        //        a1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A).ToString();
+        //        b1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B).ToString();
+        //        break;
+        //    case "PLC 481": //481
+        //        type1 = "IEPE";
+        //        a1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A).ToString();
+        //        b1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B).ToString();
+        //        type2 = "4-20 Входное";
+        //        a2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT).ToString();
+        //        b2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT).ToString();
+        //        type3 = "4-20 Выходное";
+        //        a3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT).ToString();
+        //        b3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT).ToString();
+        //        type4 = "RS-485";
+        //        a4 = (devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_CRC) + devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_TIMEOUT)).ToString();
+        //        b4 = _elapsedTime.ToString();
+        //        break;
+        //    case "PLC 991": //991
+        //        type4 = "RS-485";
+        //        a4 = (devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_CRC) + devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_TIMEOUT)).ToString();
+        //        b4 = _elapsedTime.ToString();
 
-                break;
-        }
-        string line = $"{date};{time};{orderNum};{serialNum};{PLC};{coef_volt};{type1};{a1};{b1};{type2};{a2};{b2};{type3};{a3};{b3};{type4};{a4};{b4}\r\n";
+        //        break;
+        //}
+        string line = $"{date};{time};{orderNum};{serialNum};{PLC};" +
+            $"{devices.ReadSwFloat(137)};" +
+            $"{devices.ReadSwFloat(139)};" +
+            $"{devices.ReadSwFloat(5)};" +
+            $"{devices.ReadSwFloat(9)};" +
+            $"{devices.ReadInt(11)};" +
+            $"{devices.ReadSwFloat(14)};" +
+            $"{devices.ReadSwFloat(16)};" +
+            $"{devices.ReadSwFloat(18)};" +
+            $"{devices.ReadInt(20)};" +
+
+            $"{devices.ReadInt(30)};" +
+            $"{devices.ReadInt(29)};" +
+            $"{devices.ReadSwFloat(984)};" +
+            $"{devices.ReadSwFloat(986)};" +
+            $"{devices.ReadInt(988)};" +
+            $"{devices.ReadInt(989)};" +
+            $"{devices.ReadSwFloat(990)};" +
+
+            $"{devices.ReadInt(36)};" +
+
+            $"{devices.ReadSwFloat(39)};" +
+            $"{devices.ReadSwFloat(41)};" +
+            $"{devices.ReadSwFloat(43)};" +
+            $"{devices.ReadSwFloat(45)};" +
+            $"{devices.ReadInt(47)};" +
+            $"{devices.ReadSwFloat(48)};" +
+            $"{devices.ReadSwFloat(50)};" +
+            $"{devices.ReadSwFloat(52)};" +
+            $"{devices.ReadSwFloat(54)};" +
+            $"{devices.ReadSwFloat(56)};" +
+            $"{devices.ReadInt(58)};" +
+            $"{devices.ReadInt(81)};" +
+            $"{devices.ReadInt(82)};" +
+            $"{devices.ReadInt(83)};" +
+            $"{devices.ReadInt(84)};" +
+            $"{devices.ReadInt(85)};" +
+            $"{devices.ReadInt(87)};" +
+
+            $"{devices.ReadInt(89)};" +
+            $"{devices.ReadInt(90)};" +
+            $"{devices.ReadSwFloat(63)};" +
+            $"{devices.ReadSwFloat(91)};" +
+            $"{devices.ReadSwFloat(93)};" +
+            $"{devices.ReadSwFloat(95)};" +
+            $"{devices.ReadInt(98)};" +
+            $"{devices.ReadInt(97)};" +
+
+            $"{devices.ReadSwFloat(21)};" +
+            $"{devices.ReadInt(101)};" +
+            $"{devices.ReadSwFloat(102)};" +
+            $"{devices.ReadSwFloat(69)};" +
+
+            $"{devices.ReadInt(106)};" +
+            $"{devices.ReadInt(107)};" +
+
+            $"{devices.ReadInt(110)};" +
+            $"{devices.ReadSwFloat(111)};" +
+            $"{devices.ReadSwFloat(113)};" +
+            $"{devices.ReadInt(115)};" +
+            $"{devices.ReadInt(116)};" +
+            $"{devices.ReadInt(117)};" +
+            $"{devices.ReadInt(118)};" +
+            $"{devices.ReadInt(119)};" +
+            $"{devices.ReadInt(120)};" +
+            $"{devices.ReadInt(121)};" +
+            $"{devices.ReadInt(135)};" +
+            $"{devices.ReadInt(73)};" +
+            $"{devices.ReadInt(65)};" +
+            $"{devices.ReadSwFloat(66)};" +
+            $"{devices.ReadInt(68)};" +
+            $"{devices.ReadInt(74)};" +
+            $"{devices.ReadSwFloat(75)};" +
+            $"{devices.ReadSwFloat(77)};" +
+            $"{devices.ReadSwFloat(79)};" +
+            $"{devices.ReadInt(145)}\r\n";
 
         string fileName = "Log//" + orderNum + ".csv";
         WriteLineToFile(line, fileName);
@@ -742,26 +817,144 @@ public partial class MainWindow : Window
         {
             File.WriteAllBytes(fileName, new byte[3] { 0xEF, 0xBB, 0xBF }); //указание на utf-8
             File.AppendAllText(fileName, "Дата;Время;№ заказа;Серийный №;PLC;" +
-                "Коэф. К;" +
-                " Коэф. B;" +
-                "Уставка предупр;" +
-                "Уставка авар;" +
-                "Флаг обрыва датчика;" +
-                "Коэф. датчика;" +
-                "Коэф. усиления;" +
-                "Коэф. смещения;" +
-                "Режим цифрового фильтра;" +
-                " Выбор параметра для работы по уставкам;" +
-"Включить - 1 / Выключить - 0  канал IEPE" +
-"Пороговое значение для фильтра от шума АЦП" +
-"Устанавливаемое значение для фильтра от шума АЦП" +
-"Тип сглаживающего фильтра(0 - нет, 1 - SMA, 2 - EMA, 3 - от шумов)" +
-"Длина окна SMA(Simple Moving Average(1..255))" +
-"Коэффициент EMA" +
-                "Коэфф В;" +
-                "RS-485;" +
-                "Сумма ошибок;" +
-                "Время проверки\r\n");
+//300137h Float
+//300139h Float
+//300005h Float
+//300009h Float
+//300011h Int
+//300014h Float
+//300016h Float
+//300018h Float
+//300020h Int
+
+"[IEPE] Напряжение(постоянка), коэф.К;" +
+"[IEPE] Напряжение(постоянка), коэф.B;" +
+"[IEPE] Уставка предупр.;" +
+"[IEPE] Уставка авар.;" +
+"[IEPE] Флаг обрыва датчика(1 - обрыв);" +
+"[IEPE] Коэф.датчика;" +
+"[IEPE] Коэф.усиления;" +
+"[IEPE] Коэф.смещения;" +
+"[IEPE] Режим цифрового фильтра;" +
+//300030h Int
+//300029h Int
+//300984h Float
+//300986h Float
+//300988h Int
+//300989h Int
+//300990h Float
+"[IEPE] Выбор параметра для работы по уставкам / также отображение в гл.меню /;" +
+"[IEPE] Включить - 1 / Выключить - 0  канал IEPE;" +
+"[IEPE] Пороговое значение для фильтра от шума АЦП;" +
+"[IEPE] Устанавливаемое значение для фильтра от шума АЦП;" +
+"[IEPE] Тип сглаживающего фильтра(0 - нет, 1 - SMA, 2 - EMA, 3 - от шумов);" +
+"[IEPE] Длина окна SMA(Simple Moving Average(1..255));" +
+"[IEPE] Коэффициент EMA(Exponentional Moving Average(0..1));" +
+//300036h Int
+"[4 - 20 ВХОД] Усреднение сигнала 4 - 20(0 - выкл / 1 - вкл);" +
+//300039h Float
+//300041h Float
+//300043h Float
+//300045h Float
+//300047h Int
+//300048h Float
+//300050h Float
+//300052h Float
+//300054h Float
+//300056h Float
+//300058h Int
+//300081h Int
+//300082h Int
+//300083h Int
+//300084h Int
+//300085h Int
+//300087h Int
+"[4 - 20 ВХОД] Нижняя уст.предупр.;" +
+"[4 - 20 ВХОД] Верхняя уст.предупр.;" +
+"[4 - 20 ВХОД] Нижняя уст.авар.;" +
+"[4 - 20 ВХОД] Верхняя уст.авар.;" +
+"[4 - 20 ВХОД] Флаг целостности канала(1 - обрыв);" +
+"[4 - 20 ВХОД] Нижний предел диапазона для пересчета;" +
+"[4 - 20 ВХОД] Верхний предел диапазона для пересчета;" +
+"[4 - 20 ВХОД] Коэф.усиления K;" +
+"[4 - 20 ВХОД] Коэф.смещения B;" +
+"[4 - 20 ВХОД] Расчетное значение;" +
+"[4 - 20 ВХОД] Включить - 1 / Выключить - 0(работа по уставкам);" +
+"[РЕЛЕ] Счетчик срабатываний предупр.реле;" +
+"[РЕЛЕ] Счетчик срабатываний авар.реле;" +
+"[РЕЛЕ] Состояние предупр.реле;" +
+"[РЕЛЕ] Состояние авар.реле;" +
+"[РЕЛЕ] Режим работы(0 - без памяти, 1 - c памятью);" +
+"[РЕЛЕ] Задержка на срабатывание, сек.;" +
+//300089h Int
+//300090h Int
+//300063h Float
+//300091h Float
+//300093h Float
+//300095h Float
+//300098h Int
+//300097h Int
+"[РЕЛЕ] Задержка на выход из срабатывания, мс;" +
+"[4 - 20 ВЫХОД] Источник сигнала(0 - Настр., 1 - ICP, 2 - 4 - 20, 3 - 485);" +
+"[4 - 20 ВЫХОД] Задать значение тока(настр.рег.);" +
+"[4 - 20 ВЫХОД] Коэф.усиления;" +
+"[4 - 20 ВЫХОД] Коэф.смещения;" +
+"[4 - 20 ВЫХОД] Диапазон;" +
+"[4 - 20 ВЫХОД] Номер регистра канала 485 для выхода 4 - 20;" +
+"[РЕЛЕ / ДИСКРЕТ] Квитирование реле;" +
+//300021h Float
+//300101h Int
+//300102h Float
+//300069h Float
+"[ОСНОВНЫЕ] Коэф.корректировки напряжение питания;" +
+"[ОСНОВНЫЕ / SLAVE] Адрес  modbus;" +
+"[ОСНОВНЫЕ / SLAVE] Скорость обмена XP6;" +
+"[ОСНОВНЫЕ / SLAVE] Скорость обмена  TBUS;" +
+//300106h Int
+//300107h Int
+"[ОСНОВНЫЕ] Версия ПО(hi);" +
+"[ОСНОВНЫЕ] Версия ПО(lo);" +
+//300110h Int
+//300111h Float
+//300113h Float
+//300115h Int
+//300116h Int
+//300117h Int
+//300118h Int
+//300119h Int
+//300120h Int
+//300121h Int
+//300135h Int
+//300073h Int
+//300065h Int
+//300066h Float
+//300068h Int
+//300074h Int
+//300075h Float
+//300077h Float
+//300079h Float
+//300145h Int
+"[ОСНОВНЫЕ] Время прогрева, мс.;" +
+"[ОСНОВНЫЕ] Нижняя уставка питания контроллера;" +
+"[ОСНОВНЫЕ] Верхняя уставка питания контроллера;" +
+"[HART / TWD] Включить - 1 / Выключить - 0;" +
+"[HART / TWD] Адрес устройства;" +
+"[HART / TWD] Номер функции;" +
+"[HART / TWD] Номер регистра;" +
+"[HART / TWD] Количество регистров;" +
+"[HART / TWD] Задержка Transmit DMA;" +
+"[HART / TWD] Значение регистра" +
+"[ОСНОВНЫЕ] Автоотключение дисплея, мин.;" +
+"[485 / MASTER] Включить - 1 / Выключить - 0(канал 485);" +
+"[485 / MASTER] Номер рег.для индикации на гл.экране;" +
+"[485 / MASTER] Скорость;" +
+"[485 / MASTER] Период опроса, мс;" +
+"[485 / MASTER] Флаг целостности канала(1 - обрыв);" +
+"[485 / MASTER] Ошибки CRC, %;" +
+"[485 / MASTER] Ошибки TIMEOUT, %;" +
+"[485 / MASTER] Количество потерянных пакетов;" +
+"[485 / MASTER] Рег 1 Вкл./ Выкл.;" +
+                "\r\n");
         }
         try
         {
