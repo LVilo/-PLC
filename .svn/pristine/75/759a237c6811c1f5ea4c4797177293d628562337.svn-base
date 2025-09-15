@@ -1,0 +1,42 @@
+﻿using PortsWork;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using АРМ_настройка_PLC.ViewModels;
+
+namespace AWS.Views
+{
+    class Settings
+    {
+        private DevicesCommunication devices;
+        public Settings(DevicesCommunication devList)
+        {
+            devices = devList;
+        }
+        public void CheckVoltage()
+        {
+            float Value = 0f;
+            Value = devices.PLC.GetHoldingFloat(devices.address,Registers.REGISTER_ADRESS_VOLTAGE,devices.TimeSleep);
+            if (Value >= 24.1 || Value <= 23.9)
+            {
+                Value = 24f / Value * devices.PLC.GetHoldingFloat(devices.address, Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, devices.TimeSleep);
+                
+                devices.Write_Reg(  Value, devices.address);
+            }
+        }
+        public void Seting_two_wire()
+        {
+            float IEPE_1 = 0f;
+            float IEPE_2 = 0f;
+            devices.Write_Reg(Registers.ON, Registers.REGISTER_ADRESS_K_A);
+            devices.Write_Reg(Registers.OFF, Registers.REGISTER_ADRESS_K_B);
+            devices.generator.ChangeSignalType(PortGenerator.SignalType.Sine);
+            devices.generator.SetFrequency("79,6");
+            devices.multimeter.SetVoltage( 50, 657, 0.005, 3,2);
+            IEPE_1 = 
+        }
+    }
+}

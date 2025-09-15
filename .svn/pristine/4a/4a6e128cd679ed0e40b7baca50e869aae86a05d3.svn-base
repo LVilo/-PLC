@@ -1,0 +1,260 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Width="900" Height="700"
+        x:Class="AWS.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="АРМ"
+        FontFamily="Arial">
+	<StackPanel>
+		<Canvas>
+			
+			<StackPanel
+			Name="Update_Ports"
+			Margin="600,340,0,0">
+				<Button
+					Click="Button_Update_Ports"
+					Width="130"
+					Content="Обновить порты">
+				</Button>
+			</StackPanel>
+			<StackPanel Name="Panel_Generator" Margin="600,210,0,0" Background="LightGray">
+				<Border
+				Margin="5"
+				BorderBrush="LightGray">
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto, Auto">
+
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт Генератора"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+							Name="Port_Name_Generator"
+							Background="White"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0">
+						</ComboBox>
+						<RadioButton x:Name="Option1"
+									 Grid.Column="0"
+									 Grid.Row="1"
+									 IsChecked="True"
+						 Content="Канал 1"
+						 GroupName="OptionsGroup"/>
+						<RadioButton x:Name="Option2"
+									 Grid.Column="1"
+									 Grid.Row="1"
+						 Content="Канал 2"
+						 
+						 GroupName="OptionsGroup"/>
+
+						<Button
+							Click="Button_Open_Port_Generator"
+							Content="Подключить"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="2">
+
+						</Button>
+						<Button
+							Click="Button_Close_Port_Generator"
+							Content="Отключить"
+							Width="130"
+							Grid.Column="0"
+							Grid.Row="2">
+
+						</Button>
+					</Grid>
+				</Border>
+			</StackPanel>
+			<StackPanel Name="Panel_Agilent" Margin="600,110,0,0" Background="LightGray">
+				<Border
+				Margin="5"
+				BorderBrush="LightGray">
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto">
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт вольтметра"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+							Name="Port_Name_Agiletn"
+							Background="White"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0">
+
+						</ComboBox>
+						<Button
+							Click="Button_Open_Port_Agilent"
+							Content="Подключить"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="1">
+
+						</Button>
+						<Button
+							Click="Button_Close_Port_Agilent"
+							Content="Отключить"
+							Width="130"
+							Grid.Column="0"
+							Grid.Row="1">
+						</Button>
+					</Grid>
+				</Border>
+			</StackPanel>			
+			<StackPanel Name="Panel_PLC" Margin="600,10,0,0" Background="LightGray">
+				<Border
+				Margin="5"
+				BorderBrush="LightGray">
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto, Auto">
+
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт Датчика"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+							Name="Port_Name_PLC"
+							Background="White"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0">
+
+						</ComboBox>
+						<Button
+							Click="Button_Open_Port_PLC"
+							Content="Подключить"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="2">
+
+						</Button>
+						<Button
+							Click="Button_Close_Port_PLC"
+							Content="Отключить"
+							Width="130"
+							Grid.Column="0"
+							Grid.Row="2">
+
+						</Button>
+					</Grid>
+				</Border>
+			</StackPanel>
+			<StackPanel Name="Panel_Log" Margin="90,10,0,0">
+				<TextBox Name="LogTextBox"
+						 Width="500"
+						 Height="315"
+						 FontSize="12"
+             IsReadOnly="True"
+             AcceptsReturn="True"
+             AcceptsTab="True"
+             ScrollViewer.VerticalScrollBarVisibility="Auto"
+             TextWrapping="Wrap">
+
+				</TextBox>
+			</StackPanel>
+			<StackPanel Name="Panel_Serial_Number" Margin="600,400,0,0">
+				<Border Background="LightGray" >
+					<Grid ColumnDefinitions="Auto,Auto" Margin="10">
+						<TextBox Name="Serial_Number" Width="150" Grid.Column="1" Background="White"
+							 TextChanged="Serial_Number_PreviewTextInput"
+								 Watermark="Введите номер">
+						</TextBox>
+						<Label Content="Серийный номер" Grid.Column="0" Margin="0,5,0,0">
+						</Label>
+					</Grid>
+				</Border>
+			</StackPanel>
+			<StackPanel Name="Order_Serial_Number" Margin="600,470,0,0">
+				<Border Background="LightGray" >
+					<Grid ColumnDefinitions="Auto,Auto" Margin="10">
+						<TextBox Name="Order_Number" Width="150" Grid.Column="1" Background="White"
+							 TextChanged="Order_Number_PreviewTextInput"
+								 Watermark="Введите номер">
+						</TextBox>
+						<Label Content="Номер заказа" Grid.Column="0" Margin="0,5,0,0">
+						</Label>
+					</Grid>
+				</Border>
+			</StackPanel>
+			<StackPanel Name="Panel_Name_PLC" Margin="600,540,0,0">
+				<Border Background="LightGray" >
+					<Grid ColumnDefinitions="Auto,Auto" Margin="10">
+						<ComboBox Name="Name_PLC" Width="150" Grid.Column="1" Background="White"
+							SelectedIndex="0" >
+							<ComboBoxItem>PLC 112</ComboBoxItem>
+							<ComboBoxItem>PLC 121</ComboBoxItem>
+							<ComboBoxItem>PLC 481</ComboBoxItem>
+							<ComboBoxItem>PLC 991</ComboBoxItem>
+						</ComboBox>
+						<Label Content="Контроллер" Grid.Column="0" Margin="0,5,0,0">
+						</Label>
+					</Grid>
+				</Border>
+			</StackPanel>
+			<StackPanel
+					Name="Panel_Start"
+					Margin="400,340,0,0">
+				<Button
+					Click="Button_Start"
+					Content="Старт">
+				</Button>
+			</StackPanel>
+			<StackPanel
+					Name="Panel_Setting_Volt"
+					Margin="400,540,0,0">
+				<Button
+					Click="Button_Setting_Volt"
+					Content="Настроить напряжение">
+				</Button>
+			</StackPanel>
+			<StackPanel
+					Name="Panel_Setting_IEPE"
+					Margin="400,640,0,0">
+				<Button
+					Click="Button_Setting_IEPE"
+					Content="Настроить IEPE">
+				</Button>
+			</StackPanel>
+			<StackPanel 
+					Name="Panel_Setting_4_20"
+					Margin="400,440,0,0">
+				<Button
+					Click="Button_Setting_4_20"
+					Content="Настроить 4-20">
+				</Button>
+			</StackPanel>
+			<StackPanel
+				Name="Panel_Rs_485"
+				Margin="400,490,0,0">
+				<Button
+					Click="Setting_Rs_485_Click"
+					Content="Настроить RS-485">
+				</Button>
+			</StackPanel>
+			
+		</Canvas>
+	</StackPanel>
+</Window>

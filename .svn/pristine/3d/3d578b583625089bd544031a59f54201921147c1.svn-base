@@ -1,0 +1,52 @@
+﻿using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using PortsWork;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO.Ports;
+using System.Linq;
+using АРМ_настройка_PLC.ViewModels;
+namespace AWS.Views;
+
+public partial class MainWindow : Window
+{
+    DevicesCommunication devices;
+    public MainWindow()
+    {
+        InitializeComponent();
+        devices = new DevicesCommunication();
+        PortsListReload();
+    }
+    private void Button_OnClick(object? sender, RoutedEventArgs e)
+    {
+        LogWrite("dsfbsdfbb"); 
+        //PortsListReload();
+    }
+    private void PortsListReload()
+    {
+        string[] ports = GetAllPorts();
+        Port_Name_Agiletn.ItemsSource = ports;
+        Port_Name_Agiletn.SelectedIndex = 0;
+
+    }
+    private string[] GetAllPorts()
+    {
+        devices.usbDevicesInfo = Port.FindVisaDevicesInfo();
+        List<string> usbInfo = new List<string>();
+        devices.usbDevicesInfo.ForEach(t => usbInfo.Add(t.GetInfo()));
+
+        return usbInfo.Concat(SerialPort.GetPortNames()).ToArray();
+    }
+    private void LogWrite(string message)
+    {
+        var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            LogTextBox.Text += formattedMessage;
+            LogTextBox.CaretIndex = int.MaxValue; // Прокрутка вниз
+        });
+    }
+}

@@ -1,0 +1,380 @@
+﻿using Avalonia.Controls;
+using Avalonia.Dialogs;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using PortsWork;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO.Ports;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using АРМ_настройка_PLC.ViewModels;
+namespace AWS.Views;
+
+public partial class MainWindow : Window
+{
+    DevicesCommunication devices;
+    Settings setting;
+
+    public bool DC_Read { get; set; }
+    public MainWindow()
+    {
+        InitializeComponent();
+        devices = new DevicesCommunication();
+        setting = new Settings(devices);
+        PortsListReload();
+        this.Closing += MainWindow_Closing;
+        devices.address = 10;
+        devices.TimeSleep = 2;
+        StartBackgroundWork();
+    }
+    private async void Start_DC_Read_Work()
+    {
+        try
+        {
+            await Task.Run(() =>
+            {
+                while (DC_Read)
+                {
+                    if (devices.DC_Read && devices.multimeter.IsOpen)
+                    {
+                        try
+                        {
+                            devices.currentVolt = devices.multimeter.GetVoltage(PortMultimeter.SIGNALTYPE_DC, 100);
+                        }
+                        catch (InvalidOperationException ex)
+                        {
+                            devices.CreateMessege( (ex.Message));
+                        }
+                    }
+                }
+                Thread.Sleep(300);
+            
+            });
+    
+        }
+        catch (Exception ex)
+        {
+            devices.CreateMessege((ex.Message));
+        }
+        finally
+        {
+            DC_Read = false;
+        }
+    }
+    private async void StartBackgroundWork()
+    {
+        // Показываем индикатор загрузки
+       
+
+        try
+        {
+            // Запускаем фоновую задачу
+            await Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (devices.messege.Count > 0)
+                    {
+                        LogWrite(devices.messege.Dequeue());
+                    }
+                    Thread.Sleep(1000);
+                }
+            });
+
+            // Этот код выполнится после завершения задачи в UI потоке
+        }
+        catch (Exception ex)
+        {
+            LogWrite($"Ошибка: {ex.Message}");
+        }
+    }
+    #region Кнопки
+
+
+    private void Button_Open_Port_PLC(object? sender, RoutedEventArgs e)
+    {
+        devices.PLC = (ModbusRTU)devices.SetMeasureDeviceName(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
+        devices.PLC.SetParameters(115200, (StopBits)1);
+        if (devices.PLC.OpenPort())
+        {
+            devices.CreateMessege("Датчик подключен");
+        }
+        else devices.CreateMessege("Датчик не подключен");
+        // OpenPort(devices.PLC, Port_Name_Agiletn.SelectedItem.ToString());
+    }
+    private void Button_Open_Port_Generator(object? sender, RoutedEventArgs e)
+    {
+        devices.generator = (PortGenerator)devices.SetMeasureDeviceName(devices.generator, Port_Name_Generator.SelectedItem.ToString());
+        if (devices.generator.OpenPort())
+        {
+            devices.CreateMessege("Генератор подключен");
+        }
+
+        else devices.CreateMessege("Генератор не подключен");
+        // OpenPort(devices.generator, Port_Name_Agiletn.SelectedItem.ToString());
+    }
+    private void Button_Open_Port_Agilent(object? sender, RoutedEventArgs e)
+    {
+        devices.multimeter.PortName = Port_Name_Agiletn.SelectedItem.ToString();
+        devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
+        if (devices.multimeter.OpenPort())
+        {
+            devices.CreateMessege("Мультиметр подключен");
+            Start_DC_Read_Work();
+        }
+        else devices.CreateMessege("Мультиметр не подключен");
+        // OpenPort(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
+    }
+    private void Button_Close_Port_PLC(object? sender, RoutedEventArgs e)
+    {
+        devices.PLC.ClosePort();
+        devices.CreateMessege("Датчик отключен");
+    }
+
+    private void Button_Close_Port_Generator(object? sender, RoutedEventArgs e)
+    {
+        devices.generator.ClosePort();
+        devices.CreateMessege("генератор отключен");
+    }
+    private void Button_Close_Port_Agilent(object? sender, RoutedEventArgs e)
+    {
+        devices.multimeter.ClosePort();
+        devices.CreateMessege("Мультимтер отключен");
+    }
+
+    private void Button_Update_Ports(object? sender, RoutedEventArgs e)
+    {
+        PortsListReload();
+    }
+    private async void Button_Write_Password(object? sender, RoutedEventArgs e)
+    {
+        Do_Work(0);
+    }
+    private async void Button_Write_Save_Password(object? sender, RoutedEventArgs e)
+    {
+        Do_Work(1);
+    }
+    private async void Button_Start(object? sender, RoutedEventArgs e)
+    {
+        Do_Work(2);
+    }
+    private async void Do_Work(byte code)
+    {
+        await (Task.Run(() =>
+        {
+            try
+            {
+                switch (code)
+                {
+                    case 0:
+                        //devices.SetPassword();
+                        //CheckVoltage();
+                        //Seting_IEPE();
+                        Setting_4_20Async();
+                        break;
+                    case 1: devices.Save_Change(); break;
+                    case 2: if (devices.PLC.IsOpen)
+                            setting.CheckVoltage();
+                        else devices.CreateMessege("Датчик не подключен");
+                        break;
+                    case 3: break;
+                    case 4: break;
+                    case 5: break;
+                    case 6: break;
+                }
+            }
+            catch (Exception ex)
+            {
+                devices.CreateMessege(ex.Message);
+
+            }
+        }));
+    }
+    #endregion
+    private async void OpenPort(Port device, string name_port)
+    {
+        //await (Task.Run(() =>
+        //{
+        //    try
+        //    {
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        devices.CreateMessege("Port: " + ex.Message);
+
+        //    }
+        //}));
+    }
+    private void PortsListReload()
+    {
+        InitializeAllComboBoxes(devices.GetAllPorts());
+        devices.CreateMessege("Порты обновлены");
+    }
+    private void InitializeAllComboBoxes(IEnumerable<string> portItems)
+    {
+        var comboBoxes = new[]
+        {
+        Port_Name_Agiletn,
+        Port_Name_Generator,
+        Port_Name_PLC
+        };
+
+        foreach (var comboBox in comboBoxes)
+        {
+            comboBox.ItemsSource = portItems;
+            comboBox.SelectedIndex = 0;
+        }
+    }
+
+    private void LogWrite(string message)
+    {
+        var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            LogTextBox.Text += formattedMessage;
+            LogTextBox.CaretIndex = int.MaxValue; // Прокрутка вниз
+        });
+    }
+    private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        LogWrite("Приложение закрывается");
+        devices.CloseConnection();
+    }
+    private void Serial_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
+    {
+
+    }
+    private void Order_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
+    {
+
+    }
+    #region Настройка
+    public void CheckVoltage()
+    {
+        float value = 0f;
+        value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+        if (value >= 24.1 || value <= 23.9)
+        {
+            value = 0f;
+            devices.messege.Enqueue("Регистр напряжения (99) показывает некоректные значениея, идет настройка коэффициентов");
+            for (int i = 0; i < 10; i++)
+            {
+                value += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+            }
+            value = 24f / (value / 10) * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
+
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
+
+
+        }
+        else
+        {
+            devices.messege.Enqueue("Регистр напряжения (99) показывает 24 В");
+        }
+
+    }
+    public void Seting_IEPE()
+    {
+        float IEPE_1 = 0f;
+        float IEPE_2 = 0f;
+        double volt_1 = 0d;
+        double volt_2 = 0d;
+        float result = 0f;
+        devices.SetPassword();
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.ON);
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A, Registers.ON);
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, Registers.OFF);
+        devices.Save_Change();
+        DC_Read = true;
+
+
+
+        devices.Average(0.05);
+        for (int i = 0; i <= 9; i++)
+        {
+            volt_1 += devices.multimeter.GetVoltage("AC", 100);
+        }
+        volt_1 /= 10;
+        for (int i = 0; i <= 9; i++)
+        {
+            IEPE_1 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
+        }
+        IEPE_1 /= 10;
+        devices.Average(0.25);
+        for (int i = 0; i <= 9; i++)
+        {
+            volt_2 += devices.multimeter.GetVoltage("AC", 100);
+        }
+        volt_2 /= 10;
+        for (int i = 0; i <= 9; i++)
+        {
+            IEPE_2 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
+        }
+        IEPE_2 /= 10;
+        devices.SetPassword();
+        result = (float)(volt_2 - volt_1) / (IEPE_2 - IEPE_1);
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A, result);
+        result = (float)(IEPE_2 * volt_1 - IEPE_1 * volt_2) / (IEPE_2 - IEPE_1);
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, result);
+        devices.Save_Change();
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
+        devices.CreateMessege("Настройка IEPE закончена");
+        //IEPE_1 = 
+    }
+    public async Task Setting_4_20Async()
+    {
+        float K_4_20_1 = 0f;
+        float K_4_20_2 = 0f;
+        double amper_1 = 0d;
+        double amper_2 = 0d;
+        float result = 0f;
+        devices.SetPassword();
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_IEPE, Registers.ON);
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_IEPE, Registers.OFF);
+        devices.Save_Change();
+
+        for (int i = 0; i <= 9; i++)
+        {
+            amper_1 += devices.multimeter.GetVoltage("DC", 100) * 10;
+            devices.multimeter.GetAmperage();
+        }
+        amper_1 /= 10;
+        for (int i = 0; i <= 9; i++)
+        {
+            K_4_20_1 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
+        }
+        K_4_20_1 /= 10;
+
+
+        
+
+        for (int i = 0; i <= 9; i++)
+        {
+            amper_2 += devices.multimeter.GetVoltage("DC", 100) * 10;
+        }
+        amper_2 /= 10;
+        for (int i = 0; i <= 9; i++)
+        {
+            K_4_20_2 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
+        }
+        K_4_20_2 /= 10;
+        devices.SetPassword();
+        result = (float)(amper_2 - amper_1) / (K_4_20_2 - K_4_20_1);
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A, result);
+        result = (float)(K_4_20_2 * amper_1 - K_4_20_1 * amper_2) / (K_4_20_2 - K_4_20_1);
+        devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, result);
+        devices.Save_Change();
+        devices.CreateMessege("Настройка 4-20 закончена");
+        //IEPE_1 = 
+    }
+    #endregion 
+    
+}

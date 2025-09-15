@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
+		Width="600" Height="450" 
+        SizeToContent="Manual"  
+        WindowStartupLocation="CenterOwner" 
+        x:Class="AWS.Dialog"
+        Title="Dialog">
+	<StackPanel Name="Dialog_Panel">
+		<Border Name="Border_Name"
+                BorderBrush="Black"
+                BorderThickness="2"
+                IsVisible="False"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                MaxWidth="400"
+                MaxHeight="300">
+			<Image Name="Image_Panel"
+                   Stretch="Uniform" 
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center"/>
+		</Border>
+		<Border  Background="LightGray" Margin="10">
+			<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10">
+				<Label Name="Label_Text"></Label>
+				<Button Name="OK" Click="OK_Click" Grid.Column="0" Grid.Row="1" Content="ОК">
+				</Button>
+			</Grid>
+		</Border>
+		
+	</StackPanel>
+</Window>

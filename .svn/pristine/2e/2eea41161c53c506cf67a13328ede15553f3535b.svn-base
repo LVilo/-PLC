@@ -1,0 +1,191 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|c:\\users\\ovsyannikovid\\desktop\\aws\\aws\\aws\\views\\mainwindow.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|solutionrelative:aws\\views\\mainwindow.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|c:\\users\\ovsyannikovid\\desktop\\aws\\aws\\aws\\views\\devicescommunication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|solutionrelative:aws\\views\\devicescommunication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|c:\\users\\ovsyannikovid\\desktop\\aws\\aws\\aws\\views\\dialog.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|solutionrelative:aws\\views\\dialog.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|c:\\users\\ovsyannikovid\\desktop\\aws\\aws\\aws\\views\\countdownwindow.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|solutionrelative:aws\\views\\countdownwindow.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|c:\\users\\ovsyannikovid\\desktop\\aws\\aws\\aws\\views\\mainwindow.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|solutionrelative:aws\\views\\mainwindow.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|c:\\users\\ovsyannikovid\\desktop\\aws\\aws\\aws\\views\\countdownwindow.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|solutionrelative:aws\\views\\countdownwindow.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|c:\\users\\ovsyannikovid\\desktop\\aws\\aws\\aws\\views\\registers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|solutionrelative:aws\\views\\registers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|c:\\users\\ovsyannikovid\\desktop\\aws\\aws\\aws\\views\\plc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|solutionrelative:aws\\views\\plc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|c:\\users\\ovsyannikovid\\desktop\\aws\\aws\\aws\\views\\dialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9221FDBD-38B5-9F22-314F-D931C5ED8AB0}|AWS\\AWS.csproj|solutionrelative:aws\\views\\dialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CountdownWindow.axaml",
+              "DocumentMoniker": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\CountdownWindow.axaml",
+              "RelativeDocumentMoniker": "AWS\\Views\\CountdownWindow.axaml",
+              "ToolTip": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\CountdownWindow.axaml",
+              "RelativeToolTip": "AWS\\Views\\CountdownWindow.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-09-11T10:49:31.98Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CountdownWindow.axaml.cs",
+              "DocumentMoniker": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\CountdownWindow.axaml.cs",
+              "RelativeDocumentMoniker": "AWS\\Views\\CountdownWindow.axaml.cs",
+              "ToolTip": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\CountdownWindow.axaml.cs",
+              "RelativeToolTip": "AWS\\Views\\CountdownWindow.axaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEUAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T10:49:31.895Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Dialog.axaml.cs",
+              "DocumentMoniker": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\Dialog.axaml.cs",
+              "RelativeDocumentMoniker": "AWS\\Views\\Dialog.axaml.cs",
+              "ToolTip": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\Dialog.axaml.cs",
+              "RelativeToolTip": "AWS\\Views\\Dialog.axaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-10T10:23:17.818Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.axaml.cs",
+              "DocumentMoniker": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\MainWindow.axaml.cs",
+              "RelativeDocumentMoniker": "AWS\\Views\\MainWindow.axaml.cs",
+              "ToolTip": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\MainWindow.axaml.cs",
+              "RelativeToolTip": "AWS\\Views\\MainWindow.axaml.cs",
+              "ViewState": "AgIAAAoCAAAAAAAAAAAiwCYCAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-02T09:10:52.611Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DevicesCommunication.cs",
+              "DocumentMoniker": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\DevicesCommunication.cs",
+              "RelativeDocumentMoniker": "AWS\\Views\\DevicesCommunication.cs",
+              "ToolTip": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\DevicesCommunication.cs",
+              "RelativeToolTip": "AWS\\Views\\DevicesCommunication.cs",
+              "ViewState": "AgIAAGQAAAAAAAAAAAAAwIwAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-02T09:39:00.279Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "PLC.cs",
+              "DocumentMoniker": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\PLC.cs",
+              "RelativeDocumentMoniker": "AWS\\Views\\PLC.cs",
+              "ToolTip": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\PLC.cs",
+              "RelativeToolTip": "AWS\\Views\\PLC.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-04T09:04:03.764Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Registers.cs",
+              "DocumentMoniker": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\Registers.cs",
+              "RelativeDocumentMoniker": "AWS\\Views\\Registers.cs",
+              "ToolTip": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\Registers.cs",
+              "RelativeToolTip": "AWS\\Views\\Registers.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAQwCwAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-04T06:28:21.098Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "be0b1c90-5f13-4d8b-8e63-9ac922d168ad",
+        "Display": 0,
+        "X": -29,
+        "Y": 218,
+        "Width": 1521,
+        "Height": 792,
+        "WindowState": 2
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MainWindow.axaml",
+              "DocumentMoniker": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\MainWindow.axaml",
+              "RelativeDocumentMoniker": "AWS\\Views\\MainWindow.axaml",
+              "ToolTip": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\MainWindow.axaml",
+              "RelativeToolTip": "AWS\\Views\\MainWindow.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-09-02T08:43:48.664Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Dialog.axaml",
+              "DocumentMoniker": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\Dialog.axaml",
+              "RelativeDocumentMoniker": "AWS\\Views\\Dialog.axaml",
+              "ToolTip": "C:\\Users\\OvsyannikovID\\Desktop\\AWS\\AWS\\AWS\\Views\\Dialog.axaml",
+              "RelativeToolTip": "AWS\\Views\\Dialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-09-10T10:00:26.418Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

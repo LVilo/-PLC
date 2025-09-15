@@ -1,0 +1,229 @@
+﻿using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using PortsWork;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO.Ports;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using АРМ_настройка_PLC.ViewModels;
+namespace AWS.Views;
+
+public partial class MainWindow : Window
+{
+    DevicesCommunication devices;
+    Settings setting;
+
+    public bool IsLoading { get; private set; }
+    private string messege { get;  set; }
+    public MainWindow()
+    {
+        InitializeComponent();
+        devices = new DevicesCommunication();
+        setting = new Settings(devices);
+        PortsListReload();
+        this.Closing += MainWindow_Closing;
+        devices.address = 10;
+        devices.TimeSleep = 0;
+        StartBackgroundWork();
+    }
+    private async void StartBackgroundWork()
+    {
+        // Показываем индикатор загрузки
+        IsLoading = true;
+
+        try
+        {
+            // Запускаем фоновую задачу
+            await Task.Run(() =>
+            {
+                while (IsLoading)
+                {
+
+                    if( setting.messege != "")
+                    {
+                        LogWrite(setting.messege);
+                        setting.messege = "";
+                    }
+                        
+                    if (messege != "")
+                    {
+                        LogWrite(messege);
+                        messege = "";
+                    }
+                    if (devices.messege != "")
+                    {
+                        LogWrite(devices.messege);
+                        devices.messege = "";
+                    }
+                    Thread.Sleep(1000);
+                }
+            });
+
+            // Этот код выполнится после завершения задачи в UI потоке
+        }
+        catch (Exception ex)
+        {
+            LogWrite($"Ошибка: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+    #region Кнопки
+
+
+    private void Button_Open_Port_PLC(object? sender, RoutedEventArgs e)
+    {
+        OpenPort(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
+    }
+    private void Button_Open_Port_Generator(object? sender, RoutedEventArgs e)
+    {
+        OpenPort(devices.generator, Port_Name_Generator.SelectedItem.ToString());
+    }
+    private void Button_Open_Port_Agilent(object? sender, RoutedEventArgs e)
+    {
+        OpenPort(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
+    }
+    private void Button_Close_Port_PLC(object? sender, RoutedEventArgs e)
+    {
+        ClosePort(devices.PLC);
+    }
+    
+    private void Button_Close_Port_Generator(object? sender, RoutedEventArgs e)
+    {
+        ClosePort(devices.generator);
+    }
+    private void Button_Close_Port_Agilent(object? sender, RoutedEventArgs e)
+    {
+        ClosePort(devices.multimeter);
+    }
+    
+    private void Button_Update_Ports(object? sender, RoutedEventArgs e)
+    { 
+        PortsListReload();
+    }
+    private async void Button_Write_Password(object? sender, RoutedEventArgs e)
+    {
+        Do_Work(0);
+    }
+    private async void Button_Write_Save_Password(object? sender, RoutedEventArgs e)
+    {
+        Do_Work(1);
+    }
+    private async void Button_Start(object? sender, RoutedEventArgs e)
+    {
+        Do_Work(2);
+    }
+    private async void Do_Work(byte code)
+    {
+        await (Task.Run(() =>
+        {
+            try
+            {
+                switch (code)
+                {
+                    case 0:
+                        for(int i = 0; i<=10; i++)
+                        {
+                            devices.PLC.SetValue(10, Registers.REGISTER_ADRESS_PASSWORD, Registers.PASSWORD ,0);
+                            Thread.Sleep(1000);
+                            if(!devices.Check_Change(Registers.PASSWORD,Registers.REGISTER_ADRESS_PASSWORD))
+                            {
+                                Debug.WriteLine("ничео не получилось");
+                            }
+                            else Debug.WriteLine(" получилось");
+                        }
+                        devices.SetPassword(); break;
+                    case 1:  devices.Save_Change(); break;
+                    case 2:  setting.CheckVoltage(); break;
+                    case 3: break;
+                    case 4: break;
+                    case 5: break;
+                    case 6: break;
+                }
+            }
+            catch (Exception ex)
+            {
+                messege = (ex.Message);
+
+            }
+        }));
+    }
+    #endregion
+    private async void OpenPort(Port device, string name_port)
+    {
+        await (Task.Run(() =>
+        {
+            try
+            {
+                device = (Port)devices.SetMeasureDeviceName(device, name_port);
+                if (device == devices.PLC) devices.PLC.SetParameters(115200, (StopBits)1);
+                if (device.OpenPort()) messege = ($"{name_port} " + " Подключен");
+                else messege = ($"{name_port} " + " Не подключен");
+            }
+            catch (Exception ex)
+            {
+                messege = ("Port: " + ex.Message);
+
+            }
+        }));
+    }
+    private void ClosePort(Port device)
+    {
+        device.ClosePort();
+        messege = ($"{device.PortName} " + " Отключен");
+    }
+    private void PortsListReload()
+    {
+        InitializeAllComboBoxes(devices.GetAllPorts());
+        messege = ("Порты обновлены");
+    }
+    private void InitializeAllComboBoxes(IEnumerable<string> portItems)
+    {
+        var comboBoxes = new[]
+        {
+        Port_Name_Agiletn,
+        Port_Name_Generator,
+        Port_Name_PLC
+        };
+
+        foreach (var comboBox in comboBoxes)
+        {
+            comboBox.ItemsSource = portItems;
+            comboBox.SelectedIndex = 0;
+        }
+    }
+
+    private void LogWrite(string message)
+    {
+        var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            LogTextBox.Text += formattedMessage;
+            LogTextBox.CaretIndex = int.MaxValue; // Прокрутка вниз
+        });
+    }
+    private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        IsLoading = false;
+        LogWrite("Приложение закрывается");
+        devices.CloseConnection();
+    }
+    private void Serial_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
+    {
+       
+    }
+    private void Order_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
+    {
+
+    }
+}

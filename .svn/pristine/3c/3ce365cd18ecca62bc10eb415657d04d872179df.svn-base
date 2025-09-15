@@ -1,0 +1,101 @@
+﻿using AWS.Views;
+using PortsWork;
+using System;
+using System.Collections.Generic;
+using System.IO.Ports;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace АРМ_настройка_PLC.ViewModels
+{
+    class DevicesCommunication
+    {
+        public PortMultimeter multimeter;
+        public PortGenerator generator;
+        public ModbusRTU PLC;
+        public List<VisaDeviceInformation> usbDevicesInfo;
+
+        public byte address { get; set; }
+        public int TimeSleep {  get; set; }
+
+        public double currentVolt;
+        public bool DC_Read = false;
+
+        
+
+        public DevicesCommunication()
+        {
+            multimeter = new PortMultimeter();
+            generator = new PortGenerator();
+            PLC = new ModbusRTU();
+        }
+
+        public void CloseConnection()
+        {
+            multimeter.ClosePort();
+            generator.ClosePort();
+            PLC.ClosePort();
+        }
+
+
+        public Port SetMeasureDeviceName( Port device, string name )
+        {
+            if ( name.Contains( "COM" ))
+            {
+                device.SetName( name );
+            } else
+            {
+                VisaDeviceInformation info = usbDevicesInfo.Find( t => name.Contains( t.devType ) );
+                device.usbInfo = info;
+                device.SetName( info.description );
+            }
+            return device.IdentifyDeviceType();
+        }
+        public string[] GetAllPorts()
+        {
+            usbDevicesInfo = Port.FindVisaDevicesInfo();
+            List<string> usbInfo = new List<string>();
+            usbDevicesInfo.ForEach(t => usbInfo.Add(t.GetInfo()));
+
+            return usbInfo.Concat(SerialPort.GetPortNames()).ToArray();
+        }
+        private void SetPassword()
+        {
+            PLC.SetValue(address,Registers.REGISTER_ADRESS_PASSWORD,Registers.PASSWORD, TimeSleep);
+        }
+        private void Save_Change(float value, int reg_adress)
+        {
+            for (int i = 0; i <= 10; i++)
+            {
+                if (value == PLC.GetHoldingFloat(address, reg_adress, TimeSleep))
+                {
+                    PLC.SetValue(address, Registers.REGISTER_ADRESS_PASSWORD, Registers.SAVE_CHANGE, TimeSleep);
+                    break;
+                }
+            }
+            throw new Exception("Не удалось записать значнеие в регистр");
+        }
+        public void Write_Reg(float value, int reg_adress)
+        {
+            SetPassword();
+            PLC.SetFloatValue(address, reg_adress, value, TimeSleep);
+            Save_Change(value, reg_adress);
+        }
+
+        #region Мультиметр
+        private void AverageValue(out float Value)
+        {
+            Value = PLC.GetHoldingFloat(address,Registers.REGISTER_ADRESS_VOLTAGE, TimeSleep);
+            for (int j = 0; j < 9; j++)
+            {
+                Value = PLC.GetHoldingFloat(address, Registers.REGISTER_ADRESS_VOLTAGE, TimeSleep);
+            }
+        }
+
+
+
+        #endregion
+    }
+}

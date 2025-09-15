@@ -1,0 +1,130 @@
+﻿using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using PortsWork;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO.Ports;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using АРМ_настройка_PLC.ViewModels;
+namespace AWS.Views;
+
+public partial class MainWindow : Window
+{
+    DevicesCommunication devices;
+    Settings setting;
+    public MainWindow()
+    {
+        InitializeComponent();
+        devices = new DevicesCommunication();
+        setting = new Settings(devices);
+        PortsListReload();
+        this.Closing += MainWindow_Closing;
+        devices.address = 10;
+        devices.TimeSleep = 300;
+    }
+    #region Кнопки
+    
+    
+    private void Button_Open_Port_PLC(object? sender, RoutedEventArgs e)
+    {
+        OpenPort(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
+    }
+    private void Button_Open_Port_Generator(object? sender, RoutedEventArgs e)
+    {
+        OpenPort(devices.generator, Port_Name_Generator.SelectedItem.ToString());
+    }
+    private void Button_Open_Port_Agilent(object? sender, RoutedEventArgs e)
+    {
+        OpenPort(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
+    }
+    private void Button_Close_Port_PLC(object? sender, RoutedEventArgs e)
+    {
+        ClosePort(devices.PLC);
+    }
+    
+    private void Button_Close_Port_Generator(object? sender, RoutedEventArgs e)
+    {
+        ClosePort(devices.generator);
+    }
+    private void Button_Close_Port_Agilent(object? sender, RoutedEventArgs e)
+    {
+        ClosePort(devices.multimeter);
+    }
+    
+    private void Button_Update_Ports(object? sender, RoutedEventArgs e)
+    { 
+        PortsListReload();
+    }
+    #endregion
+    private async void OpenPort(Port device, string name_port)
+    {
+        await(Task.Run(() =>
+        {
+            try
+            {
+                device = (Port)devices.SetMeasureDeviceName(device, name_port);
+                if(device == devices.PLC) devices.PLC.SetParameters(115200, (StopBits)1);
+                if (device.OpenPort()) LogWrite($"{name_port} " + " Подключен");
+                 else LogWrite($"{name_port} " + " Не подключен");
+        }
+            catch (Exception ex)
+            {
+                LogWrite("Port: " + ex.Message);
+            }
+        }));
+    }
+    private void ClosePort(Port device)
+    {
+        device.ClosePort();
+        LogWrite($"{device.PortName} " + " Отключен");
+    }
+    private void PortsListReload()
+    {
+        InitializeAllComboBoxes(devices.GetAllPorts());
+        LogWrite("Порты обновлены");
+    }
+    private void InitializeAllComboBoxes(IEnumerable<string> portItems)
+    {
+        var comboBoxes = new[]
+        {
+        Port_Name_Agiletn,
+        Port_Name_Generator,
+        Port_Name_PLC
+        };
+
+        foreach (var comboBox in comboBoxes)
+        {
+            comboBox.ItemsSource = portItems;
+            comboBox.SelectedIndex = 0;
+        }
+    }
+
+    private void LogWrite(string message)
+    {
+        var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            LogTextBox.Text += formattedMessage;
+            LogTextBox.CaretIndex = int.MaxValue; // Прокрутка вниз
+        });
+    }
+    private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        LogWrite("Приложение закрывается");
+        devices.CloseConnection();
+    }
+    private void Serial_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
+    {
+       
+    }
+    private void Order_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
+    {
+
+    }
+}

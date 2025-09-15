@@ -1,0 +1,118 @@
+﻿using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using PortsWork;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO.Ports;
+using System.Linq;
+using System.Net;
+using АРМ_настройка_PLC.ViewModels;
+namespace AWS.Views;
+
+public partial class MainWindow : Window
+{
+    DevicesCommunication devices;
+    public MainWindow()
+    {
+        InitializeComponent();
+        devices = new DevicesCommunication();
+        PortsListReload();
+        this.Closing += MainWindow_Closing;
+    }
+    #region Кнопки
+    
+    
+    private void Button_Open_Port_PLC(object? sender, RoutedEventArgs e)
+    {
+        OpenPortPLC();
+    }
+    private void Button_Close_Port_PLC(object? sender, RoutedEventArgs e)
+    {
+        ClossePortPLC();
+    }
+    private void Button_Open_Port_Generator(object? sender, RoutedEventArgs e)
+    {
+        OpenPortGenerator();
+    }
+    private void Button_Close_Port_Generator(object? sender, RoutedEventArgs e)
+    {
+        devices.generator.ClosePort();
+        LogWrite("Генератор отключен");
+    }
+    private void Button_Close_Port_Agilent(object? sender, RoutedEventArgs e)
+    {
+        //devices.multimeter.WriteLine("SYST:LOC");
+        devices.multimeter.ClosePort();
+        LogWrite("Мультиметр отключен");
+    }
+    private void Button_Open_Port_Agilent(object? sender, RoutedEventArgs e)
+    {
+        OpenPortAgilent();
+    }
+    private void Button_Update_Ports(object? sender, RoutedEventArgs e)
+    { 
+        PortsListReload();
+    }
+    #endregion
+    private void ClossePortPLC()
+    {
+        devices.PLC.ClosePort();
+        LogWrite("Датчик отключен");
+    }
+    private void OpenPortPLC()
+    {
+        devices.PLC.PortName = Port_Name_PLC.SelectedItem.ToString();
+        devices.address = 100;
+        devices.PLC.SetParameters(115200, (StopBits)1);
+        if(devices.PLC.OpenPort())
+        {
+            LogWrite("Датчик подключен");
+        }    
+        
+    }
+    private void OpenPortGenerator()
+    {
+        devices.generator.PortName = Port_Name_Generator.SelectedItem.ToString();
+        if (devices.generator.OpenPort()) LogWrite("Генератор подключен");
+        else LogWrite("Не удалось подключить генератор");
+    }
+    private void OpenPortAgilent()
+    {
+        devices.multimeter.PortName = Port_Name_Agiletn.SelectedItem.ToString();
+        devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, devices.multimeter.PortName);
+        if (devices.multimeter.OpenPort())
+            LogWrite("Вольтметр подключен");
+        else LogWrite("Ошибка подключение вольтметра");
+    }
+    private void PortsListReload()
+    {
+        string[] ports = devices.GetAllPorts();
+        Port_Name_Agiletn.ItemsSource = ports;
+        Port_Name_Agiletn.SelectedIndex = 0;
+        Port_Name_Generator.ItemsSource = ports;
+        Port_Name_Generator.SelectedIndex = 0;
+        Port_Name_PLC.ItemsSource = ports;
+        Port_Name_PLC.SelectedIndex = 0;
+        LogWrite("Порты обновлены");
+    }
+    
+    private void LogWrite(string message)
+    {
+        var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            LogTextBox.Text += formattedMessage;
+            LogTextBox.CaretIndex = int.MaxValue; // Прокрутка вниз
+        });
+    }
+    private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        LogWrite("Приложение закрывается");
+        ClossePortPLC();
+        devices.multimeter.ClosePort();
+        devices.generator.ClosePort();
+    }
+}

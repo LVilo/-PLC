@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using АРМ_настройка_PLC.ViewModels;
+
+namespace AWS.Views
+{
+    class Setting
+    {
+        private DevicesCommunication devices;
+        public Setting(DevicesCommunication devList)
+        {
+            devices = devList;
+        }
+    }
+    
+    }

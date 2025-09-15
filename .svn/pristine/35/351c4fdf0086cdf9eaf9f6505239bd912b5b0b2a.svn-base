@@ -1,0 +1,121 @@
+﻿using Avalonia.Controls;
+using PortsWork;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using АРМ_настройка_PLC.ViewModels;
+
+namespace AWS.Views
+{
+    class Settings
+    {
+        private DevicesCommunication devices;
+        public Settings(DevicesCommunication devList)
+        {
+            devices = devList;
+        }
+        public void CheckVoltage()
+        {
+            float value = 0f;
+            if (value >= 24.1 || value <= 23.9)
+            {
+                devices.messege.Enqueue("Регистр напряжения (99) показывает некоректные значениея, идет настройка коэффициентов");
+                for (int i = 0; i < 10; i++)
+                {
+                    value += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                }
+                    value = 24f / (value / 10) * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
+
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
+
+                
+            }
+            else
+            {
+                devices.messege.Enqueue("Регистр напряжения (99) показывает 24 В");
+            }
+                
+        }
+        public void Seting_IEPE()
+        {
+            float IEPE_1 = 0f;
+            float IEPE_2 = 0f;
+            double volt_1 = 0d;
+            double volt_2 = 0d;
+            float result = 0f;
+            devices.SetPassword();
+            devices.WtiteSwFloat( Registers.REGISTER_ADRESS_K_A, Registers.ON);
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, Registers.OFF);
+            devices.Save_Change();
+            // отрегулировать до 10 в
+            devices.Average(0.05);
+            for (int i = 0; i<=9; i++)
+            {
+                volt_1 += devices.multimeter.GetVoltage("AC", 100);
+            }
+            volt_1 /= 10;
+            for (int i = 0; i <= 9; i++)
+            {
+                IEPE_1 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
+            }
+            IEPE_1 /= 10;
+            devices.Average(0.25);
+            for (int i = 0; i <= 9; i++)
+            {
+                volt_2 += devices.multimeter.GetVoltage("AC", 100);
+            }
+            volt_2 /= 10;
+            for (int i = 0; i <= 9; i++)
+            {
+                IEPE_2 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
+            }
+            IEPE_2 /= 10;
+            devices.SetPassword();
+            result = (float)(volt_2 - volt_1) / (IEPE_2 - IEPE_1);
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A, result);
+            result = (float)(IEPE_2 * volt_1 - IEPE_1 * volt_2) / (IEPE_2 - IEPE_1);
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, result);
+            devices.Save_Change();
+            //IEPE_1 = 
+        }
+        public void Setting_4_20()
+        {
+            float K_4_20_1 = 0f;
+            float K_4_20_2 = 0f;
+            double amper_1 = 0d;
+            double amper_2 = 0d;
+            float result = 0f;
+            devices.SetPassword();
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_IEPE, Registers.ON);
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_IEPE, Registers.OFF);
+            devices.Save_Change();
+
+            for (int i = 0; i <= 9; i++)
+            {
+                amper_1 += devices.multimeter.GetVoltage("DC", 100) * 10;
+            }
+            amper_1 /= 10;
+            for (int i = 0; i <= 9; i++)
+            {
+                K_4_20_1 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
+            }
+            K_4_20_1 /= 10;
+            devices.Average(0.25);
+            for (int i = 0; i <= 9; i++)
+            {
+                amper_2 += devices.multimeter.GetVoltage("DC", 100) * 10;
+            }
+            amper_2 /= 10;
+            for (int i = 0; i <= 9; i++)
+            {
+                K_4_20_2 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
+            }
+            K_4_20_2 /= 10;
+        }
+
+
+    }
+}

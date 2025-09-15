@@ -1,0 +1,88 @@
+﻿using PortsWork;
+using System;
+using System.Collections.Generic;
+using System.IO.Ports;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace АРМ_настройка_PLC.ViewModels
+{
+    class DevicesCommunication
+    {
+        public PortMultimeter multimeter;
+        public PortGenerator generator;
+        public ModbusRTU PLC;
+        public List<VisaDeviceInformation> usbDevicesInfo;
+
+        public int address { get; set; }
+
+        public double currentVolt;
+        public bool DC_Read = false;
+
+        
+
+        public DevicesCommunication()
+        {
+            multimeter = new PortMultimeter();
+            generator = new PortGenerator();
+            PLC = new ModbusRTU();
+        }
+
+        public void CloseConnection()
+        {
+            multimeter.ClosePort();
+            generator.ClosePort();
+            PLC.ClosePort();
+        }
+        public void OpenPortAgilent( string Port )
+        {
+            multimeter.PortName = Port;
+            multimeter.OpenPort();
+        }
+
+        public bool CheckExtDevices( out string checkText )
+        {
+            checkText = "";
+            if ( !multimeter.OpenPort() )
+            {
+                checkText = "Мультиметр не подключен";
+                return false;
+            }
+            if ( !generator.OpenPort())
+            {
+                checkText = "Генератор не подключен";
+                return false;
+            }
+            if (!PLC.OpenPort())
+            {
+                checkText = "PLC не подключен";
+                return false;
+            }
+            return true;
+        }
+
+        public Port SetMeasureDeviceName( Port device, string name )
+        {
+            if ( name.Contains( "COM" ))
+            {
+                device.SetName( name );
+            } else
+            {
+                VisaDeviceInformation info = usbDevicesInfo.Find( t => name.Contains( t.devType ) );
+                device.usbInfo = info;
+                device.SetName( info.description );
+            }
+            return device.IdentifyDeviceType();
+        }
+        public string[] GetAllPorts()
+        {
+            usbDevicesInfo = Port.FindVisaDevicesInfo();
+            List<string> usbInfo = new List<string>();
+            usbDevicesInfo.ForEach(t => usbInfo.Add(t.GetInfo()));
+
+            return usbInfo.Concat(SerialPort.GetPortNames()).ToArray();
+        }
+
+    }
+}
