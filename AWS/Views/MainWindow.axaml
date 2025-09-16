@@ -6,7 +6,7 @@
         Width="653" Height="630"
         x:Class="AWS.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="АРМ v: 0.1.0"
+        Title="АРМ v: 0.1.2"
         FontFamily="Arial">
 	
 	<StackPanel >
@@ -189,7 +189,7 @@
                 BorderThickness="1">
 					<StackPanel >
 
-							<Button
+							<Button Name="Setting_PLC"
 								Click="Button_Start"
 								Content="Начать настройку"
 								Margin="5"

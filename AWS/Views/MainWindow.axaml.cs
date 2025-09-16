@@ -214,7 +214,7 @@ public partial class MainWindow : Window
     {
         Do_Work(Name_PLC.SelectionBoxItem.ToString());
     }
-
+   
     private async void Combo_Setting(object? sender, RoutedEventArgs e)
     {
         if (Setting_Volt.IsVisible == false)
@@ -246,6 +246,7 @@ public partial class MainWindow : Window
 
     private async void Do_Work(int code)
     {
+        Set_Enabled(false);
         await (Task.Run(async () =>
         {
             try
@@ -285,9 +286,20 @@ public partial class MainWindow : Window
                 devices.CreateMessege(ex.Message);
             }
         }));
+        Set_Enabled(true);
+    }
+    private void Set_Enabled(bool BOOL)
+    {
+        Setting_PLC.IsEnabled = BOOL;
+        Setting_Volt.IsEnabled = BOOL;
+        Setting_IEPE.IsEnabled = BOOL;
+        Setting_4_20.IsEnabled = BOOL;
+        Setting_Rs_485.IsEnabled = BOOL;
+        Save_Reg.IsEnabled = BOOL;
     }
     private async void Do_Work(string PLC)
     {
+        Set_Enabled(false);
         await (Task.Run(async () =>
         {
             try
@@ -331,6 +343,7 @@ public partial class MainWindow : Window
                 devices.CreateMessege(ex.Message);
             }
         }));
+        Set_Enabled(true);
     }
 
     private void PortsListReload()
@@ -596,6 +609,7 @@ public partial class MainWindow : Window
         {
             await Check_Setting_4_20_Output(mA);
         }
+
     }
     private async Task Check_Setting_4_20_Output(float mA)
     {

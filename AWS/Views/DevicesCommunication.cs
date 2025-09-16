@@ -23,6 +23,7 @@ namespace AWS.ViewModels
 
         public byte address { get; set; }
         public int TimeSleep {  get; set; }
+        public bool Correct_Setting { get; set; } = true;
 
         public double currentVolt;
         public bool DC_Read = false;
@@ -32,7 +33,7 @@ namespace AWS.ViewModels
         public bool IsClick_Close = false;
 
         public  Queue<string> messege = new Queue<string>();
-        public bool Correct_Setting { get; set; }
+
        public Dictionary<int, string> info = new Dictionary<int, string>
 {
 
@@ -53,8 +54,8 @@ namespace AWS.ViewModels
 {132, "Мультиметр отключен "},
 {133, "Контроллер отключен" },
 {134, "Все устройства отключены "},
-{200, "Не удалось настроить "},
 
+{200, "Не удалось настроить "},
 {201, "Проверка напряжения "},
 {202, "Нстройка IEPE "},
 {203, "Настройка 4-20 входного" },
