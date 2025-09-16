@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using System;
+using System.Threading.Tasks;
 
 namespace AWS;
 
@@ -33,5 +35,10 @@ public partial class Dialog : Window
     {
         IS_Clicked = true;
         Close();
+    }
+
+    internal async Task ShowDialog()
+    {
+        throw new NotImplementedException();
     }
 }

@@ -28,17 +28,72 @@ public partial class MainWindow : Window
 {
     DevicesCommunication devices;
     private bool Work_DO = true;
-
+    private bool _showDriverError = false;
     public MainWindow()
     {
         InitializeComponent();
-        devices = new DevicesCommunication();
-        PortsListReload();
-        this.Closing += MainWindow_Closing;
-        devices.address = 10;
-        devices.TimeSleep = 2;
-        StartBackgroundWork();
 
+        try
+        {
+            devices = new DevicesCommunication();
+            PortsListReload();
+            this.Closing += MainWindow_Closing;
+            devices.address = 10;
+            devices.TimeSleep = 2;
+            StartBackgroundWork();
+        }
+        catch (DllNotFoundException)
+        {
+            // Отложим показ ошибки до момента, когда окно уже будет открыто
+            _showDriverError = true;
+        }
+    }
+    protected override async void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+
+        if (_showDriverError)
+        {
+            await ShowDriverErrorDialog();
+            Close();
+        }
+    }
+    private async Task ShowDriverErrorDialog()
+    {
+        var textBlock = new TextBlock
+        {
+            Text = "Похоже, драйверы не установлены. Пожалуйста, установите их из папки.",
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            Margin = new Thickness(20)
+        };
+
+        var okButton = new Button
+        {
+            Content = "OK",
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
+        };
+
+        var dialog = new Window
+        {
+            Title = "Ошибка",
+            Width = 400,
+            Height = 150,
+            Content = new StackPanel
+            {
+                Children =
+            {
+                textBlock,
+                new Separator { Margin = new Thickness(0, 10) },
+                okButton
+            },
+                Margin = new Thickness(10)
+            },
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
+        };
+
+        okButton.Click += (_, __) => dialog.Close();
+
+        await dialog.ShowDialog(this);
     }
     private async void Start_DC_Read_Work()
     {
@@ -687,59 +742,6 @@ public partial class MainWindow : Window
 
         string coef_volt = devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE).ToString();
 
-
-        //string a1 = "---";
-        //string b1 = "---";
-
-        //string a2 = "---";
-        //string b2 = "---";
-        //string a3 = "---";
-        //string b3 = "---";
-        //string a4 = "---";
-        //string b4 = "---";
-
-        //string type1 = "---";
-        //string type2 = "---";
-        //string type3 = "---";
-        //string type4 = "---";
-
-        //switch (PLC)
-        //{
-        //    case "PLC 112": //112
-        //        type2 = "4-20 Входное";
-        //        a2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT).ToString();
-        //        b2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT).ToString();
-        //        type3 = "4-20 Выходное";
-        //        a3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT).ToString();
-        //        b3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT).ToString();
-        //        break;
-        //    case "PLC 121": //121
-        //        plcType = "121";
-        //        type1 = "IEPE";
-        //        a1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A).ToString();
-        //        b1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B).ToString();
-        //        break;
-        //    case "PLC 481": //481
-        //        type1 = "IEPE";
-        //        a1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A).ToString();
-        //        b1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B).ToString();
-        //        type2 = "4-20 Входное";
-        //        a2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT).ToString();
-        //        b2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT).ToString();
-        //        type3 = "4-20 Выходное";
-        //        a3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT).ToString();
-        //        b3 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT).ToString();
-        //        type4 = "RS-485";
-        //        a4 = (devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_CRC) + devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_TIMEOUT)).ToString();
-        //        b4 = _elapsedTime.ToString();
-        //        break;
-        //    case "PLC 991": //991
-        //        type4 = "RS-485";
-        //        a4 = (devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_CRC) + devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_TIMEOUT)).ToString();
-        //        b4 = _elapsedTime.ToString();
-
-        //        break;
-        //}
         string line = $"{date};{time};{orderNum};{serialNum};{PLC};" +
             $"{devices.ReadSwFloat(137)};" +
             $"{devices.ReadSwFloat(139)};" +
