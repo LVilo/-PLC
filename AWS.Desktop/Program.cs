@@ -104,33 +104,27 @@ namespace AWS.Desktop
             }
         }
 
-        // Далее RS VISA проверки — как были у тебя, без изменений или с мелкой адаптацией
 
         static bool IsRsVisaInstalled()
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                return true;
+                return true; // считаем для не-Windows, что драйвер не нужен или установлен
 
-            return CheckVisaInGac() ||
-                   CheckVisaAssembly() ||
-                   CheckVisaInRegistry() ||
-                   CheckUninstallForVisa() ||
-                   CheckFileSystemForVisa();
+            return CheckVisaInGac() || CheckVisaAssembly() || CheckVisaInRegistry() || CheckUninstallForVisa() || CheckFileSystemForVisa();
         }
 
-        // Все методы CheckVisaInGac, CheckVisaAssembly и др. остаются как были...
         static bool CheckVisaInGac()
         {
             try
             {
                 string[] gacPaths = {
-                    @"C:\Windows\assembly\GAC_64\Ivi.Visa.Interop",
-                    @"C:\Windows\assembly\GAC_MSIL\Ivi.Visa.Interop",
-                    @"C:\Windows\assembly\GAC_32\Ivi.Visa.Interop",
-                    @"C:\Windows\Microsoft.NET\assembly\GAC_64\Ivi.Visa.Interop",
-                    @"C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Ivi.Visa.Interop",
-                    @"C:\Windows\Microsoft.NET\assembly\GAC_32\Ivi.Visa.Interop"
-                };
+            @"C:\Windows\assembly\GAC_64\Ivi.Visa.Interop",
+            @"C:\Windows\assembly\GAC_MSIL\Ivi.Visa.Interop",
+            @"C:\Windows\assembly\GAC_32\Ivi.Visa.Interop",
+            @"C:\Windows\Microsoft.NET\assembly\GAC_64\Ivi.Visa.Interop",
+            @"C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Ivi.Visa.Interop",
+            @"C:\Windows\Microsoft.NET\assembly\GAC_32\Ivi.Visa.Interop"
+        };
 
                 string targetVersion = "5.5.0.0";
                 string publicKeyToken = "a128c98f1d7717c1";
@@ -142,7 +136,9 @@ namespace AWS.Desktop
 
                     string versionPath = Path.Combine(gacPath, $"{targetVersion}__{publicKeyToken}");
                     if (Directory.Exists(versionPath))
+                    {
                         return true;
+                    }
                 }
             }
             catch { }
@@ -158,7 +154,10 @@ namespace AWS.Desktop
                 var assembly = Assembly.Load(assemblyFullName);
                 return assembly != null;
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         static bool CheckVisaInRegistry()
@@ -166,12 +165,12 @@ namespace AWS.Desktop
             try
             {
                 string[] registryPaths = {
-                    @"SOFTWARE\Rohde & Schwarz\VISA",
-                    @"SOFTWARE\R&S\VISA",
-                    @"SOFTWARE\WOW6432Node\Rohde & Schwarz\VISA",
-                    @"SOFTWARE\WOW6432Node\R&S\VISA",
-                    @"SOFTWARE\IVI Foundation\VISA"
-                };
+            @"SOFTWARE\Rohde & Schwarz\VISA",
+            @"SOFTWARE\R&S\VISA",
+            @"SOFTWARE\WOW6432Node\Rohde & Schwarz\VISA",
+            @"SOFTWARE\WOW6432Node\R&S\VISA",
+            @"SOFTWARE\IVI Foundation\VISA"
+        };
 
                 foreach (var path in registryPaths)
                 {
@@ -180,8 +179,10 @@ namespace AWS.Desktop
                         if (key != null)
                         {
                             var version = key.GetValue("Version") as string;
-                            if (!string.IsNullOrEmpty(version) && version.Contains("5.5"))
+                            if (!string.IsNullOrEmpty(version) && version.StartsWith("5.5.5"))
+                            {
                                 return true;
+                            }
                         }
                     }
                 }
@@ -196,9 +197,9 @@ namespace AWS.Desktop
             try
             {
                 string[] uninstallPaths = {
-                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
-                    @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
-                };
+            @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
+            @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+        };
 
                 foreach (var uninstallPath in uninstallPaths)
                 {
@@ -237,22 +238,22 @@ namespace AWS.Desktop
             try
             {
                 string[] possibleDirs = {
-                    @"C:\Program Files\Rohde & Schwarz\VISA",
-                    @"C:\Program Files (x86)\Rohde & Schwarz\VISA",
-                    @"C:\Program Files\R&S\VISA",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + @"\Rohde & Schwarz\VISA",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Rohde & Schwarz\VISA"
-                };
+            @"C:\Program Files\Rohde & Schwarz\VISA",
+            @"C:\Program Files (x86)\Rohde & Schwarz\VISA",
+            @"C:\Program Files\R&S\VISA",
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + @"\Rohde & Schwarz\VISA",
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Rohde & Schwarz\VISA"
+        };
 
                 foreach (var dir in possibleDirs)
                 {
                     if (Directory.Exists(dir))
                     {
                         string[] visaFiles = {
-                            Path.Combine(dir, "bin", "visa32.dll"),
-                            Path.Combine(dir, "bin", "visa64.dll"),
-                            Path.Combine(dir, "RsVisa.exe")
-                        };
+                    Path.Combine(dir, "bin", "visa32.dll"),
+                    Path.Combine(dir, "bin", "visa64.dll"),
+                    Path.Combine(dir, "RsVisa.exe")
+                };
 
                         foreach (var file in visaFiles)
                         {
@@ -266,6 +267,7 @@ namespace AWS.Desktop
 
             return false;
         }
+
 
         // Win32 MessageBox
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]

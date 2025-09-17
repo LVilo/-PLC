@@ -6,7 +6,7 @@
         Width="653" Height="630"
         x:Class="AWS.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="АРМ v: 0.1.3"
+        Title="АРМ v: 0.1.4"
         FontFamily="Arial">
 	
 	<StackPanel >
@@ -20,7 +20,7 @@
 							Click="Button_Update_Ports"
 							Content="Обновить порты"
 							Width="300"
-						Margin="5"
+							Margin="5"
 							HorizontalContentAlignment="Center">
 						</Button>
 						<StackPanel Name="Panel_Generator"  Background="LightGray" Width="300" Margin="5">

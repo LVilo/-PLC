@@ -18,6 +18,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,7 +63,9 @@ public partial class MainWindow : Window
     {
         var textBlock = new TextBlock
         {
-            Text = "Похоже, драйверы не установлены. Пожалуйста, установите их из папки.",
+            Text = "Для работы приложения требуется драйвер RS VISA 5.5.5.\n\n" +
+                    "Пожалуйста, установите RS_VISA_Setup_Win_5_5_5 и перезапустите приложение.\n\n" +
+                    "Драйвер можно установить с папки приложения.",
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             Margin = new Thickness(20)
         };
@@ -157,16 +160,19 @@ public partial class MainWindow : Window
 
     private void Button_Open_Port_PLC(object? sender, RoutedEventArgs e)
     {
+        //OpenPorts(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
         try
         {
             devices.PLC = (ModbusRTU)devices.SetMeasureDeviceName(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
             devices.PLC.SetParameters(115200, (StopBits)1);
-            if (devices.PLC.OpenPort())
+            Task.Run(async () =>
             {
-                devices.CreateMessege(devices.info[103]);
-            }
-            else devices.CreateMessege(devices.info[113]);
-            // OpenPort(devices.PLC, Port_Name_Agiletn.SelectedItem.ToString());
+                if (devices.PLC.OpenPort())
+                {
+                    devices.CreateMessege(devices.info[103]);
+                }
+                else devices.CreateMessege(devices.info[113]);
+            });
         }
         catch (Exception ex)
         {
@@ -175,25 +181,27 @@ public partial class MainWindow : Window
     }
     private void Button_Open_Port_Generator(object? sender, RoutedEventArgs e)
     {
+        //OpenPorts(devices.generator, Port_Name_Generator.SelectedItem.ToString());
         try
         {
             devices.generator = (PortGenerator)devices.SetMeasureDeviceName(devices.generator, Port_Name_Generator.SelectedItem.ToString());
-            if (devices.generator.OpenPort())
+            Task.Run(async () =>
             {
-                devices.CreateMessege(devices.info[101]);
-                devices.gen_is_open = true;
-                if (Option1.IsChecked == true)
+                if (devices.generator.OpenPort())
                 {
-                    devices.generator.SetChannel(1);
+                    devices.CreateMessege(devices.info[101]);
+                    devices.gen_is_open = true;
+                    if (Option1.IsChecked == true)
+                    {
+                        devices.generator.SetChannel(1);
+                    }
+                    if (Option2.IsChecked == true)
+                    {
+                        devices.generator.SetChannel(2);
+                    }
                 }
-                if (Option2.IsChecked == true)
-                {
-                    devices.generator.SetChannel(2);
-                }
-            }
-
-            else devices.CreateMessege(devices.info[111]);
-            // OpenPort(devices.generator, Port_Name_Agiletn.SelectedItem.ToString());
+                else devices.CreateMessege(devices.info[111]);
+            });
         }
         catch (Exception ex)
         {
@@ -202,23 +210,48 @@ public partial class MainWindow : Window
     }
     private void Button_Open_Port_Agilent(object? sender, RoutedEventArgs e)
     {
+        // OpenPorts(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
         try
         {
             devices.multimeter.PortName = Port_Name_Agiletn.SelectedItem.ToString();
             devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
-            if (devices.multimeter.OpenPort())
-            {
-                devices.CreateMessege(devices.info[102]);
-                devices.mult_is_open = true;
-                Start_DC_Read_Work();
-            }
-            else devices.CreateMessege(devices.info[112]);
-            // OpenPort(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
+            Task.Run(async () =>
+           {
+               if (devices.multimeter.OpenPort())
+               {
+                   devices.CreateMessege(devices.info[102]);
+                   devices.mult_is_open = true;
+                   Start_DC_Read_Work();
+               }
+               else devices.CreateMessege(devices.info[112]);
+           });
+
+
         }
         catch (Exception ex)
         {
             LogWrite($"Ошибка: {ex.Message}");
         }
+    }
+    private async void OpenPorts(Port device,string port)
+    {
+        await Task.Run(async () =>
+        {
+            try
+            {
+                device.SetName(port);
+                device = (Port)devices.SetMeasureDeviceName(device, port);
+                if(device == devices.PLC) devices.PLC.SetParameters(115200, (StopBits)1);
+                if (device.OpenPort())
+                {
+                    devices.CreateMessege(port);
+                }
+            }
+            catch (Exception)
+            {
+                devices.CreateMessege(devices.info[110]);
+            }
+        });
     }
     private void Button_Close_Port_PLC(object? sender, RoutedEventArgs e)
     {
@@ -302,7 +335,7 @@ public partial class MainWindow : Window
     private async void Do_Work(int code)
     {
         Set_Enabled(false);
-        await (Task.Run(async () =>
+        await Task.Run(async () =>
         {
             try
             {
@@ -340,7 +373,7 @@ public partial class MainWindow : Window
             {
                 devices.CreateMessege(ex.Message);
             }
-        }));
+        });
         Set_Enabled(true);
     }
     private void Set_Enabled(bool BOOL)
@@ -735,14 +768,17 @@ public partial class MainWindow : Window
         string orderNum = "";
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            serialNum = Serial_Number.Text;
+            if (Serial_Number.Text != "")
+                serialNum = Serial_Number.Text;
+            else serialNum = "Не указано";
+            if (Order_Number.Text != "")
             orderNum = Order_Number.Text;
+            else orderNum = "Не указано";
         });
-        if (serialNum == "") serialNum = "Не указано";
 
         string coef_volt = devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE).ToString();
 
-        string line = $"{date};{time};{orderNum};{serialNum};{PLC};" +
+        string line = $"{Environment.UserName};{date};{time};{orderNum};{serialNum};{PLC};" +
             $"{devices.ReadSwFloat(137)};" +
             $"{devices.ReadSwFloat(139)};" +
             $"{devices.ReadSwFloat(5)};" +
@@ -838,7 +874,7 @@ public partial class MainWindow : Window
         if (!File.Exists(fileName))
         {
             File.WriteAllBytes(fileName, new byte[3] { 0xEF, 0xBB, 0xBF }); //указание на utf-8
-            File.AppendAllText(fileName, "Дата;Время;№ заказа;Серийный №;PLC;" +
+            File.AppendAllText(fileName, "Имя пользователя;Дата;Время;№ заказа;Серийный №;PLC;" +
 //300137h Float
 //300139h Float
 //300005h Float
