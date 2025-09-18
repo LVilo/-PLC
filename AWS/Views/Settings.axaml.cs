@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AWS.Views
@@ -18,6 +19,7 @@ namespace AWS.Views
         {
             devices.CreateMessege(devices.info[201]);
             float value = 0f;
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
             value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
             if (value <= 24.1 && value >= 23.9)
             {
@@ -40,6 +42,7 @@ namespace AWS.Views
             {
                 throw new Exception(devices.info[200] + $"Регистр напряжения (99) показывает {value} после настройки. Настройка остановлена");
             }
+            else devices.CreateMessege(devices.info[211]);
         }
         public async Task Seting_IEPE()
         {
@@ -89,7 +92,7 @@ namespace AWS.Views
             result = (float)(IEPE_2 * volt_1 - IEPE_1 * volt_2) / (IEPE_2 - IEPE_1);
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, result);
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
-            devices.CreateMessege("Настройка IEPE закончена");
+            
             //провверка настиройки 
             devices.Average(0.05);
             IEPE_1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
@@ -97,7 +100,7 @@ namespace AWS.Views
             devices.Average(0.25);
             IEPE_2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
             if (IEPE_2 > 0.2525 || IEPE_2 < 0.2475) devices.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_2} после настройки");
-
+            devices.CreateMessege("Настройка IEPE закончена");
             //провверка настиройки 
         }
         public async Task Setting_4_20_Input()
@@ -159,7 +162,7 @@ namespace AWS.Views
             Debug.WriteLine(result.ToString());
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, result);
             devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
-            devices.CreateMessege("Настройка 4-20 входного закончена");
+            
             //проверка настройки
             devices.DC_Read = true;
             for (float mA = 4; mA <= 20; mA += 2)
@@ -168,6 +171,7 @@ namespace AWS.Views
             }
             devices.DC_Read = false;
             //проверка настройки
+            devices.CreateMessege("Настройка 4-20 входного закончена");
         }
         private async Task Check_Setting_4_20_Input(float mA)
         {
@@ -198,6 +202,7 @@ namespace AWS.Views
             devices.WtiteInt(Registers.REGISTER_ADRESS_SOURCE_SIGNAL, Registers.OFF);
 
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, 4f);
+            Thread.Sleep(3000);
             for (int i = 0; i < 10; i++)
             {
                 K_4_20_1 += devices.multimeter.GetVoltage("DC", 100) * 10;
@@ -205,14 +210,13 @@ namespace AWS.Views
             K_4_20_1 /= 10;
 
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, 20f);
-
+            Thread.Sleep(3000);
 
             for (int i = 0; i < 10; i++)
             {
                 K_4_20_2 += devices.multimeter.GetVoltage("DC", 100) * 10;
             }
             K_4_20_2 /= 10;
-
 
             Debug.WriteLine(K_4_20_2.ToString());
             result = (float)((20d - 4d) / (K_4_20_2 - K_4_20_1));
@@ -222,13 +226,13 @@ namespace AWS.Views
             Debug.WriteLine(result.ToString());
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT, result);
             devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
-            devices.CreateMessege("Настройка 4-20 выходного закончена");
+            
 
             for (float mA = 4; mA <= 20; mA += 2)
             {
                 await Check_Setting_4_20_Output(mA);
             }
-
+            devices.CreateMessege("Настройка 4-20 выходного закончена");
         }
         private async Task Check_Setting_4_20_Output(float mA)
         {

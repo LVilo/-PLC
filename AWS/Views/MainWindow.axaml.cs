@@ -182,14 +182,18 @@ public partial class MainWindow : Window
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await Setting_4_20_Input();
-                        await Setting_4_20_Output();
                         break;
 
                     case 3:
+                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
+                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        await Setting_4_20_Output();
+                        break;
+                    case 4:
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await Settig_485();
                         break;
-                    case 4:
+                    case 5:
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         await MakeReportAsync(Name_PLC.SelectionBoxItem.ToString());
                         break;
@@ -256,7 +260,8 @@ public partial class MainWindow : Window
         Setting_PLC.IsEnabled = BOOL;
         Setting_Volt.IsEnabled = BOOL;
         Setting_IEPE.IsEnabled = BOOL;
-        Setting_4_20.IsEnabled = BOOL;
+        Setting_4_20_Input_but.IsEnabled = BOOL;
+        Setting_4_20_Output_but.IsEnabled = BOOL;
         Setting_Rs_485.IsEnabled = BOOL;
         Save_Reg.IsEnabled = BOOL;
     }

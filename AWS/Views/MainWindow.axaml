@@ -6,7 +6,7 @@
         Width="693" Height="630"
         x:Class="AWS.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="АРМ v: 0.1.4"
+        Title="АРМ v: 0.1.5"
         FontFamily="Arial">
 	
 	<StackPanel Background="#FBFBFB">
@@ -271,9 +271,9 @@
 							Foreground="Black"
 							BorderBrush="#A0A0A0"/>
 
-							<Button Name="Setting_4_20"
-								Click="Button_Setting_4_20"
-								Content="Настроить 4-20"
+							<Button Name="Setting_4_20_Input_but"
+								Click="Button_Setting_4_20_Input"
+								Content="Настроить 4-20 входного"
 								Margin="5"
 								Width="300"
 								HorizontalContentAlignment="Center" IsVisible="false"
@@ -281,7 +281,16 @@
 								Background="#E1E1E1"
 							Foreground="Black"
 							BorderBrush="#A0A0A0"/>
-
+						<Button Name="Setting_4_20_Output_but"
+								Click="Button_Setting_4_20_Output"
+								Content="Настроить 4-20 выходного"
+								Margin="5"
+								Width="300"
+								HorizontalContentAlignment="Center" IsVisible="false"
+									CornerRadius="10"
+								Background="#E1E1E1"
+								Foreground="Black"
+								BorderBrush="#A0A0A0"/>
 							<Button Name="Setting_Rs_485"
 								Click="Setting_Rs_485_Click"
 								Content="Настроить RS-485"

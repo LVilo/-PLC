@@ -145,17 +145,21 @@ namespace AWS.Views
             Do_Work(1);
         }
 
-        private async void Button_Setting_4_20(object? sender, RoutedEventArgs e)
+        private async void Button_Setting_4_20_Input(object? sender, RoutedEventArgs e)
         {
             Do_Work(2);
         }
-        private void Setting_Rs_485_Click(object? sender, RoutedEventArgs e)
+        private async void Button_Setting_4_20_Output(object? sender, RoutedEventArgs e)
         {
             Do_Work(3);
         }
-        private async void Save_Reg_Button(object? sender, RoutedEventArgs e)
+        private void Setting_Rs_485_Click(object? sender, RoutedEventArgs e)
         {
             Do_Work(4);
+        }
+        private async void Save_Reg_Button(object? sender, RoutedEventArgs e)
+        {
+            Do_Work(5);
         }
         private async void Button_Start(object? sender, RoutedEventArgs e)
         {
@@ -170,7 +174,8 @@ namespace AWS.Views
 
                 Setting_Volt.IsVisible = true;
                 Setting_IEPE.IsVisible = true;
-                Setting_4_20.IsVisible = true;
+                Setting_4_20_Input_but.IsVisible = true;
+                Setting_4_20_Output_but.IsVisible = true;
                 Setting_Rs_485.IsVisible = true;
                 Save_Reg.IsVisible = true;
                 LogTextBox.Margin = new Thickness(350, 395, 0, 0);
@@ -182,8 +187,8 @@ namespace AWS.Views
 
                 Setting_Volt.IsVisible = false;
                 Setting_IEPE.IsVisible = false;
-                Setting_4_20.IsVisible = false;
-                Setting_Rs_485.IsVisible = false;
+                Setting_4_20_Input_but.IsVisible = false;
+                Setting_4_20_Output_but.IsVisible = false;
                 Save_Reg.IsVisible = false;
                 LogTextBox.Margin = new Thickness(10, 395, 0, 0);
                 LogTextBox.Width = 673;

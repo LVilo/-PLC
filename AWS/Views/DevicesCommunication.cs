@@ -63,7 +63,12 @@ namespace AWS.ViewModels
 {204, "Настройка 4-20 выходного "},
 {205, "Настройка RS-485 "},
 
-
+{210, "Настройка закончена "},
+{211, "Проверка напряжения закончена "},
+{212, "Нстройка IEPE закончена "},
+{213, "Настройка 4-20 входного закончена " },
+{214, "Настройка 4-20 выходного закончена "},
+{215, "Настройка RS-485 закончена "},
 
 };
         public DevicesCommunication()
@@ -188,7 +193,7 @@ namespace AWS.ViewModels
             
             int iteration = 0;
             double newVoltage = targetVoltageV;
-            while (Math.Abs(measuredVoltage - targetVoltageV) > 0.00001 && iteration < 100)
+            while (Math.Abs(measuredVoltage - targetVoltageV) > 0.0001 && iteration < 100)
             {
                 
                 newVoltage += targetVoltageV - measuredVoltage;
