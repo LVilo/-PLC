@@ -27,6 +27,8 @@
 				<Label Name="Label_Text"></Label>
 				<Button Name="OK" Click="OK_Click" Grid.Column="0" Grid.Row="1" Content="ОК">
 				</Button>
+				<Button Name="Canel" Click="Canel_Click" Grid.Column="1" Grid.Row="1" Content="ОК">
+				</Button>
 			</Grid>
 		</Border>
 		

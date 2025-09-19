@@ -63,6 +63,7 @@ namespace AWS.ViewModels
 {204, "Настройка 4-20 выходного "},
 {205, "Настройка RS-485 "},
 
+{220, "Отмена настройка "},
 {210, "Настройка закончена "},
 {211, "Проверка напряжения закончена "},
 {212, "Нстройка IEPE закончена "},
@@ -70,6 +71,13 @@ namespace AWS.ViewModels
 {214, "Настройка 4-20 выходного закончена "},
 {215, "Настройка RS-485 закончена "},
 
+
+{300, "Не получается записать значения в Контроллер"},
+{301, "Записал значения "},
+{311, "Не удалось записать значения "},
+
+{302, "Сохранил значения "},
+{312, "Не сохранил Значения " },
 };
         public DevicesCommunication()
         {
@@ -138,7 +146,7 @@ namespace AWS.ViewModels
         public void WtiteInt(int reg, int value)
         {
             CreateMessege($"Записываю значения {value} в регистр {reg}");
-            for (int i = 0; i <= 9; i++)
+            for (int i = 1; i < 10; i++)
             {
                 SetPassword();
                 PLC.SetValue(address, reg, value, TimeSleep);
@@ -146,20 +154,18 @@ namespace AWS.ViewModels
                 Save_Change();
                 if (value == ReadInt(reg))
                 {
-                    CreateMessege("сохранил значения");
+                    CreateMessege(info[302]);
                     return;
                 }
-                else
-                {
-                    CreateMessege("не сохранил значения пробую снова");
-                }
+                    CreateMessege($"{info[312]} пробую {i+1} Раз из 10");
+                
             }
-            throw new Exception("не получается записать значения");
+            throw new Exception(info[300] + Registers.Name[reg]);
         }
         public void WtiteSwFloat(int reg,float value)
         {
             CreateMessege($"Записываю значения {value} в регистр {reg}");
-            for (int i = 0;i<=9;i++)
+            for (int i = 1; i < 10; i++)
             {
                 SetPassword();
                 PLC.SetSwFloatValue(address, reg, value, TimeSleep);
@@ -167,15 +173,12 @@ namespace AWS.ViewModels
                 Save_Change();
                 if (value == ReadSwFloat(reg))
                 {
-                    CreateMessege("сохранил значения");
+                    CreateMessege(info[302]);
                     return;
                 }
-                else
-                {
-                    CreateMessege("не сохранил значения пробую снова");
-                }
+                CreateMessege($"{info[312]} пробую {i + 1} Раз из 10");
             }
-            throw new Exception("не получается записать значения");
+            throw new Exception(info[300] + Registers.Name[reg]);
         }
         public double Average(double targetVoltage)
         {

@@ -14,6 +14,30 @@ namespace AWS.Views
     {
         private TimeSpan _elapsedTime;
         private CountdownWindow _countdownWindow;
+        public async Task<bool> ShowConfirmationDialogAsync(string message)
+        {
+            bool result = await Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                devices.DC_Read = true;
+                var dialog = new Dialog(message);
+                await dialog.ShowDialog(this);
+                devices.DC_Read = false;
+                return dialog.Dialog_result;
+            });
+
+            return result;
+        }
+        public async Task<bool> ShowConfirmationDialogAsync(string message, string setting)
+        {
+            bool result = await Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                var dialog = new Dialog(message, setting);
+                await dialog.ShowDialog(this);
+                return dialog.Dialog_result;
+            });
+
+            return result;
+        }
         #region Настройка
         public async Task CheckVoltage()
         {
@@ -23,36 +47,42 @@ namespace AWS.Views
             value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
             if (value <= 24.1 && value >= 23.9)
             {
-                devices.messege.Enqueue("Регистр напряжения (99) показывает 24 В");
+                devices.messege.Enqueue(Registers.Name[99] + "показывает 24 В");
                 return;
             }
             value = 0f;
-            devices.messege.Enqueue("Регистр напряжения (99) показывает некоректные значениея, идет настройка коэффициентов");
+            devices.messege.Enqueue(Registers.Name[99] + " показывает некоректные значениея, идет настройка коэффициентов");
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 1; i < 10; i++)
             {
-                value += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-            }
-            value = 24f / (value / 10) * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
+                for (int j = 0; j < 10; j++)
+                {
+                    value += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                }
+                value = 24f / (value / 10) * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
 
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
 
-            value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-            if (value >= 24.1 || value <= 23.9)
-            {
-                throw new Exception(devices.info[200] + $"Регистр напряжения (99) показывает {value} после настройки. Настройка остановлена");
+                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                if (value >= 24.1 || value <= 23.9)
+                {
+                    devices.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки. Пробую {i} из 10");
+                }
+                else
+                {
+                    devices.CreateMessege(devices.info[211]);
+                    return;
+                }
             }
-            else devices.CreateMessege(devices.info[211]);
         }
         public async Task Seting_IEPE()
         {
             devices.CreateMessege(devices.info[202]);
-            await Dispatcher.UIThread.InvokeAsync(async () =>
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки IEPE", "IEPE");
+            if (!confirmed)
             {
-                var dialog = new Dialog("Соберите схему для настройки IEPE", "IEPE");
-                await dialog.ShowDialog(this);
-            });
-
+                devices.CreateMessege(devices.info[220]); return;
+            }
             float IEPE_1 = 0f;
             float IEPE_2 = 0f;
             double volt_1 = 0d;
@@ -67,6 +97,7 @@ namespace AWS.Views
             {
                 var dialog = new Dialog("Отрегулируйте напряжение до 12 В");
                 await dialog.ShowDialog(this);
+                if (!dialog.Dialog_result) { devices.CreateMessege(devices.info[220]); return; }
             });
             devices.DC_Read = false;
 
@@ -100,17 +131,18 @@ namespace AWS.Views
             devices.Average(0.25);
             IEPE_2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
             if (IEPE_2 > 0.2525 || IEPE_2 < 0.2475) devices.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_2} после настройки");
-            devices.CreateMessege("Настройка IEPE закончена");
+            devices.CreateMessege(devices.info[212]);
+            return;
             //провверка настиройки 
         }
         public async Task Setting_4_20_Input()
         {
             devices.CreateMessege(devices.info[203]);
-            await Dispatcher.UIThread.InvokeAsync(async () =>
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного", "4-20 входное");
+            if (!confirmed)
             {
-                var dialog = new Dialog("Соберите схему для настройки 4-20 входного", "4-20 входное");
-                await dialog.ShowDialog(this);
-            });
+                devices.CreateMessege(devices.info[220]); return;
+            }
             float K_4_20_1 = 0f;
             float K_4_20_2 = 0f;
             double amper_1 = 0d;
@@ -122,8 +154,9 @@ namespace AWS.Views
             devices.DC_Read = true;
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                var dialog = new Dialog("Отрегулируйте напряжение до 4 мА");
+                var dialog = new Dialog("Отрегулируйте напряжение до 0.4 В");
                 await dialog.ShowDialog(this);
+                if (!dialog.Dialog_result) { devices.CreateMessege(devices.info[220]); return; }
             });
             devices.DC_Read = false;
 
@@ -140,8 +173,9 @@ namespace AWS.Views
             devices.DC_Read = true;
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                var dialog = new Dialog("Отрегулируйте напряжение до 20 мА");
+                var dialog = new Dialog("Отрегулируйте напряжение до 2 В");
                 await dialog.ShowDialog(this);
+                if (!dialog.Dialog_result) { devices.CreateMessege(devices.info[220]); return; }
             });
             devices.DC_Read = false;
 
@@ -171,14 +205,17 @@ namespace AWS.Views
             }
             devices.DC_Read = false;
             //проверка настройки
-            devices.CreateMessege("Настройка 4-20 входного закончена");
+            devices.CreateMessege(devices.info[213]);
+            return;
         }
+
         private async Task Check_Setting_4_20_Input(float mA)
         {
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                var dialog = new Dialog($"Отрегулируйте напряжение до {mA} мА");
+                var dialog = new Dialog($"Отрегулируйте напряжение до {mA /10} В");
                 await dialog.ShowDialog(this);
+                if (!dialog.Dialog_result) { devices.CreateMessege(devices.info[220]); return; }
             });
             float mA_reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
             if (mA_reg < (mA - 0.2) || mA_reg > (mA + 0.2))
@@ -189,11 +226,11 @@ namespace AWS.Views
         public async Task Setting_4_20_Output()
         {
             devices.CreateMessege(devices.info[204]);
-            await Dispatcher.UIThread.InvokeAsync(async () =>
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного", "4-20 выходное");
+            if (!confirmed)
             {
-                var dialog = new Dialog("Соберите схему для настройки 4-20 выходного", "4-20 выходное");
-                await dialog.ShowDialog(this);
-            });
+                devices.CreateMessege(devices.info[220]); return;
+            }
             double K_4_20_1 = 0d;
             double K_4_20_2 = 0d;
             float result = 0f;
@@ -232,7 +269,7 @@ namespace AWS.Views
             {
                 await Check_Setting_4_20_Output(mA);
             }
-            devices.CreateMessege("Настройка 4-20 выходного закончена");
+            devices.CreateMessege(devices.info[214]);
         }
         private async Task Check_Setting_4_20_Output(float mA)
         {

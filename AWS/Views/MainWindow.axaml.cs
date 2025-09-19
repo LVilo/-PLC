@@ -273,18 +273,15 @@ public partial class MainWindow : Window
     }
     private void InitializeAllComboBoxes(IEnumerable<string> portItems)
     {
-        var comboBoxes = new[]
-        {
-        Port_Name_Agiletn,
-        Port_Name_Generator,
-        Port_Name_PLC
-        };
+        Port_Name_Agiletn.ItemsSource = portItems;
+        if (!devices.mult_is_open) Port_Name_Agiletn.SelectedIndex = 0;
 
-        foreach (var comboBox in comboBoxes)
-        {
-            comboBox.ItemsSource = portItems;
-            comboBox.SelectedIndex = 0;
-        }
+        Port_Name_Generator.ItemsSource = portItems;
+        if (!devices.gen_is_open) Port_Name_Generator.SelectedIndex = 0;
+
+        Port_Name_PLC.ItemsSource = portItems;
+        if (!devices.PLC.IsOpen) Port_Name_PLC.SelectedIndex = 0;
+
     }
 
     private void LogWrite(string message)
@@ -305,6 +302,7 @@ public partial class MainWindow : Window
 
         Thread.Sleep(1000);
         devices.CloseConnection();
+        
     }
     private void Serial_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
     {
