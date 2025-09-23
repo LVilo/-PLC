@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using AWS.ViewModels;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PortsWork;
@@ -145,7 +146,7 @@ public partial class MainWindow : Window
                     {
                         LogWrite(devices.messege.Dequeue());
                     }
-                    Thread.Sleep(1000);
+                    Thread.Sleep(700);
                 }
             });
 
@@ -291,7 +292,7 @@ public partial class MainWindow : Window
         Dispatcher.UIThread.Post(() =>
         {
             LogTextBox.Text += formattedMessage;
-            LogTextBox.CaretIndex = int.MaxValue; // Прокрутка вниз
+            LogTextBox.CaretIndex = LogTextBox.Text.Length; // Прокрутка вниз
         });
     }
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -306,11 +307,43 @@ public partial class MainWindow : Window
     }
     private void Serial_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
     {
+        if (sender is TextBox textBox)
+        {
+            var digitsOnly = new string(textBox.Text.Where(char.IsDigit).ToArray());
 
+            if (textBox.Text != digitsOnly)
+            {
+                var caretIndex = textBox.CaretIndex;
+                textBox.Text = digitsOnly;
+                textBox.CaretIndex = Math.Min(caretIndex, digitsOnly.Length);
+            }
+        }
     }
     private void Order_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
     {
+        if (sender is TextBox textBox)
+        {
+            var cleaned = new string(textBox.Text.Where(char.IsLetterOrDigit).ToArray());
 
+            if (textBox.Text != cleaned)
+            {
+                var caretIndex = textBox.CaretIndex;
+                textBox.Text = cleaned;
+                textBox.CaretIndex = Math.Min(caretIndex, cleaned.Length);
+            }
+        }
+    }
+    private bool NumberCheck( TextBox text_box)
+    {
+        return !text_box.Text.Contains("\\") &&
+            !text_box.Text.Contains("/") &&
+            !text_box.Text.Contains(":") &&
+            !text_box.Text.Contains("*") &&
+            !text_box.Text.Contains("?") &&
+            !text_box.Text.Contains("\"") &&
+            !text_box.Text.Contains("<") &&
+            !text_box.Text.Contains(">") &&
+            !text_box.Text.Contains("|");
     }
 }
 

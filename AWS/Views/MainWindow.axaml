@@ -251,7 +251,7 @@
 							
 							<Button Name="Setting_Volt"
 								Click="Button_Setting_Volt"
-								Content="Настроить напряжение"
+								Content="Настроить напряжение питания"
 								Margin="5"
 								Width="300"
 								HorizontalContentAlignment="Center" IsVisible="false"
@@ -262,7 +262,7 @@
 
 							<Button Name="Setting_IEPE"
 								Click="Button_Setting_IEPE"
-								Content="Настроить IEPE"
+								Content="Настроить канал IEPE"
 								Margin="5"
 								Width="300"
 								HorizontalContentAlignment="Center" IsVisible="false"
@@ -273,7 +273,7 @@
 
 							<Button Name="Setting_4_20_Input_but"
 								Click="Button_Setting_4_20_Input"
-								Content="Настроить 4-20 входного"
+								Content="Настроить входной канал 4-20"
 								Margin="5"
 								Width="300"
 								HorizontalContentAlignment="Center" IsVisible="false"
@@ -283,7 +283,7 @@
 							BorderBrush="#A0A0A0"/>
 						<Button Name="Setting_4_20_Output_but"
 								Click="Button_Setting_4_20_Output"
-								Content="Настроить 4-20 выходного"
+								Content="Настроить выходной канал 4-20"
 								Margin="5"
 								Width="300"
 								HorizontalContentAlignment="Center" IsVisible="false"

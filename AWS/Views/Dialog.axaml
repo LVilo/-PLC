@@ -23,11 +23,13 @@
 			VerticalAlignment="Center"/>
 		</Border>
 		<Border  Background="LightGray" Margin="10">
-			<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10">
+			<Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto" Margin="10">
 				<Label Name="Label_Text"></Label>
-				<Button Name="OK" Click="OK_Click" Grid.Column="0" Grid.Row="1" Content="ОК">
+				<Button Name="OK" Click="OK_Click" Grid.Column="0" Grid.Row="1" Content="Ок">
 				</Button>
-				<Button Name="Canel" Click="Canel_Click" Grid.Column="1" Grid.Row="1" Content="ОК">
+				<Button Name="Skip" Click="Skip_Click" Grid.Column="1" Grid.Row="1" Content="Пропустить">
+				</Button>
+				<Button Name="Cancel" Click="Canel_Click" Grid.Column="2" Grid.Row="1" Content="Отмена настройки">
 				</Button>
 			</Grid>
 		</Border>

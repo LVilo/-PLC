@@ -122,7 +122,7 @@ namespace AWS.Views
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A, result);
             result = (float)(IEPE_2 * volt_1 - IEPE_1 * volt_2) / (IEPE_2 - IEPE_1);
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, result);
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
+            
             
             //провверка настиройки 
             devices.Average(0.05);
@@ -132,7 +132,8 @@ namespace AWS.Views
             IEPE_2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
             if (IEPE_2 > 0.2525 || IEPE_2 < 0.2475) devices.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_2} после настройки");
             devices.CreateMessege(devices.info[212]);
-            return;
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
+           
             //провверка настиройки 
         }
         public async Task Setting_4_20_Input()
@@ -141,7 +142,8 @@ namespace AWS.Views
             bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного", "4-20 входное");
             if (!confirmed)
             {
-                devices.CreateMessege(devices.info[220]); return;
+                devices.CreateMessege(devices.info[220]);
+                return;
             }
             float K_4_20_1 = 0f;
             float K_4_20_2 = 0f;
@@ -195,7 +197,6 @@ namespace AWS.Views
             result = (float)((K_4_20_2 * amper_1 - K_4_20_1 * amper_2) / (K_4_20_2 - K_4_20_1));
             Debug.WriteLine(result.ToString());
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, result);
-            devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
             
             //проверка настройки
             devices.DC_Read = true;
@@ -205,8 +206,9 @@ namespace AWS.Views
             }
             devices.DC_Read = false;
             //проверка настройки
+            devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
             devices.CreateMessege(devices.info[213]);
-            return;
+
         }
 
         private async Task Check_Setting_4_20_Input(float mA)
@@ -215,7 +217,11 @@ namespace AWS.Views
             {
                 var dialog = new Dialog($"Отрегулируйте напряжение до {mA /10} В");
                 await dialog.ShowDialog(this);
-                if (!dialog.Dialog_result) { devices.CreateMessege(devices.info[220]); return; }
+                if (!dialog.Dialog_result) 
+                { 
+                    devices.CreateMessege(devices.info[220]); 
+                    return;
+                }
             });
             float mA_reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
             if (mA_reg < (mA - 0.2) || mA_reg > (mA + 0.2))
@@ -229,7 +235,8 @@ namespace AWS.Views
             bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного", "4-20 выходное");
             if (!confirmed)
             {
-                devices.CreateMessege(devices.info[220]); return;
+                devices.CreateMessege(devices.info[220]);
+                return;
             }
             double K_4_20_1 = 0d;
             double K_4_20_2 = 0d;

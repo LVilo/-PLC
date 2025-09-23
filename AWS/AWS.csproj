@@ -12,6 +12,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Images\4-20 Вход.png" />
+    <None Remove="Images\4-20 Выход.png" />
+    <None Remove="Images\IEPE.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\4-20 Вход.png" />
+    <EmbeddedResource Include="Images\4-20 Выход.png" />
+    <EmbeddedResource Include="Images\IEPE.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />

@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Threading;
 using AWS.ViewModels;
 using PortsWork;
 using System;
@@ -22,6 +24,7 @@ namespace AWS.Views
             //OpenPorts(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
             try
             {
+                if (devices.PLC.IsOpen) return;
                 devices.PLC = (ModbusRTU)devices.SetMeasureDeviceName(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
                 devices.PLC.SetParameters(115200, (StopBits)1);
                 Task.Run(async () =>
@@ -29,6 +32,10 @@ namespace AWS.Views
                     if (devices.PLC.OpenPort())
                     {
                         devices.CreateMessege(devices.info[103]);
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            Panel_PLC.Background = new SolidColorBrush(Color.Parse("#1DEC1D"));
+                        });
                     }
                     else devices.CreateMessege(devices.info[113]);
                 });
@@ -41,38 +48,48 @@ namespace AWS.Views
         private void Button_Open_Port_Generator(object? sender, RoutedEventArgs e)
         {
             //OpenPorts(devices.generator, Port_Name_Generator.SelectedItem.ToString());
-            try
-            {
-                devices.generator = (PortGenerator)devices.SetMeasureDeviceName(devices.generator, Port_Name_Generator.SelectedItem.ToString());
-                Task.Run(async () =>
+            
+                try
                 {
-                    if (devices.generator.OpenPort())
+                    if (devices.gen_is_open) return;
+
+                    devices.generator = (PortGenerator)devices.SetMeasureDeviceName(devices.generator, Port_Name_Generator.SelectedItem.ToString());
+                    Task.Run(async () =>
                     {
-                        devices.CreateMessege(devices.info[101]);
-                        devices.gen_is_open = true;
-                        if (Option1.IsChecked == true)
+                        if (devices.generator.OpenPort())
                         {
-                            devices.generator.SetChannel(1);
+                            devices.CreateMessege(devices.info[101]);
+                            devices.gen_is_open = true;
+                            await Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                Panel_Generator.Background = new SolidColorBrush(Color.Parse("#1DEC1D"));
+                                if (Option1.IsChecked == true)
+                                {
+                                    devices.generator.SetChannel(1);
+                                }
+                                if (Option2.IsChecked == true)
+                                {
+                                    devices.generator.SetChannel(2);
+                                }
+                            });
+                            
                         }
-                        if (Option2.IsChecked == true)
-                        {
-                            devices.generator.SetChannel(2);
-                        }
-                    }
-                    else devices.CreateMessege(devices.info[111]);
-                });
-            }
-            catch (Exception ex)
-            {
-                devices.CreateMessege($"Ошибка: {ex.Message}");
-            }
+                        else devices.CreateMessege(devices.info[111]);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    devices.CreateMessege($"Ошибка: {ex.Message}");
+                }
+            
         }
         private void Button_Open_Port_Agilent(object? sender, RoutedEventArgs e)
         {
             // OpenPorts(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
             try
             {
-                devices.multimeter.PortName = Port_Name_Agiletn.SelectedItem.ToString();
+                if (devices.mult_is_open) return;
+                    devices.multimeter.PortName = Port_Name_Agiletn.SelectedItem.ToString();
                 devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
                 Task.Run(async () =>
                 {
@@ -81,6 +98,10 @@ namespace AWS.Views
                         devices.CreateMessege(devices.info[102]);
                         devices.mult_is_open = true;
                         Start_DC_Read_Work();
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            Panel_Agilent.Background = new SolidColorBrush(Color.Parse("#1DEC1D"));
+                        });
                     }
                     else devices.CreateMessege(devices.info[112]);
                 });
@@ -114,21 +135,33 @@ namespace AWS.Views
         }
         private void Button_Close_Port_PLC(object? sender, RoutedEventArgs e)
         {
-            devices.PLC.ClosePort();
-            devices.CreateMessege(devices.info[133]);
+            if (devices.PLC.IsOpen)
+            {
+                devices.PLC.ClosePort();
+                devices.CreateMessege(devices.info[133]);
+                Panel_PLC.Background = new SolidColorBrush(Colors.LightGray);
+            }
         }
 
         private void Button_Close_Port_Generator(object? sender, RoutedEventArgs e)
         {
-            devices.generator.ClosePort();
-            devices.gen_is_open = false;
-            devices.CreateMessege(devices.info[131]);
+            if (devices.gen_is_open)
+            {
+                devices.generator.ClosePort();
+                devices.gen_is_open = false;
+                devices.CreateMessege(devices.info[131]);
+                Panel_Generator.Background = new SolidColorBrush(Colors.LightGray);
+            }
         }
         private void Button_Close_Port_Agilent(object? sender, RoutedEventArgs e)
         {
-            devices.multimeter.ClosePort();
-            devices.mult_is_open = false;
-            devices.CreateMessege(devices.info[132]);
+            if (devices.mult_is_open)
+            {
+                devices.multimeter.ClosePort();
+                devices.mult_is_open = false;
+                devices.CreateMessege(devices.info[132]);
+                Panel_Agilent.Background = new SolidColorBrush(Colors.LightGray);
+            }
         }
 
         private void Button_Update_Ports(object? sender, RoutedEventArgs e)

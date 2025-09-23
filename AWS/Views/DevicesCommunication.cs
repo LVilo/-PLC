@@ -39,21 +39,21 @@ namespace AWS.ViewModels
 
 {101, "Генератор подключен "},
 {102, "Мультиметр подключен "},
-{103, "Контроллер подключен "},
+{103, "RS-485  подключен "},
 {104, "Все устройства подключены успешно "},
 
 {110, "Не удалось подключить устройство "},
 {111, "Не удалось подключить генераотр "},
 {112, "Не удалось подключить мультиметр "},
-{113, "Не удалось подключить контроллер "},
+{113, "Не удалось подключить RS-485  "},
 
 {121, "Генераотр не подключен "},
 {122, "Мультиметр не подключен "},
-{123, "Контроллер не подключен "},
+{123, "RS-485 не подключен "},
 
 {131, "Генератор отключен "},
 {132, "Мультиметр отключен "},
-{133, "Контроллер отключен" },
+{133, "RS-485  отключен" },
 {134, "Все устройства отключены "},
 
 {200, "Не удалось настроить "},
@@ -63,7 +63,7 @@ namespace AWS.ViewModels
 {204, "Настройка 4-20 выходного "},
 {205, "Настройка RS-485 "},
 
-{220, "Отмена настройка "},
+{220, "Отмена настройки "},
 {210, "Настройка закончена "},
 {211, "Проверка напряжения закончена "},
 {212, "Нстройка IEPE закончена "},
@@ -84,6 +84,8 @@ namespace AWS.ViewModels
             multimeter = new PortMultimeter();
             generator = new PortGenerator();
             PLC = new ModbusRTU();
+            PLC.ReadTimeout = 1000;
+            PLC.WriteTimeout = 1000;
         }
 
         public void CloseConnection()
@@ -123,59 +125,51 @@ namespace AWS.ViewModels
         }
         public void SetPassword()
         {
-            PLC.SetValue(address,Registers.REGISTER_ADRESS_PASSWORD,Registers.PASSWORD, TimeSleep);
-            Thread.Sleep(1000);
+            PLC.SetValue(address, Registers.REGISTER_ADRESS_PASSWORD, Registers.PASSWORD, TimeSleep);
+            //Thread.Sleep(1000);
         }
         public void Save_Change()
         {
             PLC.SetValue(address, Registers.REGISTER_ADRESS_PASSWORD, Registers.SAVE_CHANGE, TimeSleep);
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
         }
         public float ReadSwFloat(int reg)
         {
             float result = PLC.GetHoldingSwFloat(address, reg, TimeSleep);
-            Thread.Sleep(500);
+           // Thread.Sleep(500);
             return result;
         }
         public int ReadInt(int reg)
         {
-            int result = PLC.GetHoldingValue(address, reg,1, TimeSleep)[0];
-            Thread.Sleep(500);
+            int result = PLC.GetHoldingValue(address, reg, 1, TimeSleep)[0];
+          //  Thread.Sleep(500);
             return result;
         }
         public void WtiteInt(int reg, int value)
         {
-            CreateMessege($"Записываю значения {value} в регистр {reg}");
+            CreateMessege($"Записываю значения {value} в {Registers.Name[reg]}");
             for (int i = 1; i < 10; i++)
             {
                 SetPassword();
                 PLC.SetValue(address, reg, value, TimeSleep);
-                Thread.Sleep(500);
+               // Thread.Sleep(500);
                 Save_Change();
-                if (value == ReadInt(reg))
-                {
-                    CreateMessege(info[302]);
-                    return;
-                }
-                    CreateMessege($"{info[312]} пробую {i+1} Раз из 10");
-                
+                if (value == ReadInt(reg)) return;
+                CreateMessege($"{info[312]} пробую {i + 1} Раз из 10");
+
             }
             throw new Exception(info[300] + Registers.Name[reg]);
         }
-        public void WtiteSwFloat(int reg,float value)
+        public void WtiteSwFloat(int reg, float value)
         {
-            CreateMessege($"Записываю значения {value} в регистр {reg}");
+            CreateMessege($"Записываю значения {value} в {Registers.Name[reg]}");
             for (int i = 1; i < 10; i++)
             {
                 SetPassword();
                 PLC.SetSwFloatValue(address, reg, value, TimeSleep);
-                Thread.Sleep(500);
+              //  Thread.Sleep(500);
                 Save_Change();
-                if (value == ReadSwFloat(reg))
-                {
-                    CreateMessege(info[302]);
-                    return;
-                }
+                if (value == ReadSwFloat(reg)) return;
                 CreateMessege($"{info[312]} пробую {i + 1} Раз из 10");
             }
             throw new Exception(info[300] + Registers.Name[reg]);
