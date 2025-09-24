@@ -88,7 +88,10 @@ namespace AWS.Views
             // OpenPorts(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
             try
             {
-                if (devices.mult_is_open) return;
+                if (devices.mult_is_open)
+                {
+                    return;
+                }
                     devices.multimeter.PortName = Port_Name_Agiletn.SelectedItem.ToString();
                 devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
                 Task.Run(async () =>

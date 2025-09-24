@@ -54,7 +54,6 @@ public partial class MainWindow : Window
     protected override async void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-
         if (_showDriverError)
         {
             await ShowDriverErrorDialog();

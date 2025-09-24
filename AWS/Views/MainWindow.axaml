@@ -6,7 +6,7 @@
         Width="693" Height="630"
         x:Class="AWS.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="АРМ v: 0.1.5"
+        Title="АРМ v: 0.1.6"
         FontFamily="Arial">
 	
 	<StackPanel Background="#FBFBFB">

@@ -22,6 +22,7 @@ namespace AWS.Views
                 var dialog = new Dialog(message);
                 await dialog.ShowDialog(this);
                 devices.DC_Read = false;
+                if (dialog.Dialog_skip == true) throw new Exception(devices.info[220]);
                 return dialog.Dialog_result;
             });
 
@@ -33,6 +34,7 @@ namespace AWS.Views
             {
                 var dialog = new Dialog(message, setting);
                 await dialog.ShowDialog(this);
+                if (dialog.Dialog_skip == true) throw new Exception(devices.info[220]);
                 return dialog.Dialog_result;
             });
 
@@ -42,28 +44,37 @@ namespace AWS.Views
         public async Task CheckVoltage()
         {
             devices.CreateMessege(devices.info[201]);
+            bool confirmed = await ShowConfirmationDialogAsync("Убедитесь, что на источнике питания стоит 24В");
+            if (!confirmed)
+            {
+                devices.CreateMessege(devices.info[220]);
+                return;
+            }
             float value = 0f;
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
             value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
             if (value <= 24.1 && value >= 23.9)
             {
-                devices.messege.Enqueue(Registers.Name[99] + "показывает 24 В");
+                devices.messege.Enqueue(Registers.Name[99] + $" показывает {value} В");
                 return;
             }
-            value = 0f;
-            devices.messege.Enqueue(Registers.Name[99] + " показывает некоректные значениея, идет настройка коэффициентов");
-
+            
             for (int i = 1; i < 10; i++)
             {
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
+                value = 0f;
+                Thread.Sleep(2000);
                 for (int j = 0; j < 10; j++)
                 {
                     value += devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                    Thread.Sleep(500);
                 }
+                Debug.WriteLine((value/10).ToString());
                 value = 24f / (value / 10) * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
 
                 devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
 
                 value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                Debug.WriteLine(value.ToString());
                 if (value >= 24.1 || value <= 23.9)
                 {
                     devices.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки. Пробую {i} из 10");
@@ -95,9 +106,12 @@ namespace AWS.Views
             devices.DC_Read = true;
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                var dialog = new Dialog("Отрегулируйте напряжение до 12 В");
-                await dialog.ShowDialog(this);
-                if (!dialog.Dialog_result) { devices.CreateMessege(devices.info[220]); return; }
+                bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 12 В");
+                if (!confirmed)
+                {
+                    devices.CreateMessege(devices.info[220]);
+                    return;
+                }
             });
             devices.DC_Read = false;
 
@@ -131,10 +145,12 @@ namespace AWS.Views
             devices.Average(0.25);
             IEPE_2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
             if (IEPE_2 > 0.2525 || IEPE_2 < 0.2475) devices.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_2} после настройки");
-            devices.CreateMessege(devices.info[212]);
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
-           
             //провверка настиройки 
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
+            devices.CreateMessege(devices.info[212]);
+            
+           
+            
         }
         public async Task Setting_4_20_Input()
         {
@@ -156,9 +172,12 @@ namespace AWS.Views
             devices.DC_Read = true;
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                var dialog = new Dialog("Отрегулируйте напряжение до 0.4 В");
-                await dialog.ShowDialog(this);
-                if (!dialog.Dialog_result) { devices.CreateMessege(devices.info[220]); return; }
+                bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 0.4 В");
+                if (!confirmed)
+                {
+                    devices.CreateMessege(devices.info[220]);
+                    return;
+                }
             });
             devices.DC_Read = false;
 
@@ -175,9 +194,12 @@ namespace AWS.Views
             devices.DC_Read = true;
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                var dialog = new Dialog("Отрегулируйте напряжение до 2 В");
-                await dialog.ShowDialog(this);
-                if (!dialog.Dialog_result) { devices.CreateMessege(devices.info[220]); return; }
+                bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 2 В");
+                if (!confirmed)
+                {
+                    devices.CreateMessege(devices.info[220]);
+                    return;
+                }
             });
             devices.DC_Read = false;
 
@@ -215,11 +237,10 @@ namespace AWS.Views
         {
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                var dialog = new Dialog($"Отрегулируйте напряжение до {mA /10} В");
-                await dialog.ShowDialog(this);
-                if (!dialog.Dialog_result) 
-                { 
-                    devices.CreateMessege(devices.info[220]); 
+                bool confirmed = await ShowConfirmationDialogAsync($"Отрегулируйте напряжение до {mA / 10} В");
+                if (!confirmed)
+                {
+                    devices.CreateMessege(devices.info[220]);
                     return;
                 }
             });

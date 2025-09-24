@@ -73,7 +73,7 @@ namespace AWS.ViewModels
 
 
 {300, "Не получается записать значения в Контроллер"},
-{301, "Записал значения "},
+{301, "Записал значение "},
 {311, "Не удалось записать значения "},
 
 {302, "Сохранил значения "},
@@ -147,7 +147,7 @@ namespace AWS.ViewModels
         }
         public void WtiteInt(int reg, int value)
         {
-            CreateMessege($"Записываю значения {value} в {Registers.Name[reg]}");
+            CreateMessege($"Записываю значение {value} в {Registers.Name[reg]}");
             for (int i = 1; i < 10; i++)
             {
                 SetPassword();
@@ -162,7 +162,7 @@ namespace AWS.ViewModels
         }
         public void WtiteSwFloat(int reg, float value)
         {
-            CreateMessege($"Записываю значения {value} в {Registers.Name[reg]}");
+            CreateMessege($"Записываю значение {value} в {Registers.Name[reg]}");
             for (int i = 1; i < 10; i++)
             {
                 SetPassword();
