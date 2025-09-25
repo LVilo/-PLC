@@ -40,8 +40,8 @@ namespace AWS.Views
         public const int REGISTER_ADRESS_ERROR_TIMEOUT = 77;
         public const int REGISTER_ADRESS_TIMEOUT = 77;
 
-        public const int PASSWORD = -7035; //   AB           -461045760 ABCD   34276 ДЛЯ DCBA 
-        public const int SAVE_CHANGE = 481; //    AB     31522816  ABCD   57601 ДЛЯ DCBA  
+        public const int PASSWORD = 0xE485; //  -7035 AB           -461045760 ABCD   34276 ДЛЯ DCBA 
+        public const int SAVE_CHANGE = 0x01E1; //  481  AB     31522816  ABCD   57601 ДЛЯ DCBA  
         public const float Coef_1 = 1;
         public const float Coef_0 = 0;
         public const int ON = 1;

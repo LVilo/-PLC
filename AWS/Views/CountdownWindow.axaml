@@ -6,7 +6,8 @@
         Title="Обратный отсчет"
         Width="300"
         Height="200"
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner"
+		CanResize="False">
     
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
         <!-- Таймер -->

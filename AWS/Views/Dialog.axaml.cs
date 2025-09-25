@@ -34,7 +34,7 @@ public partial class Dialog : Window
         Title = Text;
     }
     public bool Dialog_result { get; private set; }
-    public bool Dialog_skip { get; private set; }
+    public bool Dialog_Cancel { get; private set; }
     private static Bitmap LoadEmbeddedImage(string resourceName)
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -58,7 +58,7 @@ public partial class Dialog : Window
     }
     private async void Canel_Click(object? sender, RoutedEventArgs e)
     {
-        Dialog_skip = true;
+        Dialog_Cancel = true;
         Close();
     }
     //internal async Task ShowDialog()

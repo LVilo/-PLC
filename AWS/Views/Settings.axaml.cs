@@ -14,6 +14,7 @@ namespace AWS.Views
     {
         private TimeSpan _elapsedTime;
         private CountdownWindow _countdownWindow;
+
         public async Task<bool> ShowConfirmationDialogAsync(string message)
         {
             bool result = await Dispatcher.UIThread.InvokeAsync(async () =>
@@ -22,7 +23,7 @@ namespace AWS.Views
                 var dialog = new Dialog(message);
                 await dialog.ShowDialog(this);
                 devices.DC_Read = false;
-                if (dialog.Dialog_skip == true) throw new Exception(devices.info[220]);
+                if (dialog.Dialog_Cancel == true) throw new Exception(devices.info[220]);
                 return dialog.Dialog_result;
             });
 
@@ -34,7 +35,7 @@ namespace AWS.Views
             {
                 var dialog = new Dialog(message, setting);
                 await dialog.ShowDialog(this);
-                if (dialog.Dialog_skip == true) throw new Exception(devices.info[220]);
+                if (dialog.Dialog_Cancel == true) throw new Exception(devices.info[220]);
                 return dialog.Dialog_result;
             });
 
@@ -136,21 +137,21 @@ namespace AWS.Views
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A, result);
             result = (float)(IEPE_2 * volt_1 - IEPE_1 * volt_2) / (IEPE_2 - IEPE_1);
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, result);
-            
-            
+
             //провверка настиройки 
+            devices.CreateMessege(devices.info[206]);
             devices.Average(0.05);
             IEPE_1 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
             if (IEPE_1 > 0.0505 || IEPE_1 < 0.0495) devices.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_1} после настройки");
-            devices.Average(0.25);
+            
+                devices.Average(0.25);
             IEPE_2 = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE_IEPE);
             if (IEPE_2 > 0.2525 || IEPE_2 < 0.2475) devices.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_2} после настройки");
-            //провверка настиройки 
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
+            
+                //провверка настиройки 
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
             devices.CreateMessege(devices.info[212]);
-            
-           
-            
+             
         }
         public async Task Setting_4_20_Input()
         {
@@ -161,76 +162,91 @@ namespace AWS.Views
                 devices.CreateMessege(devices.info[220]);
                 return;
             }
-            float K_4_20_1 = 0f;
-            float K_4_20_2 = 0f;
-            double amper_1 = 0d;
-            double amper_2 = 0d;
-            float result = 0f;
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT, Registers.Coef_1);
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, Registers.Coef_0);
-            devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.ON);
-            devices.DC_Read = true;
-            await Dispatcher.UIThread.InvokeAsync(async () =>
+            while (true)
             {
-                bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 0.4 В");
-                if (!confirmed)
+                float K_4_20_1 = 0f;
+                float K_4_20_2 = 0f;
+                double amper_1 = 0d;
+                double amper_2 = 0d;
+                float result = 0f;
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT, Registers.Coef_1);
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, Registers.Coef_0);
+                devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.ON);
+                devices.DC_Read = true;
+                await Dispatcher.UIThread.InvokeAsync(async () =>
                 {
-                    devices.CreateMessege(devices.info[220]);
-                    return;
-                }
-            });
-            devices.DC_Read = false;
+                    bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 0.4 В");
+                    if (!confirmed)
+                    {
+                        devices.CreateMessege(devices.info[220]);
+                        return;
+                    }
+                });
+                devices.DC_Read = false;
 
-            for (int i = 0; i < 10; i++)
-            {
-                amper_1 += devices.multimeter.GetVoltage("DC", 100) * 10;
-            }
-            amper_1 /= 10;
-            Debug.WriteLine(amper_1.ToString());
-
-            K_4_20_1 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
-
-            Debug.WriteLine(K_4_20_1.ToString());
-            devices.DC_Read = true;
-            await Dispatcher.UIThread.InvokeAsync(async () =>
-            {
-                bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 2 В");
-                if (!confirmed)
+                for (int i = 0; i < 10; i++)
                 {
-                    devices.CreateMessege(devices.info[220]);
-                    return;
+                    amper_1 += devices.multimeter.GetVoltage("DC", 100) * 10;
                 }
-            });
-            devices.DC_Read = false;
+                amper_1 /= 10;
+                Debug.WriteLine(amper_1.ToString());
 
-            for (int i = 0; i < 10; i++)
-            {
-                amper_2 += devices.multimeter.GetVoltage("DC", 100) * 10;
+                K_4_20_1 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
+
+                Debug.WriteLine(K_4_20_1.ToString());
+                devices.DC_Read = true;
+                await Dispatcher.UIThread.InvokeAsync(async () =>
+                {
+                    bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 2 В");
+                    if (!confirmed)
+                    {
+                        devices.CreateMessege(devices.info[220]);
+                        return;
+                    }
+                });
+                devices.DC_Read = false;
+
+                for (int i = 0; i < 10; i++)
+                {
+                    amper_2 += devices.multimeter.GetVoltage("DC", 100) * 10;
+                }
+                amper_2 /= 10;
+                Debug.WriteLine(amper_2.ToString());
+
+                K_4_20_2 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
+
+                result = (float)((amper_2 - amper_1) / (K_4_20_2 - K_4_20_1));
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT, result);
+                result = (float)((K_4_20_2 * amper_1 - K_4_20_1 * amper_2) / (K_4_20_2 - K_4_20_1));
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, result);
+
+                //проверка настройки
+                devices.CreateMessege(devices.info[206]);
+                devices.DC_Read = true;
+                for (float mA = 4; mA <= 20; mA += 2)
+                {
+                    await Check_Setting_4_20_Input(mA);
+                }
+                if (devices.fail_settings.Count > 0)
+                {
+                    while (devices.fail_settings.Count > 0)
+                    {
+                        devices.CreateMessege(devices.fail_settings.Dequeue());
+                    }
+                    confirmed = await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?");
+                    if (!confirmed)
+                    {
+                        devices.CreateMessege(devices.info[220]);
+                        return;
+                    }
+                }
+                else devices.CreateMessege(devices.info[213]);
+                devices.DC_Read = false;
+                //проверка настройки
+                devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
+
+
             }
-            amper_2 /= 10;
-            Debug.WriteLine(amper_2.ToString());
-
-            K_4_20_2 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
-
-            Debug.WriteLine(K_4_20_2.ToString());
-            result = (float)((amper_2 - amper_1) / (K_4_20_2 - K_4_20_1));
-            Debug.WriteLine(result.ToString());
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT, result);
-            result = (float)((K_4_20_2 * amper_1 - K_4_20_1 * amper_2) / (K_4_20_2 - K_4_20_1));
-            Debug.WriteLine(result.ToString());
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, result);
-            
-            //проверка настройки
-            devices.DC_Read = true;
-            for (float mA = 4; mA <= 20; mA += 2)
-            {
-                await Check_Setting_4_20_Input(mA);
-            }
-            devices.DC_Read = false;
-            //проверка настройки
-            devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
-            devices.CreateMessege(devices.info[213]);
-
         }
 
         private async Task Check_Setting_4_20_Input(float mA)
@@ -247,7 +263,7 @@ namespace AWS.Views
             float mA_reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
             if (mA_reg < (mA - 0.2) || mA_reg > (mA + 0.2))
             {
-                devices.CreateMessege(devices.info[200] + $"При заданном значении в {mA} датчик показывает не корректные {mA_reg}");
+                devices.fail_settings.Enqueue(devices.info[200] + $"При заданном значении в {mA} датчик показывает не корректные {mA_reg}");
             }
         }
         public async Task Setting_4_20_Output()
@@ -259,49 +275,70 @@ namespace AWS.Views
                 devices.CreateMessege(devices.info[220]);
                 return;
             }
-            double K_4_20_1 = 0d;
-            double K_4_20_2 = 0d;
-            float result = 0f;
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, Registers.Coef_1);
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT, Registers.Coef_0);
-            devices.WtiteInt(Registers.REGISTER_ADRESS_SOURCE_SIGNAL, Registers.OFF);
-
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, 4f);
-            Thread.Sleep(3000);
-            for (int i = 0; i < 10; i++)
+            while (true)
             {
-                K_4_20_1 += devices.multimeter.GetVoltage("DC", 100) * 10;
+                double K_4_20_1 = 0d;
+                double K_4_20_2 = 0d;
+                float result = 0f;
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, Registers.Coef_1);
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT, Registers.Coef_0);
+                devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.ON);
+                devices.WtiteInt(Registers.REGISTER_ADRESS_SOURCE_SIGNAL, Registers.OFF);
+
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, 4f);
+                Thread.Sleep(3000);
+                for (int i = 0; i < 10; i++)
+                {
+                    K_4_20_1 += devices.multimeter.GetVoltage("DC", 100) * 10;
+                }
+                K_4_20_1 /= 10;
+
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, 20f);
+                Thread.Sleep(3000);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    K_4_20_2 += devices.multimeter.GetVoltage("DC", 100) * 10;
+                }
+                K_4_20_2 /= 10;
+
+                Debug.WriteLine(K_4_20_2.ToString());
+                result = (float)((20d - 4d) / (K_4_20_2 - K_4_20_1));
+                Debug.WriteLine(result.ToString());
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, result);
+                result = (float)((K_4_20_2 * 4d - K_4_20_1 * 20d) / (K_4_20_2 - K_4_20_1));
+                Debug.WriteLine(result.ToString());
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT, result);
+
+                devices.CreateMessege(devices.info[206]);
+                for (float mA = 4; mA <= 20; mA += 2)
+                {
+                    await Check_Setting_4_20_Output(mA);
+                }
+                if (devices.fail_settings.Count > 0)
+                {
+                    while (devices.fail_settings.Count > 0)
+                    {
+                        devices.CreateMessege(devices.fail_settings.Dequeue());
+                    }
+                    devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
+                    confirmed = await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?");
+                    if (!confirmed)
+                    {
+                        devices.CreateMessege(devices.info[220]);
+                        return;
+                    }
+                }
+                else
+                {
+                    devices.CreateMessege(devices.info[214]);
+                }
             }
-            K_4_20_1 /= 10;
-
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, 20f);
-            Thread.Sleep(3000);
-
-            for (int i = 0; i < 10; i++)
-            {
-                K_4_20_2 += devices.multimeter.GetVoltage("DC", 100) * 10;
-            }
-            K_4_20_2 /= 10;
-
-            Debug.WriteLine(K_4_20_2.ToString());
-            result = (float)((20d - 4d) / (K_4_20_2 - K_4_20_1));
-            Debug.WriteLine(result.ToString());
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, result);
-            result = (float)((K_4_20_2 * 4d - K_4_20_1 * 20d) / (K_4_20_2 - K_4_20_1));
-            Debug.WriteLine(result.ToString());
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT, result);
-            devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
-            
-
-            for (float mA = 4; mA <= 20; mA += 2)
-            {
-                await Check_Setting_4_20_Output(mA);
-            }
-            devices.CreateMessege(devices.info[214]);
         }
         private async Task Check_Setting_4_20_Output(float mA)
         {
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, mA);
+            Thread.Sleep(3000);
             double reg_4_20 = 0d;
             for (int i = 0; i < 10; i++)
             {
@@ -310,7 +347,7 @@ namespace AWS.Views
             reg_4_20 /= 10;
             if (reg_4_20 < (mA - 0.2) || reg_4_20 > (mA + 0.2))
             {
-                devices.CreateMessege(devices.info[200] + $"При заданном значении в {mA} мультиметр показывает не корректные {reg_4_20}");
+                devices.fail_settings.Enqueue(devices.info[200] + $"При заданном значении в {mA} мультиметр показывает не корректные {reg_4_20}");
             }
         }
         

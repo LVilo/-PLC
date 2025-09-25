@@ -1,5 +1,6 @@
 ﻿using AWS.Views;
 using PortsWork;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,8 +34,9 @@ namespace AWS.ViewModels
         public bool IsClick_Close = false;
 
         public  Queue<string> messege = new Queue<string>();
+        public Queue<string> fail_settings = new Queue<string>();
 
-       public Dictionary<int, string> info = new Dictionary<int, string>
+        public Dictionary<int, string> info = new Dictionary<int, string>
 {
 
 {101, "Генератор подключен "},
@@ -62,6 +64,7 @@ namespace AWS.ViewModels
 {203, "Настройка 4-20 входного" },
 {204, "Настройка 4-20 выходного "},
 {205, "Настройка RS-485 "},
+{206, "Проверяю настройку "},
 
 {220, "Отмена настройки "},
 {210, "Настройка закончена "},
@@ -73,10 +76,12 @@ namespace AWS.ViewModels
 
 
 {300, "Не получается записать значения в Контроллер"},
-{301, "Записал значение "},
-{311, "Не удалось записать значения "},
+{301, "Записал "},
+{303, "Читаю "},
+{313, "Прочитал и получил"},
+{311, "Не удалось записать "},
 
-{302, "Сохранил значения "},
+{302, "Сохранил "},
 {312, "Не сохранил Значения " },
 };
         public DevicesCommunication()
@@ -99,8 +104,19 @@ namespace AWS.ViewModels
         {
             Debug.WriteLine(mes);
             messege.Enqueue(mes);
+            Log.Information(mes);
         }
-        
+        public void CreateMessege(Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            messege.Enqueue(ex.Message);
+            Log.Error(ex.Message);
+        }
+        public void WriteLog(string mes)
+        {
+            Debug.WriteLine(mes);
+            Log.Information(mes);
+        }
 
         public Port SetMeasureDeviceName( Port device, string name )
         {
@@ -131,22 +147,25 @@ namespace AWS.ViewModels
         public void Save_Change()
         {
             PLC.SetValue(address, Registers.REGISTER_ADRESS_PASSWORD, Registers.SAVE_CHANGE, TimeSleep);
+
             //Thread.Sleep(1000);
         }
         public float ReadSwFloat(int reg)
         {
             float result = PLC.GetHoldingSwFloat(address, reg, TimeSleep);
-           // Thread.Sleep(500);
+
+            // Thread.Sleep(500);
             return result;
         }
         public int ReadInt(int reg)
         {
             int result = PLC.GetHoldingValue(address, reg, 1, TimeSleep)[0];
-          //  Thread.Sleep(500);
+            //  Thread.Sleep(500);
             return result;
         }
         public void WtiteInt(int reg, int value)
         {
+           
             CreateMessege($"Записываю значение {value} в {Registers.Name[reg]}");
             for (int i = 1; i < 10; i++)
             {
@@ -154,7 +173,10 @@ namespace AWS.ViewModels
                 PLC.SetValue(address, reg, value, TimeSleep);
                // Thread.Sleep(500);
                 Save_Change();
-                if (value == ReadInt(reg)) return;
+                if (value == ReadInt(reg))
+                {
+                    return;
+                }
                 CreateMessege($"{info[312]} пробую {i + 1} Раз из 10");
 
             }
@@ -169,7 +191,11 @@ namespace AWS.ViewModels
                 PLC.SetSwFloatValue(address, reg, value, TimeSleep);
               //  Thread.Sleep(500);
                 Save_Change();
-                if (value == ReadSwFloat(reg)) return;
+                if (value == ReadSwFloat(reg))
+                {
+                    if(i>1) CreateMessege($"{info[302]} ");
+                    return;
+                }
                 CreateMessege($"{info[312]} пробую {i + 1} Раз из 10");
             }
             throw new Exception(info[300] + Registers.Name[reg]);

@@ -10,8 +10,10 @@ using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PortsWork;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -31,6 +33,7 @@ public partial class MainWindow : Window
     DevicesCommunication devices;
     private bool Work_DO = true;
     private bool _showDriverError = false;
+   
     public MainWindow()
     {
         InitializeComponent();
@@ -44,6 +47,8 @@ public partial class MainWindow : Window
             devices.address = 10;
             devices.TimeSleep = 2;
             StartBackgroundWork();
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.File("log.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+            Log.Information("\n\n ///////////////// Приложение запущено \n\n");
         }
         catch (DllNotFoundException)
         {
@@ -51,6 +56,7 @@ public partial class MainWindow : Window
             _showDriverError = true;
         }
     }
+
     protected override async void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
@@ -201,7 +207,7 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                devices.CreateMessege(ex.Message);
+                devices.CreateMessege(ex);
             }
         });
         Set_Enabled(true);
@@ -250,7 +256,7 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                devices.CreateMessege(ex.Message);
+                devices.CreateMessege(ex);
             }
         }));
         Set_Enabled(true);
@@ -296,7 +302,7 @@ public partial class MainWindow : Window
     }
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
-        LogWrite("Приложение закрывается");
+        devices.CreateMessege("//////////////////////////////     Приложение закрывается");
         Work_DO = false;
 
 
@@ -331,18 +337,6 @@ public partial class MainWindow : Window
                 textBox.CaretIndex = Math.Min(caretIndex, cleaned.Length);
             }
         }
-    }
-    private bool NumberCheck( TextBox text_box)
-    {
-        return !text_box.Text.Contains("\\") &&
-            !text_box.Text.Contains("/") &&
-            !text_box.Text.Contains(":") &&
-            !text_box.Text.Contains("*") &&
-            !text_box.Text.Contains("?") &&
-            !text_box.Text.Contains("\"") &&
-            !text_box.Text.Contains("<") &&
-            !text_box.Text.Contains(">") &&
-            !text_box.Text.Contains("|");
     }
 }
 

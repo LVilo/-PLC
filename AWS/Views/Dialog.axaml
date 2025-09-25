@@ -7,7 +7,8 @@
         SizeToContent="Manual"  
         WindowStartupLocation="CenterOwner" 
         x:Class="AWS.Dialog"
-        Title="Dialog">
+        Title="Dialog"
+		CanResize="False">
 	<StackPanel Name="Dialog_Panel">
 		<Border Name="Border_Name"
                 BorderBrush="Black"

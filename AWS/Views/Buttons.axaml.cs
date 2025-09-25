@@ -34,6 +34,7 @@ namespace AWS.Views
                         devices.CreateMessege(devices.info[103]);
                         await Dispatcher.UIThread.InvokeAsync(() =>
                         {
+                            Port_Name_PLC.IsEnabled = false;
                             Panel_PLC.Background = new SolidColorBrush(Color.Parse("#1DEC1D"));
                         });
                     }
@@ -63,6 +64,7 @@ namespace AWS.Views
                             await Dispatcher.UIThread.InvokeAsync(() =>
                             {
                                 Panel_Generator.Background = new SolidColorBrush(Color.Parse("#1DEC1D"));
+                                Port_Name_Generator.IsEnabled = false;
                                 if (Option1.IsChecked == true)
                                 {
                                     devices.generator.SetChannel(1);
@@ -79,7 +81,7 @@ namespace AWS.Views
                 }
                 catch (Exception ex)
                 {
-                    devices.CreateMessege($"Ошибка: {ex.Message}");
+                devices.CreateMessege($"Ошибка: {ex.Message}");
                 }
             
         }
@@ -104,6 +106,7 @@ namespace AWS.Views
                         await Dispatcher.UIThread.InvokeAsync(() =>
                         {
                             Panel_Agilent.Background = new SolidColorBrush(Color.Parse("#1DEC1D"));
+                            Port_Name_Agiletn.IsEnabled = false;
                         });
                     }
                     else devices.CreateMessege(devices.info[112]);
@@ -143,6 +146,7 @@ namespace AWS.Views
                 devices.PLC.ClosePort();
                 devices.CreateMessege(devices.info[133]);
                 Panel_PLC.Background = new SolidColorBrush(Colors.LightGray);
+                Port_Name_PLC.IsEnabled = true;
             }
         }
 
@@ -154,6 +158,7 @@ namespace AWS.Views
                 devices.gen_is_open = false;
                 devices.CreateMessege(devices.info[131]);
                 Panel_Generator.Background = new SolidColorBrush(Colors.LightGray);
+                Port_Name_Generator.IsEnabled = true;
             }
         }
         private void Button_Close_Port_Agilent(object? sender, RoutedEventArgs e)
@@ -164,6 +169,7 @@ namespace AWS.Views
                 devices.mult_is_open = false;
                 devices.CreateMessege(devices.info[132]);
                 Panel_Agilent.Background = new SolidColorBrush(Colors.LightGray);
+                Port_Name_Agiletn.IsEnabled = true;
             }
         }
 
