@@ -118,7 +118,7 @@ namespace AWS.Views
                     bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 12 В");
                     if (!confirmed)
                     {
-                        devices.CreateMessege(devices.info[220]);
+                        devices.CreateMessege(devices.info[230]);
                         return;
                     }
                 });
@@ -176,7 +176,7 @@ namespace AWS.Views
                     confirmed = await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?");
                     if (!confirmed)
                     {
-                        devices.CreateMessege(devices.info[220]);
+                        devices.CreateMessege(devices.info[230]);
                         return;
                     }
                 }
@@ -194,7 +194,7 @@ namespace AWS.Views
             bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного", "4-20 входное");
             if (!confirmed)
             {
-                devices.CreateMessege(devices.info[220]);
+                devices.CreateMessege(devices.info[230]);
                 return;
             }
             while (true)
@@ -293,7 +293,7 @@ namespace AWS.Views
                 bool confirmed = await ShowConfirmationDialogAsync($"Отрегулируйте напряжение до {mA / 10} В");
                 if (!confirmed)
                 {
-                    devices.CreateMessege(devices.info[220]);
+                    devices.CreateMessege(devices.info[230]);
                     return;
                 }
                 float mA_reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
