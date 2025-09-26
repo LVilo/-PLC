@@ -61,17 +61,19 @@ namespace AWS.ViewModels
 {200, "Не удалось настроить "},
 {201, "Проверка напряжения "},
 {202, "Нстройка IEPE "},
-{203, "Настройка 4-20 входного" },
-{204, "Настройка 4-20 выходного "},
+{203, "Настройка входного канала 4-20 " },
+{204, "Настройка выходного канала 4-20  "},
 {205, "Настройка RS-485 "},
 {206, "Проверяю настройку "},
+{207, "Считаю коэффициенты "},
 
+{230, "Пропуск настройки "},
 {220, "Отмена настройки "},
 {210, "Настройка закончена "},
 {211, "Проверка напряжения закончена "},
-{212, "Нстройка IEPE закончена "},
-{213, "Настройка 4-20 входного закончена " },
-{214, "Настройка 4-20 выходного закончена "},
+{212, "Нстройка IEPE закончена успешно"},
+{213, "Настройка входного канала 4-20  закончена успешно " },
+{214, "Настройка выходного канала 4-20  закончена успешно "},
 {215, "Настройка RS-485 закончена "},
 
 
@@ -104,18 +106,18 @@ namespace AWS.ViewModels
         {
             Debug.WriteLine(mes);
             messege.Enqueue(mes);
-            Log.Information(mes);
+            Log.Information(Environment.UserName + mes);
         }
         public void CreateMessege(Exception ex)
         {
             Debug.WriteLine(ex.Message);
             messege.Enqueue(ex.Message);
-            Log.Error(ex.Message);
+            Log.Error(Environment.UserName + ex.Message);
         }
         public void WriteLog(string mes)
         {
-            Debug.WriteLine(mes);
-            Log.Information(mes);
+            Debug.WriteLine(Environment.UserName + mes);
+            Log.Information(Environment.UserName + mes);
         }
 
         public Port SetMeasureDeviceName( Port device, string name )

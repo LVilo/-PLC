@@ -47,8 +47,11 @@ public partial class MainWindow : Window
             devices.address = 10;
             devices.TimeSleep = 2;
             StartBackgroundWork();
-            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.File("log.txt", rollingInterval: RollingInterval.Day).CreateLogger();
-            Log.Information("\n\n ///////////////// Приложение запущено \n\n");
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
+                .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File(@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+            devices.WriteLog("\n\n ///////////////// Приложение запущено \n\n");
         }
         catch (DllNotFoundException)
         {
