@@ -190,12 +190,14 @@ public partial class MainWindow : Window
                     case 2:// 4-20
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
                         await Setting_4_20_Input();
                         break;
 
                     case 3:
-                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
+                        //if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
                         await Setting_4_20_Output();
                         break;
                     case 4:
@@ -228,6 +230,7 @@ public partial class MainWindow : Window
                     case "PLC 112":
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
                         await CheckVoltage();
                         await Setting_4_20_Input();
                         await Setting_4_20_Output();
@@ -243,6 +246,7 @@ public partial class MainWindow : Window
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
                         await CheckVoltage();
                         await Seting_IEPE();
                         await Setting_4_20_Input();
@@ -291,6 +295,8 @@ public partial class MainWindow : Window
         Port_Name_PLC.ItemsSource = portItems;
         if (!devices.PLC.IsOpen) Port_Name_PLC.SelectedIndex = 0;
 
+        Port_Name_SG004.ItemsSource = portItems;
+        if (!devices.sg004.IsOpen) Port_Name_SG004.SelectedIndex = 0;
     }
 
     private void LogWrite(string message)

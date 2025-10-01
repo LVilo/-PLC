@@ -202,7 +202,62 @@
 									</Button>
 								</Grid>
 							</Border>
-						
+
+						<Border Name="Panel_SG004"  Background="LightGray" Margin="5" CornerRadius="10">
+
+
+							<Grid
+								ShowGridLines="False"
+								Margin="15,5,5,5"
+					  ColumnDefinitions="Auto, Auto"
+					  RowDefinitions="Auto, Auto, Auto">
+
+								<Label
+									Grid.Column="0"
+									Grid.Row="0"
+									Content="Порт SG-004"
+									Margin="0,5,0,0">
+								</Label>
+								<ComboBox
+									Name="Port_Name_SG004"
+									Background="White"
+									Width="130"
+									Grid.Column="1"
+									Grid.Row="0"
+									CornerRadius="10"
+									Margin="5,0">
+
+								</ComboBox>
+								<Button
+									Click="Button_Open_Port_SG004"
+									Content="Подключить"
+									HorizontalContentAlignment="Center"
+									Width="130"
+									Grid.Column="1"
+									Grid.Row="2"
+									CornerRadius="10"
+									Margin="5"
+									Background="#E1E1E1"
+							Foreground="Black"
+							BorderBrush="#A0A0A0">
+
+								</Button>
+								<Button
+									Click="Button_Close_Port_SG004"
+									Content="Отключить"
+									HorizontalContentAlignment="Center"
+									Width="130"
+									Grid.Column="0"
+									Grid.Row="2"
+									CornerRadius="10"
+									Background="#E1E1E1"
+							Foreground="Black"
+							BorderBrush="#A0A0A0">
+
+								</Button>
+							</Grid>
+						</Border>
+
 					</StackPanel>
 				</Border>
 			</StackPanel>
@@ -218,7 +273,8 @@
              AcceptsTab="True"
              ScrollViewer.VerticalScrollBarVisibility="Auto"
              TextWrapping="Wrap"
-					 CornerRadius="10" BorderBrush="#A0A0A0" Background="White">
+					 CornerRadius="10" BorderBrush="#A0A0A0" Background="White"
+					 IsVisible="False">
 
 				</TextBox>
 			

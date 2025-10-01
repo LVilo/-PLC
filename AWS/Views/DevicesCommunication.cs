@@ -21,7 +21,7 @@ namespace AWS.ViewModels
         public PortGenerator generator;
         public ModbusRTU PLC;
         public List<VisaDeviceInformation> usbDevicesInfo;
-
+        public SG004AProtocol sg004;
         public byte address { get; set; }
         public int TimeSleep {  get; set; }
         public bool Correct_Setting { get; set; } = true;
@@ -42,21 +42,25 @@ namespace AWS.ViewModels
 {101, "Генератор подключен "},
 {102, "Мультиметр подключен "},
 {103, "RS-485  подключен "},
-{104, "Все устройства подключены успешно "},
+{104, "SG-004 подключен "},
+{105, "Все устройства подключены успешно "},
 
 {110, "Не удалось подключить устройство "},
 {111, "Не удалось подключить генераотр "},
 {112, "Не удалось подключить мультиметр "},
-{113, "Не удалось подключить RS-485  "},
+{113, "Не удалось подключить RS-485 "},
+{114, "Не удалось подключить SG-004 "},
 
 {121, "Генераотр не подключен "},
 {122, "Мультиметр не подключен "},
 {123, "RS-485 не подключен "},
+{124, "SG-004 не подключен "},
 
 {131, "Генератор отключен "},
 {132, "Мультиметр отключен "},
 {133, "RS-485  отключен" },
-{134, "Все устройства отключены "},
+{134, "SG-004 отключен" },
+{135, "Все устройства отключены "},
 
 {200, "Не удалось настроить "},
 {201, "Проверка напряжения "},
@@ -90,9 +94,12 @@ namespace AWS.ViewModels
         {
             multimeter = new PortMultimeter();
             generator = new PortGenerator();
+            sg004 = new SG004AProtocol();
             PLC = new ModbusRTU();
             PLC.ReadTimeout = 1000;
             PLC.WriteTimeout = 1000;
+            sg004.delay = 1000;
+            sg004.slaveAddr = 1;
         }
 
         public void CloseConnection()

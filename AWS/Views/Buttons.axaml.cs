@@ -17,8 +17,33 @@ namespace AWS.Views
     public partial class MainWindow : Window
     {
         #region Кнопки
-        
 
+        private void Button_Open_Port_SG004(object? sender, RoutedEventArgs e)
+        {
+            //OpenPorts(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
+            try
+            {
+                if (devices.sg004.IsOpen) return;
+                devices.sg004.PortName = Port_Name_SG004.SelectedItem.ToString();
+                Task.Run(async () =>
+                {
+                    if (devices.sg004.Open())
+                    {
+                        devices.CreateMessege(devices.info[104]);
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            Port_Name_SG004.IsEnabled = false;
+                            Panel_SG004.Background = new SolidColorBrush(Color.Parse("#1DEC1D"));
+                        });
+                    }
+                    else devices.CreateMessege(devices.info[114]);
+                });
+            }
+            catch (Exception ex)
+            {
+                devices.CreateMessege($"Ошибка: {ex.Message}");
+            }
+        }
         private void Button_Open_Port_PLC(object? sender, RoutedEventArgs e)
         {
             //OpenPorts(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
@@ -139,6 +164,16 @@ namespace AWS.Views
                 }
             });
         }
+        private void Button_Close_Port_SG004(object? sender, RoutedEventArgs e)
+        {
+            if (devices.sg004.IsOpen)
+            {
+                devices.sg004.Close();
+                devices.CreateMessege(devices.info[134]);
+                Panel_SG004.Background = new SolidColorBrush(Colors.LightGray);
+                Port_Name_SG004.IsEnabled = true;
+            }
+        }
         private void Button_Close_Port_PLC(object? sender, RoutedEventArgs e)
         {
             if (devices.PLC.IsOpen)
@@ -185,6 +220,7 @@ namespace AWS.Views
         private async void Button_Setting_IEPE(object? sender, RoutedEventArgs e)
         {
             Do_Work(1);
+
         }
 
         private async void Button_Setting_4_20_Input(object? sender, RoutedEventArgs e)
