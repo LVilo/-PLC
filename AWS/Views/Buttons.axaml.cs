@@ -215,7 +215,10 @@ namespace AWS.Views
 
         private async void Button_Setting_Volt(object? sender, RoutedEventArgs e)
         {
-            Do_Work(0);
+            devices.test.PortName = "COM12";
+            devices.test.OpenPort();
+           devices.CreateMessege( devices.test.ReadMessage("*IDN?"));
+           // Do_Work(0);
         }
         private async void Button_Setting_IEPE(object? sender, RoutedEventArgs e)
         {

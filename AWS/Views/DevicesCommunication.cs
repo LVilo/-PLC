@@ -22,6 +22,7 @@ namespace AWS.ViewModels
         public ModbusRTU PLC;
         public List<VisaDeviceInformation> usbDevicesInfo;
         public SG004AProtocol sg004;
+        public Port test;
         public byte address { get; set; }
         public int TimeSleep {  get; set; }
         public bool Correct_Setting { get; set; } = true;
@@ -95,11 +96,18 @@ namespace AWS.ViewModels
             multimeter = new PortMultimeter();
             generator = new PortGenerator();
             sg004 = new SG004AProtocol();
+            test = new Port();
             PLC = new ModbusRTU();
             PLC.ReadTimeout = 1000;
             PLC.WriteTimeout = 1000;
             sg004.delay = 1000;
             sg004.slaveAddr = 1;
+
+            test.ReadTimeout = 1000;
+            test.WriteTimeout = 1000;
+            test.BaudRate = 115200;
+            test.Parity = Parity.None;
+            test.StopBits = StopBits.One;
         }
 
         public void CloseConnection()
