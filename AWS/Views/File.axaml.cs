@@ -15,7 +15,7 @@ namespace AWS.Views
         #region Файл
         private async Task MakeReportAsync(string PLC)
         {
-            devices.CreateMessege("Сохранение Регистров");
+            //devices.CreateMessege("Сохранение Регистров");
             string date = String.Format("{0}.{1}.{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
             string time = String.Format("{0}:{1}", DateTime.Now.Hour, DateTime.Now.Minute);
             string serialNum = "";

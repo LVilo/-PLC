@@ -6,11 +6,14 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using AWS.ViewModels;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PortsWork;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -30,6 +33,7 @@ public partial class MainWindow : Window
     DevicesCommunication devices;
     private bool Work_DO = true;
     private bool _showDriverError = false;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -37,12 +41,17 @@ public partial class MainWindow : Window
         try
         {
             devices = new DevicesCommunication();
-            
+
             PortsListReload();
             this.Closing += MainWindow_Closing;
             devices.address = 10;
             devices.TimeSleep = 2;
             StartBackgroundWork();
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
+                .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File(@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+            devices.WriteLog("\n\n ///////////////// Приложение запущено \n\n");
         }
         catch (DllNotFoundException)
         {
@@ -50,10 +59,10 @@ public partial class MainWindow : Window
             _showDriverError = true;
         }
     }
+
     protected override async void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-
         if (_showDriverError)
         {
             await ShowDriverErrorDialog();
@@ -145,7 +154,7 @@ public partial class MainWindow : Window
                     {
                         LogWrite(devices.messege.Dequeue());
                     }
-                    Thread.Sleep(1000);
+                    Thread.Sleep(700);
                 }
             });
 
@@ -156,7 +165,7 @@ public partial class MainWindow : Window
             LogWrite($"Ошибка: {ex.Message}");
         }
     }
-  
+
 
     protected async void Do_Work(int code)
     {
@@ -181,12 +190,14 @@ public partial class MainWindow : Window
                     case 2:// 4-20
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
                         await Setting_4_20_Input();
                         break;
 
                     case 3:
-                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
+                        //if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
                         await Setting_4_20_Output();
                         break;
                     case 4:
@@ -201,12 +212,12 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                devices.CreateMessege(ex.Message);
+                devices.CreateMessege(ex);
             }
         });
         Set_Enabled(true);
     }
-    
+
     protected async void Do_Work(string PLC)
     {
         Set_Enabled(false);
@@ -219,6 +230,7 @@ public partial class MainWindow : Window
                     case "PLC 112":
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
                         await CheckVoltage();
                         await Setting_4_20_Input();
                         await Setting_4_20_Output();
@@ -234,6 +246,7 @@ public partial class MainWindow : Window
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
                         await CheckVoltage();
                         await Seting_IEPE();
                         await Setting_4_20_Input();
@@ -250,7 +263,7 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                devices.CreateMessege(ex.Message);
+                devices.CreateMessege(ex);
             }
         }));
         Set_Enabled(true);
@@ -268,6 +281,7 @@ public partial class MainWindow : Window
 
     protected void PortsListReload()
     {
+        Console.WriteLine("PortsListReload---------------");
         InitializeAllComboBoxes(devices.GetAllPorts());
         devices.CreateMessege("Порты обновлены");
     }
@@ -282,6 +296,8 @@ public partial class MainWindow : Window
         Port_Name_PLC.ItemsSource = portItems;
         if (!devices.PLC.IsOpen) Port_Name_PLC.SelectedIndex = 0;
 
+        Port_Name_SG004.ItemsSource = portItems;
+        if (!devices.sg004.IsOpen) Port_Name_SG004.SelectedIndex = 0;
     }
 
     private void LogWrite(string message)
@@ -291,26 +307,46 @@ public partial class MainWindow : Window
         Dispatcher.UIThread.Post(() =>
         {
             LogTextBox.Text += formattedMessage;
-            LogTextBox.CaretIndex = int.MaxValue; // Прокрутка вниз
+            LogTextBox.CaretIndex = LogTextBox.Text.Length; // Прокрутка вниз
         });
     }
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
-        LogWrite("Приложение закрывается");
+        devices.CreateMessege("//////////////////////////////     Приложение закрывается");
         Work_DO = false;
 
 
         Thread.Sleep(1000);
         devices.CloseConnection();
-        
+
     }
     private void Serial_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
     {
+        if (sender is TextBox textBox)
+        {
+            var digitsOnly = new string(textBox.Text.Where(char.IsDigit).ToArray());
 
+            if (textBox.Text != digitsOnly)
+            {
+                var caretIndex = textBox.CaretIndex;
+                textBox.Text = digitsOnly;
+                textBox.CaretIndex = Math.Min(caretIndex, digitsOnly.Length);
+            }
+        }
     }
     private void Order_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
     {
+        if (sender is TextBox textBox)
+        {
+            var cleaned = new string(textBox.Text.Where(char.IsLetterOrDigit).ToArray());
 
+            if (textBox.Text != cleaned)
+            {
+                var caretIndex = textBox.CaretIndex;
+                textBox.Text = cleaned;
+                textBox.CaretIndex = Math.Min(caretIndex, cleaned.Length);
+            }
+        }
     }
 }
 
