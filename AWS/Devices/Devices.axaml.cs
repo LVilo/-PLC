@@ -4,7 +4,6 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
-using AWS.ViewModels;
 using AWS.Views;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PortsWork;
@@ -15,14 +14,14 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AWS;
+namespace AWS.Devices;
 
-public partial class Devices : Window
+public partial class DevicesWindow : Window
 {
    public DevicesCommunication devices;
    public bool Work_DO = true;
    public bool _reallyClose = false;
-    public Devices()
+    public DevicesWindow()
     {
         InitializeComponent();
         devices = new DevicesCommunication();

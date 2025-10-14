@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 
+namespace AWS.Devices;
 public class SG004AProtocol : Port
 {
     public byte slaveAddr { get; set; }

@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
-using AWS.ViewModels;
+using AWS.Devices;
 using System;
 using System.Collections.Generic;
 using System.IO;

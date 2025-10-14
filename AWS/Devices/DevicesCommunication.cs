@@ -14,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace AWS.ViewModels
+namespace AWS.Devices
 {
    public class DevicesCommunication
     {
@@ -34,7 +34,7 @@ namespace AWS.ViewModels
         public bool IsClick_OK = false;
         public bool IsClick_Close = false;
 
-       public static Queue<string> messege = new Queue<string>();
+         public static Queue<string> messege = new Queue<string>();
         public Queue<string> fail_settings = new Queue<string>();
 
         public Dictionary<int, string> info = new Dictionary<int, string>
@@ -94,7 +94,7 @@ namespace AWS.ViewModels
         public DevicesCommunication()
         {
             
-            multimeter = new PortMultimeter();
+            multimeter = new PortMultimeter()
             generator = new PortGenerator();
             sg004 = new SG004AProtocol();
             PLC = new ModbusRTU();

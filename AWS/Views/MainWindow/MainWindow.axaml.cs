@@ -12,33 +12,24 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using PortsWork;
 using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Ports;
 using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
+using AWS.Devices;
 
 namespace AWS.Views;
 
 public partial class MainWindow : Window
 {
     private bool _showDriverError = false;
-    Devices Show ;
+    DevicesWindow Show ;
     public DevicesCommunication devices;
     private bool Work_DO = true;
     public MainWindow()
     {
         InitializeComponent();
         devices = new DevicesCommunication();
-        Show = new Devices();
+        Show = new DevicesWindow();
         try
         {
             this.Closing += MainWindow_Closing;
