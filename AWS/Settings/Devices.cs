@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AWS.Views
+namespace AWS.Settings
 {
-    internal class PLC
+    public class Devices
     {
+
     }
 }

@@ -1,0 +1,260 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="460"
+        x:Class="AWS.Devices"
+        Title="Подключение устройств"
+		CanResize="False"
+		Width="320"
+		Height="460"
+		>
+	<StackPanel Width="320" Height="460">
+		<Border BorderBrush="#A0A0A0" Background="#F0F0F0"
+		BorderThickness="1"  Padding="10">
+			<StackPanel >
+				<Button
+					Click="Button_Update_Ports"
+					Content="Обновить порты"
+					Width="290"
+					Margin="5"
+					HorizontalContentAlignment="Center"
+					CornerRadius="10"
+					Background="#E1E1E1"
+						Foreground="Black"
+						BorderBrush="#A0A0A0" >
+				</Button>
+				<Border Name="Panel_Generator"  Background="LightGray" Margin="5" CornerRadius="10">
+
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto, Auto">
+
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт генератора"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+							Name="Port_Name_Generator"
+							Background="White"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0"
+							CornerRadius="10"
+							Margin="5,0">
+						</ComboBox>
+						<RadioButton x:Name="Option1"
+									 Grid.Column="0"
+									 Grid.Row="1"
+									 IsChecked="True"
+						 Content="Канал 1"
+						 GroupName="OptionsGroup"/>
+						<RadioButton x:Name="Option2"
+									 Grid.Column="1"
+									 Grid.Row="1"
+						 Content="Канал 2"
+						 
+						 GroupName="OptionsGroup"
+									 Margin="5,0"/>
+
+						<Button
+							Click="Button_Open_Port_Generator"
+							Content="Подключить"
+							HorizontalContentAlignment="Center"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="2"
+							CornerRadius="10"
+							Margin="5"
+						Background="#E1E1E1"
+					Foreground="Black"
+					BorderBrush="#A0A0A0">
+
+						</Button>
+						<Button
+							Click="Button_Close_Port_Generator"
+							Content="Отключить"
+							HorizontalContentAlignment="Center"
+							Width="130"
+							Grid.Column="0"
+							Grid.Row="2"
+							CornerRadius="10"
+							Background="#E1E1E1"
+					Foreground="Black"
+					BorderBrush="#A0A0A0">
+
+						</Button>
+					</Grid>
+
+				</Border>
+				<Border Name="Panel_Agilent"  Background="LightGray"  Margin="5" CornerRadius="10">
+
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto">
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт мультиметра"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+							Name="Port_Name_Agiletn"
+							Background="White"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0"
+							CornerRadius="10"
+						Margin="5,0">
+
+						</ComboBox>
+						<Button
+							Click="Button_Open_Port_Agilent"
+							Content="Подключить"
+							HorizontalContentAlignment="Center"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="1"
+							CornerRadius="10"
+							Margin="5"
+							Background="#E1E1E1"
+					Foreground="Black"
+					BorderBrush="#A0A0A0">
+
+						</Button>
+						<Button
+							Click="Button_Close_Port_Agilent"
+							Content="Отключить"
+							HorizontalContentAlignment="Center"
+							Width="130"
+							Grid.Column="0"
+							Grid.Row="1"
+							CornerRadius="10"
+							Background="#E1E1E1"
+					Foreground="Black"
+					BorderBrush="#A0A0A0">
+						</Button>
+					</Grid>
+				</Border>
+				<Border Name="Panel_PLC"  Background="LightGray" Margin="5" CornerRadius="10">
+
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto, Auto">
+
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт RS-485"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+							Name="Port_Name_PLC"
+							Background="White"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0"
+							CornerRadius="10"
+							Margin="5,0">
+
+						</ComboBox>
+						<Button
+							Click="Button_Open_Port_PLC"
+							Content="Подключить"
+							HorizontalContentAlignment="Center"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="2"
+							CornerRadius="10"
+							Margin="5"
+							Background="#E1E1E1"
+					Foreground="Black"
+					BorderBrush="#A0A0A0">
+
+						</Button>
+						<Button
+							Click="Button_Close_Port_PLC"
+							Content="Отключить"
+							HorizontalContentAlignment="Center"
+							Width="130"
+							Grid.Column="0"
+							Grid.Row="2"
+							CornerRadius="10"
+							Background="#E1E1E1"
+					Foreground="Black"
+					BorderBrush="#A0A0A0">
+
+						</Button>
+					</Grid>
+				</Border>
+
+				<Border Name="Panel_SG004"  Background="LightGray" Margin="5" CornerRadius="10">
+
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto, Auto">
+
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт SG-004"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+							Name="Port_Name_SG004"
+							Background="White"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0"
+							CornerRadius="10"
+							Margin="5,0">
+
+						</ComboBox>
+						<Button
+							Click="Button_Open_Port_SG004"
+							Content="Подключить"
+							HorizontalContentAlignment="Center"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="2"
+							CornerRadius="10"
+							Margin="5"
+							Background="#E1E1E1"
+					Foreground="Black"
+					BorderBrush="#A0A0A0">
+
+						</Button>
+						<Button
+							Click="Button_Close_Port_SG004"
+							Content="Отключить"
+							HorizontalContentAlignment="Center"
+							Width="130"
+							Grid.Column="0"
+							Grid.Row="2"
+							CornerRadius="10"
+							Background="#E1E1E1"
+					Foreground="Black"
+					BorderBrush="#A0A0A0">
+
+						</Button>
+					</Grid>
+				</Border>
+
+			</StackPanel>
+		</Border>
+	</StackPanel>
+</Window>
