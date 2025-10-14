@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
+using AWS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,23 +12,23 @@ namespace AWS.Views
 {
     public partial class MainWindow : Window
     {
-        
+
         #region Файл
         private async Task MakeReportAsync(string PLC)
         {
-            //devices.CreateMessege("Сохранение Регистров");
+            DevicesCommunication.CreateMessege("Сохранение регистров");
             string date = String.Format("{0}.{1}.{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
             string time = String.Format("{0}:{1}", DateTime.Now.Hour, DateTime.Now.Minute);
             string serialNum = "";
             string orderNum = "";
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (Serial_Number.Text != "")
-                    serialNum = Serial_Number.Text;
-                else serialNum = "Не указано";
-                if (Order_Number.Text != "")
-                    orderNum = Order_Number.Text;
-                else orderNum = "Не указано";
+                if (Serial_Number.Text == null)
+                    serialNum = "Серийный № не указан";
+                else serialNum = Serial_Number.Text;
+                if (Order_Number.Text == null)
+                    orderNum = "№ заказа не указан";
+                else orderNum = Order_Number.Text;
             });
 
             string coef_volt = devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE).ToString();
@@ -110,9 +111,12 @@ namespace AWS.Views
                 $"{devices.ReadInt(145)}\r\n";
 
             string fileName = "Log//" + orderNum + ".csv";
+
             WriteLineToFile(line, fileName);
 
+
             fileName = "\\\\files\\Общее\\Прошивки и методики проверки\\Прикладное ПО\\АРМ настройки PLC\\CommonLogs\\" + orderNum + ".csv";
+
             WriteLineToFile(line, fileName);
         }
         private void WriteLineToFile(string line, string fileName)
@@ -274,19 +278,18 @@ namespace AWS.Views
                 {
                     stream.Close();
                     File.AppendAllText(fileName, line);
-                    devices.CreateMessege("Записал настройки в файл");
-
+                    DevicesCommunication.CreateMessege($"Записал настройки в  {fileName}");
                 }
             }
 
             catch (IOException)
             {
-                devices.CreateMessege("Файл занят другим процессом");
+                DevicesCommunication.CreateMessege("Файл занят другим процессом");
 
             }
             catch (Exception)
             {
-                devices.CreateMessege("файл не существует и т.д.");
+                DevicesCommunication.CreateMessege("файл не существует и т.д.");
             }
         }
         #endregion

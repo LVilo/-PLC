@@ -1,0 +1,163 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Width="693" Height="515"
+        x:Class="AWS.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="АРМ v: 0.2.0"
+        FontFamily="Arial"
+		CanResize="False"
+		>
+
+	<StackPanel Background="#FBFBFB">
+		<Canvas>
+			<Button Name="ShowDiveces"
+							Content="Открыть Подключение устройств"
+								Margin="350,15,5,5"
+								HorizontalContentAlignment="Center"
+								Width="330"
+								Click="Button_Show_Diveces"
+								CornerRadius="10"
+								Background="#E1E1E1"
+								Foreground="Black"
+								BorderBrush="#A0A0A0"/>
+				
+			<TextBox Name="LogTextBox"
+						 Width="330"
+						 Height="455"
+						 FontSize="12"
+						 Margin="350,050,0,0"
+             IsReadOnly="True"
+             AcceptsReturn="True"
+             AcceptsTab="True"
+             ScrollViewer.VerticalScrollBarVisibility="Auto"
+             TextWrapping="Wrap"
+					 CornerRadius="10" BorderBrush="#A0A0A0" Background="White">
+
+			</TextBox>
+
+			<StackPanel Margin="10,0,0,0">
+				<TextBlock Text="Настройка" ></TextBlock>
+				<Border BorderBrush="#A0A0A0" Background="#F0F0F0"
+                BorderThickness="1" CornerRadius="10" Padding="10">
+					<StackPanel >
+
+						<Button Name="Setting_PLC"
+							Click="Button_Start"
+							Content="Начать настройку"
+							Margin="5"
+							Width="300"
+							HorizontalContentAlignment="Center"
+								CornerRadius="10"
+							Background="#E1E1E1"
+						Foreground="Black"
+						BorderBrush="#A0A0A0"/>
+
+
+						<Button Name="Setting_Volt"
+							Click="Button_Setting_Volt"
+							Content="Настроить напряжение питания"
+							Margin="5"
+							Width="300"
+							HorizontalContentAlignment="Center" 
+								CornerRadius="10"
+							Background="#E1E1E1"
+							Foreground="Black"
+							BorderBrush="#A0A0A0"/>
+
+						<Button Name="Setting_IEPE"
+							Click="Button_Setting_IEPE"
+							Content="Настроить канал IEPE"
+							Margin="5"
+							Width="300"
+							HorizontalContentAlignment="Center" 
+								CornerRadius="10"
+							Background="#E1E1E1"
+						Foreground="Black"
+						BorderBrush="#A0A0A0"/>
+
+						<Button Name="Setting_4_20_Input_but"
+							Click="Button_Setting_4_20_Input"
+							Content="Настроить входной канал 4-20"
+							Margin="5"
+							Width="300"
+							HorizontalContentAlignment="Center" 
+								CornerRadius="10"
+							Background="#E1E1E1"
+						Foreground="Black"
+						BorderBrush="#A0A0A0"/>
+						<Button Name="Setting_4_20_Output_but"
+								Click="Button_Setting_4_20_Output"
+								Content="Настроить выходной канал 4-20"
+								Margin="5"
+								Width="300"
+								HorizontalContentAlignment="Center" 
+									CornerRadius="10"
+								Background="#E1E1E1"
+								Foreground="Black"
+								BorderBrush="#A0A0A0"/>
+						<Button Name="Setting_Rs_485"
+							Click="Setting_Rs_485_Click"
+							Content="Настроить RS-485"
+							Margin="5"
+							Width="300"
+							HorizontalContentAlignment="Center" 
+								CornerRadius="10"
+							Background="#E1E1E1"
+						Foreground="Black"
+						BorderBrush="#A0A0A0"/>
+						<Button Name="Save_Reg"
+								Click="Save_Reg_Button"
+								Content="Сохранить регистры на сервер"
+								Margin="5"
+								Width="300"
+								HorizontalContentAlignment="Center" 
+								CornerRadius="10"
+								Background="#E1E1E1"
+								Foreground="Black"
+								BorderBrush="#A0A0A0"/>
+
+						<Border Background="LightGray" Margin="5" Name="Serial_Border"  CornerRadius="10">
+							<Grid ColumnDefinitions="Auto,Auto" Margin="10" >
+								<Label Content="Серийный номер" Grid.Column="0" Margin="0,5,10,0"></Label>
+								<TextBox Name="Serial_Number" Width="150" Grid.Column="1" Background="White"
+									 TextChanged="Serial_Number_PreviewTextInput"
+										 Watermark="Введите номер"
+										 CornerRadius="10">
+								</TextBox>
+
+							</Grid>
+						</Border>
+						<Border Background="LightGray" Margin="5" Name="Order_Border"  CornerRadius="10" >
+							<Grid ColumnDefinitions="Auto,Auto" Margin="10" >
+								<Label Content="Номер заказа" Grid.Column="0" Margin="0,5,32,0"></Label>
+								<TextBox Name="Order_Number" Width="150" Grid.Column="1" Background="White"
+									 TextChanged="Order_Number_PreviewTextInput"
+										 Watermark="Введите номер"
+										 CornerRadius="10">
+								</TextBox>
+
+							</Grid>
+						</Border>
+						<Border Background="LightGray" Margin="5" Name="PLC_Border"  CornerRadius="10">
+							<Grid ColumnDefinitions="Auto,Auto" Margin="10" >
+								<Label Content="Контроллер" Grid.Column="0" Margin="0,5,45,0"></Label>
+								<ComboBox Name="Name_PLC" Width="150" Grid.Column="1" Background="White"
+									SelectedIndex="0"  CornerRadius="10">
+									<ComboBoxItem>PLC 112</ComboBoxItem>
+									<ComboBoxItem>PLC 121</ComboBoxItem>
+									<ComboBoxItem>PLC 481</ComboBoxItem>
+									<ComboBoxItem>PLC 991</ComboBoxItem>
+								</ComboBox>
+
+							</Grid>
+						</Border>
+					</StackPanel>
+
+				</Border>
+			</StackPanel>
+		</Canvas>
+	</StackPanel>
+</Window>

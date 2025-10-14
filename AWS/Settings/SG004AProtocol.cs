@@ -1,23 +1,15 @@
-﻿using System;
+﻿using PortsWork;
+using System;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
-using PortsWork;
 
-public class SG004AProtocol
+public class SG004AProtocol : Port
 {
-    private readonly SerialPort _port;
-    private readonly Port port;
     public byte slaveAddr { get; set; }
     public int delay { get; set; }
-    public bool IsOpen { get { return _port.IsOpen; } }
-
-    public string PortName
-    {
-        get => _port.PortName;
-        set => _port.PortName = value;
-    }
 
     private const byte FUNC_READ_UINT16 = 0x64;  // 100
     private const byte FUNC_WRITE_UINT16 = 0x65; // 101
@@ -56,25 +48,22 @@ public class SG004AProtocol
     public const byte OUTPUT_ON = 1;
     public SG004AProtocol()
     {
-        port = new Port();
-        _port = new SerialPort()
-        {
-            ReadTimeout = 1000,
-            WriteTimeout = 1000,
-            BaudRate = 9600,
-            Parity = Parity.None,
-            DataBits = 8,
-            StopBits = StopBits.One,
-        };
+
+        ReadTimeout = 1000;
+        WriteTimeout = 1000;
+        BaudRate = 9600;
+        Parity = Parity.None;
+        DataBits = 8;
+        StopBits = StopBits.One;
 
     }
-    public bool Open()
+    public override bool OpenPort()
     {
         try
         {
             Console.WriteLine("-----------Open");
-            port.Acsessusb(PortName);
-            _port.Open();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) Linux.Acsessusb(PortName);
+            Open();
         }
         catch (FileNotFoundException)
         {
@@ -117,23 +106,23 @@ public class SG004AProtocol
     private ushort ReadUint16(ushort regAddr)
     {
         byte[] packet = BuildReadPacket(slaveAddr, 0x64, regAddr, 1);
-        _port.Write(packet, 0, packet.Length);
+        Write(packet, 0, packet.Length);
 
         byte[] resp = new byte[7]; // slave + func + count + data(2) + CRC(2)
-        _port.Read(resp, 0, resp.Length);
-        Thread.Sleep(delay);
+        Read(resp, 0, resp.Length);
+        Sleep(delay);
         return (ushort)((resp[3] << 8) | resp[4]);
     }
 
     private float ReadFloat(ushort regAddr)
     {
         byte[] packet = BuildReadPacket(slaveAddr, 0x66, regAddr, 2);
-        _port.Write(packet, 0, packet.Length);
+        Write(packet, 0, packet.Length);
 
         byte[] resp = new byte[9]; // slave + func + count + data(4) + CRC(2)
-        _port.Read(resp, 0, resp.Length);
-        Thread.Sleep(delay);
-        _port.Read(resp, 0, resp.Length);
+        Read(resp, 0, resp.Length);
+        Sleep(delay);
+        Read(resp, 0, resp.Length);
         byte[] floatBytes = { resp[3], resp[4], resp[5], resp[6] };
 
         if (BitConverter.IsLittleEndian)
@@ -154,8 +143,8 @@ public class SG004AProtocol
         ushort crc = ComputeCRC(buffer, buffer.Length);
         byte[] packet = buffer.Concat(new byte[] { (byte)(crc & 0xFF), (byte)(crc >> 8) }).ToArray();
 
-        _port.Write(packet, 0, packet.Length);
-        Thread.Sleep(delay);
+        Write(packet, 0, packet.Length);
+        Sleep(delay);
     }
     private void WriteFloat(ushort register, float value)
     {
@@ -194,8 +183,8 @@ public class SG004AProtocol
         byte[] commandWithCrc = command.Concat(new byte[] { (byte)(crc & 0xFF), (byte)(crc >> 8) }).ToArray();
 
         // --- 5. Отправка ---
-        _port.Write(commandWithCrc, 0, commandWithCrc.Length);
-        Thread.Sleep(delay);
+        Write(commandWithCrc, 0, commandWithCrc.Length);
+        Sleep(delay);
         // ⚠️ Если нужно — можно раскомментировать обработку ответа
         // byte[] response = new byte[8];
         // int read = _port.Read(response, 0, response.Length);
@@ -224,5 +213,5 @@ public class SG004AProtocol
     {
         WriteUint16(REG_INPUT_SIGNAL, signal);
     }
-    public void Close() => _port.Close();
+    public override void ClosePort() => Close();
 }

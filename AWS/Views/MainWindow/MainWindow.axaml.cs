@@ -30,28 +30,25 @@ namespace AWS.Views;
 
 public partial class MainWindow : Window
 {
-    DevicesCommunication devices;
-    private bool Work_DO = true;
     private bool _showDriverError = false;
-
+    Devices Show ;
+    public DevicesCommunication devices;
+    private bool Work_DO = true;
     public MainWindow()
     {
         InitializeComponent();
-
+        devices = new DevicesCommunication();
+        Show = new Devices();
         try
         {
-            devices = new DevicesCommunication();
-
-            PortsListReload();
             this.Closing += MainWindow_Closing;
-            devices.address = 10;
-            devices.TimeSleep = 2;
+            
             StartBackgroundWork();
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
                 .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day)
                 .WriteTo.File(@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
-            devices.WriteLog("\n\n ///////////////// Приложение запущено \n\n");
+            DevicesCommunication.WriteLog("\n\n ///////////////// Приложение запущено \n\n");
         }
         catch (DllNotFoundException)
         {
@@ -108,51 +105,21 @@ public partial class MainWindow : Window
 
         await dialog.ShowDialog(this);
     }
-    protected async void Start_DC_Read_Work()
-    {
-        try
-        {
-            await Task.Run(() =>
-            {
-                while (Work_DO)
-                {
-                    if (devices.DC_Read && devices.mult_is_open)
-                    {
-                        try
-                        {
-                            devices.currentVolt = devices.multimeter.GetVoltage(PortMultimeter.SIGNALTYPE_DC, 100);
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            devices.CreateMessege((ex.Message));
-                        }
-                    }
-                    Thread.Sleep(300);
-                }
-            });
-
-        }
-        catch (Exception ex)
-        {
-            devices.CreateMessege((ex.Message));
-        }
-
-    }
+   
     private async void StartBackgroundWork()
     {
         // Показываем индикатор загрузки
-
-
+        
         try
         {
             // Запускаем фоновую задачу
             await Task.Run(() =>
             {
-                while (true)
+                while (Work_DO)
                 {
-                    if (devices.messege.Count > 0)
+                    if (DevicesCommunication.messege.Count > 0)
                     {
-                        LogWrite(devices.messege.Dequeue());
+                        LogWrite(DevicesCommunication.messege.Dequeue());
                     }
                     Thread.Sleep(700);
                 }
@@ -165,7 +132,7 @@ public partial class MainWindow : Window
             LogWrite($"Ошибка: {ex.Message}");
         }
     }
-
+   
 
     protected async void Do_Work(int code)
     {
@@ -174,6 +141,7 @@ public partial class MainWindow : Window
         {
             try
             {
+                devices = Show.devices;
                 switch (code)
                 {
                     case 0://настройка напряжения
@@ -212,7 +180,7 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                devices.CreateMessege(ex);
+                DevicesCommunication.CreateMessege(ex.Message);
             }
         });
         Set_Enabled(true);
@@ -220,11 +188,14 @@ public partial class MainWindow : Window
 
     protected async void Do_Work(string PLC)
     {
+        
+        
         Set_Enabled(false);
         await (Task.Run(async () =>
         {
             try
             {
+                    devices = Show.devices;
                 switch (PLC)
                 {
                     case "PLC 112":
@@ -263,7 +234,7 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                devices.CreateMessege(ex);
+                DevicesCommunication.CreateMessege(ex.Message);
             }
         }));
         Set_Enabled(true);
@@ -279,27 +250,7 @@ public partial class MainWindow : Window
         Save_Reg.IsEnabled = BOOL;
     }
 
-    protected void PortsListReload()
-    {
-        Console.WriteLine("PortsListReload---------------");
-        InitializeAllComboBoxes(devices.GetAllPorts());
-        devices.CreateMessege("Порты обновлены");
-    }
-    private void InitializeAllComboBoxes(IEnumerable<string> portItems)
-    {
-        Port_Name_Agiletn.ItemsSource = portItems;
-        if (!devices.mult_is_open) Port_Name_Agiletn.SelectedIndex = 0;
-
-        Port_Name_Generator.ItemsSource = portItems;
-        if (!devices.gen_is_open) Port_Name_Generator.SelectedIndex = 0;
-
-        Port_Name_PLC.ItemsSource = portItems;
-        if (!devices.PLC.IsOpen) Port_Name_PLC.SelectedIndex = 0;
-
-        Port_Name_SG004.ItemsSource = portItems;
-        if (!devices.sg004.IsOpen) Port_Name_SG004.SelectedIndex = 0;
-    }
-
+   
     private void LogWrite(string message)
     {
         var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
@@ -312,13 +263,13 @@ public partial class MainWindow : Window
     }
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
-        devices.CreateMessege("//////////////////////////////     Приложение закрывается");
+        DevicesCommunication.CreateMessege("\n\n //////////////////////////////     Приложение закрывается \n\n");
         Work_DO = false;
-
-
+        Show.Work_DO = false;
         Thread.Sleep(1000);
         devices.CloseConnection();
-
+        Show._reallyClose = true;
+        Show.Close();
     }
     private void Serial_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
     {

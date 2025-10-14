@@ -16,15 +16,13 @@ using System.Xml;
 
 namespace AWS.ViewModels
 {
-    class DevicesCommunication
+   public class DevicesCommunication
     {
         public PortMultimeter multimeter;
         public PortGenerator generator;
         public ModbusRTU PLC;
         public List<VisaDeviceInformation> usbDevicesInfo;
         public SG004AProtocol sg004;
-        public UsbTmcDevice tmc;
-        public Port test;
         public byte address { get; set; }
         public int TimeSleep { get; set; }
         public bool Correct_Setting { get; set; } = true;
@@ -36,7 +34,7 @@ namespace AWS.ViewModels
         public bool IsClick_OK = false;
         public bool IsClick_Close = false;
 
-        public Queue<string> messege = new Queue<string>();
+       public static Queue<string> messege = new Queue<string>();
         public Queue<string> fail_settings = new Queue<string>();
 
         public Dictionary<int, string> info = new Dictionary<int, string>
@@ -99,45 +97,35 @@ namespace AWS.ViewModels
             multimeter = new PortMultimeter();
             generator = new PortGenerator();
             sg004 = new SG004AProtocol();
-            test = new Port();
             PLC = new ModbusRTU();
-            tmc = new UsbTmcDevice();
             PLC.ReadTimeout = 1000;
             PLC.WriteTimeout = 1000;
             sg004.delay = 1000;
             sg004.slaveAddr = 1;
-
-            test.ReadTimeout = 5000;
-            test.WriteTimeout = 5000;
-            test.BaudRate = 115200;
-            test.Parity = Parity.None;
-            test.StopBits = StopBits.One;
-            test.DataBits = 8;
         }
 
         public void CloseConnection()
         {
-
             multimeter.ClosePort();
             generator.ClosePort();
             PLC.ClosePort();
-            sg004.Close();
+            sg004.ClosePort();
         }
-        public void CreateMessege(string mes)
+        public static void CreateMessege(string mes)
         {
             Debug.WriteLine(mes);
             messege.Enqueue(mes);
             Log.Information(Environment.UserName + mes);
             Console.WriteLine(mes);
         }
-        public void CreateMessege(Exception ex)
+        public static void CreateMessege(Exception ex)
         {
             Debug.WriteLine(ex.Message);
             messege.Enqueue(ex.Message);
             Log.Error(Environment.UserName + ex.Message);
             Console.WriteLine(ex.StackTrace);
         }
-        public void WriteLog(string mes)
+        public static void WriteLog(string mes)
         {
             Debug.WriteLine(Environment.UserName + mes);
             Log.Information(Environment.UserName + mes);
@@ -175,9 +163,7 @@ namespace AWS.ViewModels
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                // Код для Linux
-                Console.WriteLine("Running on Linux");
-                return multimeter.FindDevicesLinux().ToArray();
+                return Linux.FindDevicesLinux().ToArray();
             }
             else
             {
