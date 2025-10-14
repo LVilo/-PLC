@@ -1,17 +1,7 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Media;
-using Avalonia.Threading;
-using AWS.ViewModels;
-using PortsWork;
-using System;
-using System.Collections.Generic;
-using System.IO.Ports;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using AWS.Settings.Calibration;
+using AWS.Devices;
 
 namespace AWS.Views
 {
@@ -20,11 +10,14 @@ namespace AWS.Views
         #region Кнопки
         private async void Button_Show_Diveces(object? sender, RoutedEventArgs e)
         {
-            Show.Show();       
+            DevicesWin.Show();       
         }
         private async void Button_Setting_Volt(object? sender, RoutedEventArgs e)
         {
-            Do_Work(0);
+            devices = DevicesWin.devices;
+            PLC plc = devices.PLC;
+           await CheckVolt.RunAsync(plc);
+            //Do_Work(0);
         }
         private async void Button_Setting_IEPE(object? sender, RoutedEventArgs e)
         {

@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
+using AWS.Devices;
 using AWS.Settings.Calibration;
 using AWS.ViewModels;
 using System;

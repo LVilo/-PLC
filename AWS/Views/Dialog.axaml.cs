@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using AWS.ViewModels;
 using System;
 using System.IO;
@@ -62,6 +63,7 @@ public partial class Dialog : Window
         Dialog_Cancel = true;
         Close();
     }
+    
     //internal async Task ShowDialog()
     //{
     //    throw new NotImplementedException();

@@ -22,14 +22,14 @@ namespace AWS.Views;
 public partial class MainWindow : Window
 {
     private bool _showDriverError = false;
-    DevicesWindow Show ;
+    DevicesWindow DevicesWin ;
     public DevicesCommunication devices;
     private bool Work_DO = true;
     public MainWindow()
     {
         InitializeComponent();
         devices = new DevicesCommunication();
-        Show = new DevicesWindow();
+        DevicesWin = new DevicesWindow();
         try
         {
             this.Closing += MainWindow_Closing;

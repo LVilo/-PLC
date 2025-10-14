@@ -93,8 +93,8 @@ namespace AWS.Devices
 };
         public DevicesCommunication()
         {
-            
-            multimeter = new PortMultimeter()
+
+            multimeter = new PortMultimeter();
             generator = new PortGenerator();
             sg004 = new SG004AProtocol();
             PLC = new ModbusRTU();

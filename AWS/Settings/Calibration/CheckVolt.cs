@@ -12,56 +12,63 @@ using System.Threading.Tasks;
 
 namespace AWS.Settings.Calibration
 {
-    public class CheckVolt : ICalibrationRoutine
+    public static class CheckVolt
     {
-        private readonly CalibrationContext _context;
+        public static async Task<bool> RunAsync(PLC plc)
+        {
+            Log.CreateMessege(Log.info[201]);
 
-        public CheckVolt(CalibrationContext context)
-        {
-            _context = context;
-        }
-          public async Task<bool> RunAsync()
-        {
-            DevicesCommunication.CreateMessege(devices.info[201]);
-            bool confirmed = await ShowConfirmationDialogAsync("Убедитесь, что на источнике питания стоит 24В");
+            Dialog dialog = new Dialog("Убедитесь, что на источнике питания стоит 24В");
+            dialog.Show();
+
+            bool confirmed = dialog.Dialog_result;
             if (!confirmed)
             {
-                DevicesCommunication.CreateMessege(devices.info[230]);
-                return;
+                Log.CreateMessege(Log.info[230]);
+                return false;
             }
-            float value = 0f;
-            value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-            if (value <= 24.1 && value >= 23.9)
+
+            float value = plc.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+
+            if (value <= 24.1f && value >= 23.9f)
             {
-                DevicesCommunication.CreateMessege(Registers.Name[99] + $" показывает {value} В");
-                return;
+                Log.CreateMessege($"{Registers.Name[99]} показывает {value} В");
+                return false;
             }
 
             for (int i = 1; i < 10; i++)
             {
-                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
-                value = 0f;
-                Thread.Sleep(2000);
-                DevicesCommunication.CreateMessege(devices.info[207]);
-                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-                Thread.Sleep(500);
-                Debug.WriteLine(value.ToString());
-                value = 24f / value;// * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
+                plc.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
 
-                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
+                await Task.Delay(2000); 
 
-                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                DevicesCommunication.CreateMessege(Log.info[207]);
+                value = plc.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+
+                await Task.Delay(500); 
+
                 Debug.WriteLine(value.ToString());
-                if (value >= 24.1 || value <= 23.9)
+
+                value = 24f / value;
+
+                plc.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
+
+                value = plc.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                Debug.WriteLine(value.ToString());
+
+                if (value <= 23.9f || value >= 24.1f)
                 {
-                    DevicesCommunication.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки. Пробую {i} из 10");
+                    Log.CreateMessege($"{Log.info[200]} {Registers.Name[99]} показывает {value} после настройки. Пробую {i} из 10");
                 }
                 else
                 {
-                    DevicesCommunication.CreateMessege(devices.info[211]);
-                    return;
+                    Log.CreateMessege(Log.info[211]);
+                    return true;
                 }
             }
+
+            return false;
         }
+
     }
 }

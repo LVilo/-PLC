@@ -22,25 +22,19 @@ namespace AWS.Devices
         public void SetPassword()
         {
             SetValue(address, Registers.REGISTER_ADRESS_PASSWORD, Registers.PASSWORD, TimeSleep);
-            //Thread.Sleep(1000);
         }
         public void Save_Change()
         {
             SetValue(address, Registers.REGISTER_ADRESS_PASSWORD, Registers.SAVE_CHANGE, TimeSleep);
-
-            //Thread.Sleep(1000);
         }
         public float ReadSwFloat(int reg)
         {
             float result = GetHoldingSwFloat(address, reg, TimeSleep);
-
-            // Thread.Sleep(500);
             return result;
         }
         public int ReadInt(int reg)
         {
             int result = GetHoldingValue(address, reg, 1, TimeSleep)[0];
-            //  Thread.Sleep(500);
             return result;
         }
         public void WtiteInt(int reg, int value)
@@ -51,7 +45,6 @@ namespace AWS.Devices
             {
                 SetPassword();
                 SetValue(address, reg, value, TimeSleep);
-                // Thread.Sleep(500);
                 Save_Change();
                 if (value == ReadInt(reg))
                 {
@@ -69,7 +62,6 @@ namespace AWS.Devices
             {
                 SetPassword();
                 SetSwFloatValue(address, reg, value, TimeSleep);
-                //  Thread.Sleep(500);
                 Save_Change();
                 if (value == ReadSwFloat(reg))
                 {
