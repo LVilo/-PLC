@@ -69,8 +69,8 @@ namespace AWS.Devices
 {203, "Настройка входного канала 4-20 " },
 {204, "Настройка выходного канала 4-20  "},
 {205, "Настройка RS-485 "},
-{206, "Проверяю настройку "},
-{207, "Считаю коэффициенты "},
+{206, "Проверка настройки "},
+{207, "Расчет коэффициентов "},
 
 {230, "Пропуск настройки "},
 {220, "Отмена настройки "},
@@ -83,13 +83,13 @@ namespace AWS.Devices
 
 
 {300, "Не получается записать значения в Контроллер"},
-{301, "Записал "},
-{303, "Читаю "},
-{313, "Прочитал и получил"},
+{301, "Записнно "},
+{303, "прочитанно "},
+{313, "Прочитанно и получиенно"},
 {311, "Не удалось записать "},
 
-{302, "Сохранил "},
-{312, "Не сохранил Значения " },
+{302, "Сохраненнно "},
+{312, "Не сохраненно Значение " },
 };
         public DevicesCommunication()
         {
@@ -167,7 +167,7 @@ namespace AWS.Devices
             }
             else
             {
-                throw new PlatformNotSupportedException("Unsupported OS");
+                throw new PlatformNotSupportedException("Неподдерживаемая ОС");
             }
         }
         public void SetPassword()
@@ -197,7 +197,7 @@ namespace AWS.Devices
         public void WtiteInt(int reg, int value)
         {
 
-            CreateMessege($"Записываю значение {value} в {Registers.Name[reg]}");
+            CreateMessege($"Записывается значение {value} в {Registers.Name[reg]}");
             for (int i = 1; i < 10; i++)
             {
                 SetPassword();
@@ -215,7 +215,7 @@ namespace AWS.Devices
         }
         public void WtiteSwFloat(int reg, float value)
         {
-            CreateMessege($"Записываю значение {value} в {Registers.Name[reg]}");
+            CreateMessege($"Записывается значение {value} в {Registers.Name[reg]}");
             for (int i = 1; i < 10; i++)
             {
                 SetPassword();
@@ -227,7 +227,7 @@ namespace AWS.Devices
                     if (i > 1) CreateMessege($"{info[302]} ");
                     return;
                 }
-                CreateMessege($"{info[312]} пробую {i + 1} Раз из 10");
+                CreateMessege($"{info[312]} повтор {i + 1} Раз из 10");
             }
             throw new Exception(info[300] + Registers.Name[reg]);
         }
