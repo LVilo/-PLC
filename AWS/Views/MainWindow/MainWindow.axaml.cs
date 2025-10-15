@@ -132,7 +132,7 @@ public partial class MainWindow : Window
         {
             try
             {
-                devices = Show.devices;
+                devices = DevicesWin.devices;
                 switch (code)
                 {
                     case 0://настройка напряжения
@@ -186,7 +186,7 @@ public partial class MainWindow : Window
         {
             try
             {
-                    devices = Show.devices;
+                    devices = DevicesWin.devices;
                 switch (PLC)
                 {
                     case "PLC 112":
@@ -256,11 +256,11 @@ public partial class MainWindow : Window
     {
         DevicesCommunication.CreateMessege("\n\n //////////////////////////////     Приложение закрывается \n\n");
         Work_DO = false;
-        Show.Work_DO = false;
+        DevicesWin.Work_DO = false;
         Thread.Sleep(1000);
         devices.CloseConnection();
-        Show._reallyClose = true;
-        Show.Close();
+        DevicesWin._reallyClose = true;
+        DevicesWin.Close();
     }
     private void Serial_Number_PreviewTextInput(object sender, TextChangedEventArgs e)
     {

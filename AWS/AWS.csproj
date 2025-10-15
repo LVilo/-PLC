@@ -12,13 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Images\IEPE.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Images\4-20Input.png" />
     <EmbeddedResource Include="Images\4-20Output.png" />
-    <EmbeddedResource Include="Images\IEPE.png" />
+	<EmbeddedResource Include="Images\IEPE.png" />
   </ItemGroup>
 
   <ItemGroup>

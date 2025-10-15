@@ -14,7 +14,7 @@ namespace AWS.Devices
     {
         byte address { get; set; } = 10;
         public int TimeSleep { get; set; } = 2;
-        PLC()
+        public PLC()
         {
             ReadTimeout = 1000;
             WriteTimeout = 1000;

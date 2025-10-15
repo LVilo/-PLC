@@ -31,11 +31,11 @@ namespace AWS.Views
 
             return result;
         }
-        public async Task<bool> ShowConfirmationDialogAsync(string message, string setting)
+        public async Task<bool> ShowConfirmationDialogAsync(string message, string path)
         {
             bool result = await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                var dialog = new Dialog(message, setting);
+                var dialog = new Dialog(message, path);
                 await dialog.ShowDialog(this);
                 if (dialog.Dialog_Cancel == true) throw new Exception(devices.info[220]);
                 return dialog.Dialog_result;
@@ -90,7 +90,8 @@ namespace AWS.Views
         public async Task Seting_IEPE()
         {
             DevicesCommunication.CreateMessege(devices.info[202]);
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки IEPE", "IEPE");
+           
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки IEPE", "AWS.Images.IEPE.png");
             if (!confirmed)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
@@ -111,6 +112,7 @@ namespace AWS.Views
                 devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, Registers.OFF);
 
                 devices.DC_Read = true;
+                devices.multimeter.VoltmeterMode("DC");
                 await Dispatcher.UIThread.InvokeAsync(async () =>
                 {
                     bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 12 В");
@@ -122,6 +124,7 @@ namespace AWS.Views
                 });
                 devices.DC_Read = false;
                 DevicesCommunication.CreateMessege(devices.info[207]);
+                devices.multimeter.VoltmeterMode("AC");
                 devices.Average(0.05);
                 for (int i = 0; i <= 9; i++)
                 {
@@ -189,7 +192,7 @@ namespace AWS.Views
         public async Task Setting_4_20_Input()
         {
             DevicesCommunication.CreateMessege(devices.info[203]);
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного", "4-20 входное");
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного", "AWS.Images.4-20Input.png");
             if (!confirmed)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
@@ -320,7 +323,7 @@ namespace AWS.Views
         public async Task Setting_4_20_Output()
         {
             DevicesCommunication.CreateMessege(devices.info[204]);
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного", "4-20 выходное");
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного", "AWS.Images.4-20Output.png");
             if (!confirmed)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);

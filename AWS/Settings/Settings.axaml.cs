@@ -15,12 +15,12 @@ namespace AWS.Settings
 {
     public static class Setting
     {
-        public async void Do_Work(int code)
-        {
-            DeviceManager devices = new DeviceManager();
-            CalibrationContext context = new CalibrationContext(devices);
-            CheckVolt checkvolt = new CheckVolt(context);
-            CheckVolt.RunAsync();
-        }
+        //public async void Do_Work(int code)
+        //{
+        //    DeviceManager devices = new DeviceManager();
+        //    CalibrationContext context = new CalibrationContext(devices);
+        //    CheckVolt checkvolt = new CheckVolt(context);
+        //    CheckVolt.RunAsync();
+        //}
     }
 }

@@ -14,10 +14,10 @@ namespace AWS.Views
         }
         private async void Button_Setting_Volt(object? sender, RoutedEventArgs e)
         {
-            devices = DevicesWin.devices;
-            PLC plc = devices.PLC;
-           await CheckVolt.RunAsync(plc);
-            //Do_Work(0);
+            //    devices = DevicesWin.devices;
+            //    PLC plc = (PLC)devices.PLC;
+            //   await CheckVolt.RunAsync(plc);
+            Do_Work(0);
         }
         private async void Button_Setting_IEPE(object? sender, RoutedEventArgs e)
         {
