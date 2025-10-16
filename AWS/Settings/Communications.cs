@@ -1,32 +1,43 @@
-﻿using Serilog;
+﻿using Avalonia.Threading;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 
 namespace AWS.Settings
 {
-    public static class Log
+    public static class Loger
     {
-        public static Queue<string> messege = new Queue<string>();
-
-        static Log()
+        public static TextBox? OutputBox { get; set; }
+        static Loger()
         {
             Serilog.Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
                             .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day)
                             .WriteTo.File(@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log.txt", rollingInterval: RollingInterval.Day)
                             .CreateLogger();
         }
+        public static void Write(string message)
+        {
+            var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                OutputBox.Text += formattedMessage;
+                OutputBox.CaretIndex = OutputBox.Text.Length; // Прокрутка вниз
+            });
+        }
         public static void CreateMessege(string mes)
         {
-            messege.Enqueue(mes);
+           // Write(mes, obj);
             WriteLog(mes);
         }
         public static void CreateMessege(Exception ex)
         {
-            messege.Enqueue(ex.Message);
+            //Write(ex.Message, obj);
             WriteLog(ex.Message);
         }
         public static void WriteLog(string mes)

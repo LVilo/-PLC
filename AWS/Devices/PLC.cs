@@ -40,7 +40,7 @@ namespace AWS.Devices
         public void WtiteInt(int reg, int value)
         {
 
-            Log.CreateMessege($"Записываю значение {value} в {Registers.Name[reg]}");
+            Loger.CreateMessege($"Записываю значение {value} в {Registers.Name[reg]}");
             for (int i = 1; i < 10; i++)
             {
                 SetPassword();
@@ -50,14 +50,14 @@ namespace AWS.Devices
                 {
                     return;
                 }
-                Log.CreateMessege($"{Log.info[312]} пробую {i + 1} Раз из 10");
+                Loger.CreateMessege($"{Loger.info[312]} пробую {i + 1} Раз из 10");
 
             }
-            throw new Exception(Log.info[300] + Registers.Name[reg]);
+            throw new Exception(Loger.info[300] + Registers.Name[reg]);
         }
         public void WtiteSwFloat(int reg, float value)
         {
-            Log.CreateMessege($"Записываю значение {value} в {Registers.Name[reg]}");
+            Loger.CreateMessege($"Записываю значение {value} в {Registers.Name[reg]}");
             for (int i = 1; i < 10; i++)
             {
                 SetPassword();
@@ -65,12 +65,12 @@ namespace AWS.Devices
                 Save_Change();
                 if (value == ReadSwFloat(reg))
                 {
-                    if (i > 1) Log.CreateMessege($"{Log.info[302]} ");
+                    if (i > 1) Loger.CreateMessege($"{Loger.info[302]} ");
                     return;
                 }
-                Log.CreateMessege($"{Log.info[312]} пробую {i + 1} Раз из 10");
+                Loger.CreateMessege($"{Loger.info[312]} пробую {i + 1} Раз из 10");
             }
-            throw new Exception(Log.info[300] + Registers.Name[reg]);
+            throw new Exception(Loger.info[300] + Registers.Name[reg]);
         }
     }
 }

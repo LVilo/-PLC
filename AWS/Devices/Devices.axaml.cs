@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
+using AWS.Settings;
 using AWS.Views;
 using DocumentFormat.OpenXml.Spreadsheet;
 using PortsWork;
@@ -93,12 +94,12 @@ public partial class DevicesWindow : Window
             if (devices.PLC.IsOpen) return;
             //
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
+            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            //{
                 devices.PLC = (ModbusRTU)devices.SetMeasureDeviceName(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) devices.PLC.SetName(Port_Name_PLC.SelectedItem.ToString());
-            else throw new PlatformNotSupportedException("Unsupported OS");
+            //}
+            //else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) devices.PLC.SetName(Port_Name_PLC.SelectedItem.ToString());
+            //else throw new PlatformNotSupportedException("Unsupported OS");
 
             devices.PLC.SetParameters(115200, (StopBits)1);
             Task.Run(async () =>
@@ -131,12 +132,12 @@ public partial class DevicesWindow : Window
             // 
 
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
+            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            //{
                 devices.generator = (PortGenerator)devices.SetMeasureDeviceName(devices.generator, Port_Name_Generator.SelectedItem.ToString());
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) devices.generator.SetName(Port_Name_Generator.SelectedItem.ToString());
-            else throw new PlatformNotSupportedException("Unsupported OS");
+            //}
+            //else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) devices.generator.SetName(Port_Name_Generator.SelectedItem.ToString());
+            //else throw new PlatformNotSupportedException("Unsupported OS");
             Task.Run(async () =>
             {
                 if (devices.generator.OpenPort())
@@ -178,14 +179,17 @@ public partial class DevicesWindow : Window
             {
                 return;
             }
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
+            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            //{
                 devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) devices.multimeter.SetName(Port_Name_Agiletn.SelectedItem.ToString());
-            else throw new PlatformNotSupportedException("Unsupported OS");
+                Console.WriteLine("yes");
+            //}
+            //else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) devices.multimeter.SetName(Port_Name_Agiletn.SelectedItem.ToString());
+            //else throw new PlatformNotSupportedException("Unsupported OS");
             Task.Run(async () =>
             {
+                Console.WriteLine("async");
+                Console.WriteLine(devices.multimeter.GetName());
                 if (devices.multimeter.OpenPort())
                 {
                     DevicesCommunication.CreateMessege(devices.info[102]);

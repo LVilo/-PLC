@@ -44,5 +44,10 @@ namespace AWS.Desktop
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
         
+        //public static async Task InfoMessage(string message,string caption)
+        //{
+        //    WindowInfo Info = new WindowInfo(message, caption);
+        //    Info.Show();
+        //}
     }
 }

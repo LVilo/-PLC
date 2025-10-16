@@ -60,32 +60,31 @@ namespace AWS.Views
                 DevicesCommunication.CreateMessege(Registers.Name[99] + $" показывает {value} В");
                 return;
             }
-
-            for (int i = 1; i < 10; i++)
-            {
-                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
-                value = 0f;
-                Thread.Sleep(2000);
-                DevicesCommunication.CreateMessege(devices.info[207]);
+                for (int i = 1; i < 10; i++)
+                {
+                    devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
+                    value = 0f;
+                    Thread.Sleep(2000);
+                    DevicesCommunication.CreateMessege(devices.info[207]);
                     value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
                     Thread.Sleep(500);
-                Debug.WriteLine(value.ToString());
-                value = 24f / value;// * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
+                    Debug.WriteLine(value.ToString());
+                    value = 24f / value;// * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
 
-                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
+                    devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
 
-                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-                Debug.WriteLine(value.ToString());
-                if (value >= 24.1 || value <= 23.9)
-                {
-                    DevicesCommunication.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки. Пробую {i} из 10");
+                    value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                    Debug.WriteLine(value.ToString());
+                    if (value >= 24.1 || value <= 23.9)
+                    {
+                        DevicesCommunication.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки. Пробую {i} из 10");
+                    }
+                    else
+                    {
+                        DevicesCommunication.CreateMessege(devices.info[211]);
+                        return;
+                    }
                 }
-                else
-                {
-                    DevicesCommunication.CreateMessege(devices.info[211]);
-                    return;
-                }
-            }
         }
         public async Task Seting_IEPE()
         {
@@ -100,7 +99,6 @@ namespace AWS.Views
             while (true)
 
             {
-
                 // hello world
                 float IEPE_1 = 0f;
                 float IEPE_2 = 0f;

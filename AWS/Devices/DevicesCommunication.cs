@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using AWS.Settings;
 
 namespace AWS.Devices
 {
@@ -34,7 +35,7 @@ namespace AWS.Devices
         public bool IsClick_OK = false;
         public bool IsClick_Close = false;
 
-         public static Queue<string> messege = new Queue<string>();
+
         public Queue<string> fail_settings = new Queue<string>();
 
         public Dictionary<int, string> info = new Dictionary<int, string>
@@ -88,7 +89,7 @@ namespace AWS.Devices
 {313, "Прочитанно и получиенно"},
 {311, "Не удалось записать "},
 
-{302, "Сохраненнно "},
+{302, "Сохраненно "},
 {312, "Не сохраненно Значение " },
 };
         public DevicesCommunication()
@@ -111,17 +112,18 @@ namespace AWS.Devices
             PLC.ClosePort();
             sg004.ClosePort();
         }
+        
         public static void CreateMessege(string mes)
         {
             Debug.WriteLine(mes);
-            messege.Enqueue(mes);
+            Loger.Write(mes);
             Log.Information(Environment.UserName + mes);
             Console.WriteLine(mes);
         }
         public static void CreateMessege(Exception ex)
         {
             Debug.WriteLine(ex.Message);
-            messege.Enqueue(ex.Message);
+            Loger.Write(ex.Message);
             Log.Error(Environment.UserName + ex.Message);
             Console.WriteLine(ex.StackTrace);
         }
@@ -134,7 +136,7 @@ namespace AWS.Devices
 
         public Port SetMeasureDeviceName(Port device, string name)
         {
-            if (name.Contains("COM"))
+            if (name.Contains("COM") || name.Contains("/dev/ttyUSB") || name.Contains("/dev/usbtmc"))
             {
                 device.SetName(name);
             }
@@ -144,6 +146,7 @@ namespace AWS.Devices
                 device.usbInfo = info;
                 device.SetName(info.description);
             }
+            Console.WriteLine("YES");
             return device.IdentifyDeviceType();
         }
         //usbDevicesInfo = Port.FindVisaDevicesInfo();
@@ -152,7 +155,6 @@ namespace AWS.Devices
 
         public string[] GetAllPorts()
         {
-            Console.WriteLine("GetAllPorts---------------");
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -237,14 +239,15 @@ namespace AWS.Devices
 
             generator.SetFrequency(79.6);
             generator.ChangeSignalType(PortGenerator.SignalType.Sine);
+            Port.Sleep(500);
             multimeter.VoltmeterMode(PortMultimeter.SIGNALTYPE_AC);
 
-
+            Port.Sleep(500);
             generator.SetVoltage(targetVoltageV);
-
+            Port.Sleep(500);
             double measuredVoltage = multimeter.GetVoltage("AC", 100);
 
-
+            Port.Sleep(500);
             int iteration = 0;
             double newVoltage = targetVoltageV;
             while (Math.Abs(measuredVoltage - targetVoltageV) > 0.0001 && iteration < 100)

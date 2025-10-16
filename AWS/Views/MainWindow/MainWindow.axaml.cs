@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AWS.Devices;
+using AWS.Settings;
 
 namespace AWS.Views;
 
@@ -28,13 +29,13 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        Loger.OutputBox = LogTextBox;
         devices = new DevicesCommunication();
         DevicesWin = new DevicesWindow();
         try
         {
             this.Closing += MainWindow_Closing;
             
-            StartBackgroundWork();
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
                 .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day)
                 .WriteTo.File(@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log.txt", rollingInterval: RollingInterval.Day)
@@ -97,32 +98,6 @@ public partial class MainWindow : Window
         await dialog.ShowDialog(this);
     }
    
-    private async void StartBackgroundWork()
-    {
-        // Показываем индикатор загрузки
-        
-        try
-        {
-            // Запускаем фоновую задачу
-            await Task.Run(() =>
-            {
-                while (Work_DO)
-                {
-                    if (DevicesCommunication.messege.Count > 0)
-                    {
-                        LogWrite(DevicesCommunication.messege.Dequeue());
-                    }
-                    Thread.Sleep(700);
-                }
-            });
-
-            // Этот код выполнится после завершения задачи в UI потоке
-        }
-        catch (Exception ex)
-        {
-            LogWrite($"Ошибка: {ex.Message}");
-        }
-    }
    
 
     protected async void Do_Work(int code)
@@ -241,17 +216,6 @@ public partial class MainWindow : Window
         Save_Reg.IsEnabled = BOOL;
     }
 
-   
-    private void LogWrite(string message)
-    {
-        var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
-
-        Dispatcher.UIThread.Post(() =>
-        {
-            LogTextBox.Text += formattedMessage;
-            LogTextBox.CaretIndex = LogTextBox.Text.Length; // Прокрутка вниз
-        });
-    }
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         DevicesCommunication.CreateMessege("\n\n //////////////////////////////     Приложение закрывается \n\n");
