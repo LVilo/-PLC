@@ -3,8 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Dialogs;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using AWS.Devices;
+using AWS.Settings;
 using AWS.ViewModels;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.EMMA;
@@ -15,8 +18,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AWS.Devices;
-using AWS.Settings;
 
 namespace AWS.Views;
 
@@ -117,8 +118,8 @@ public partial class MainWindow : Window
         {
             try
             {
-               await CheckTextBox(Order_Number);
-               await CheckTextBox(Serial_Number);
+                await CheckTextBox(Order_Number);
+                await CheckTextBox(Serial_Number);
                 devices = DevicesWin.devices;
                 switch (code)
                 {
@@ -156,14 +157,31 @@ public partial class MainWindow : Window
                         break;
                 }
             }
+            catch (InvalidOperationException ex)
+            {
+                devices.CloseConnection();
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                   DevicesWin.Panel_SG004.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                    DevicesWin.Port_Name_SG004.IsEnabled = true;
+                    DevicesWin.Panel_PLC.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                    DevicesWin.Port_Name_PLC.IsEnabled = true;
+                    DevicesWin.Panel_Generator.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                    DevicesWin.Port_Name_Generator.IsEnabled = true;
+                    DevicesWin.Panel_Agilent.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                    DevicesWin.Port_Name_Agiletn.IsEnabled = true;
+                });
+                DevicesCommunication.CreateMessege(ex.Message);
+                DevicesCommunication.CreateMessege("Все устройства отключены");
+            }
             catch (Exception ex)
             {
                 DevicesCommunication.CreateMessege(ex.Message);
             }
+
         });
         Set_Enabled(true);
     }
-
     protected async void Do_Work(string PLC)
     {
         
