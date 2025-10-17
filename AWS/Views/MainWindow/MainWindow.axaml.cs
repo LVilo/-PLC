@@ -35,10 +35,14 @@ public partial class MainWindow : Window
         try
         {
             this.Closing += MainWindow_Closing;
-            
+
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
-                .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day)
-                .WriteTo.File(@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File($"Log\\log-{DateTime.Now:dd.MM.yyyy}.txt",
+                outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}" )
+
+
+                .WriteTo.File($@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log-{DateTime.Now:dd.MM.yyyy}.txt",
+                outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
             DevicesCommunication.WriteLog("\n\n ///////////////// Приложение запущено \n\n");
         }

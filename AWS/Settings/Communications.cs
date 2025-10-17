@@ -15,10 +15,10 @@ namespace AWS.Settings
         public static TextBox? OutputBox { get; set; }
         static Loger()
         {
-            Serilog.Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
-                            .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day)
-                            .WriteTo.File(@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log.txt", rollingInterval: RollingInterval.Day)
-                            .CreateLogger();
+            //Serilog.Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
+            //                .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day)
+            //                .WriteTo.File(@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log.txt", rollingInterval: RollingInterval.Day)
+            //                .CreateLogger();
         }
         public static void Write(string message)
         {

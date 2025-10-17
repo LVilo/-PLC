@@ -392,7 +392,7 @@ namespace AWS.Views
         private async Task Check_Setting_4_20_Output(float mA)
         {
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, mA);
-            Thread.Sleep(3000);
+             await Task.Delay(3000);
             double reg_4_20 = 0d;
             //for (int i = 0; i < 10; i++)
             //{
