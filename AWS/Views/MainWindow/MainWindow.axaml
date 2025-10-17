@@ -99,7 +99,7 @@
 								<Label Content="Серийный номер" Grid.Column="0" Margin="0,5,10,0"></Label>
 								<TextBox Name="Serial_Number" Width="150" Grid.Column="1" Background="White"
 									 TextChanged="Serial_Number_PreviewTextInput"
-										 Watermark="Введите номер"
+										 Watermark="Введите серийный номер"
 										 CornerRadius="10">
 								</TextBox>
 
@@ -110,7 +110,7 @@
 								<Label Content="Номер заказа" Grid.Column="0" Margin="0,5,32,0"></Label>
 								<TextBox Name="Order_Number" Width="150" Grid.Column="1" Background="White"
 									 TextChanged="Order_Number_PreviewTextInput"
-										 Watermark="Введите номер"
+										 Watermark="Введите номер заказа"
 										 CornerRadius="10">
 								</TextBox>
 

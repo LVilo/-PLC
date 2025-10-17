@@ -101,16 +101,24 @@ public partial class MainWindow : Window
 
         await dialog.ShowDialog(this);
     }
-   
-   
-
+    private async Task CheckTextBox(TextBox textbox)
+    {
+        await Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            if (IsEmpty(textbox.Text)) throw new Exception(textbox.Watermark);
+        });
+    }
+    bool IsEmpty(string? s) =>string.IsNullOrEmpty(s);
     protected async void Do_Work(int code)
     {
+         
         Set_Enabled(false);
         await Task.Run(async () =>
         {
             try
             {
+               await CheckTextBox(Order_Number);
+               await CheckTextBox(Serial_Number);
                 devices = DevicesWin.devices;
                 switch (code)
                 {
@@ -165,7 +173,9 @@ public partial class MainWindow : Window
         {
             try
             {
-                    devices = DevicesWin.devices;
+                await CheckTextBox(Order_Number);
+                await CheckTextBox(Serial_Number);
+                devices = DevicesWin.devices;
                 switch (PLC)
                 {
                     case "PLC 112":
@@ -209,15 +219,17 @@ public partial class MainWindow : Window
         }));
         Set_Enabled(true);
     }
-    private void Set_Enabled(bool BOOL)
+    private void Set_Enabled(bool isenabled)
     {
-        Setting_PLC.IsEnabled = BOOL;
-        Setting_Volt.IsEnabled = BOOL;
-        Setting_IEPE.IsEnabled = BOOL;
-        Setting_4_20_Input_but.IsEnabled = BOOL;
-        Setting_4_20_Output_but.IsEnabled = BOOL;
-        Setting_Rs_485.IsEnabled = BOOL;
-        Save_Reg.IsEnabled = BOOL;
+        Serial_Number.IsEnabled = isenabled;
+        Order_Number.IsEnabled = isenabled;
+        Setting_PLC.IsEnabled = isenabled;
+        Setting_Volt.IsEnabled = isenabled;
+        Setting_IEPE.IsEnabled = isenabled;
+        Setting_4_20_Input_but.IsEnabled = isenabled;
+        Setting_4_20_Output_but.IsEnabled = isenabled;
+        Setting_Rs_485.IsEnabled = isenabled;
+        Save_Reg.IsEnabled = isenabled;
     }
 
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
