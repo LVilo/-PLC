@@ -53,21 +53,21 @@ namespace AWS.Views
                 DevicesCommunication.CreateMessege(devices.info[230]);
                 return;
             }
-            float value = 0f;
-            value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-            if (value <= 24.1 && value >= 23.9)
-            {
-                DevicesCommunication.CreateMessege(Registers.Name[99] + $" показывает {value} В");
-                return;
-            }
                 for (int i = 1; i < 10; i++)
                 {
-                    devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
+                float value = 0f;
+                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                if (value <= 24.1 && value >= 23.9)
+                {
+                    DevicesCommunication.CreateMessege(Registers.Name[99] + $" показывает {value} В");
+                    return;
+                }
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
                     value = 0f;
-                    Thread.Sleep(2000);
+                    await Task.Delay(2000);
                     DevicesCommunication.CreateMessege(devices.info[207]);
                     value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-                    Thread.Sleep(500);
+                    await Task.Delay(500);
                     Debug.WriteLine(value.ToString());
                     value = 24f / value;// * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
 

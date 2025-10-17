@@ -10,7 +10,8 @@ namespace AWS.Views
         #region Кнопки
         private async void Button_Show_Diveces(object? sender, RoutedEventArgs e)
         {
-            DevicesWin.Show();       
+            DevicesWin.Show();
+            DevicesWin.WindowState = WindowState.Normal;
         }
         private async void Button_Setting_Volt(object? sender, RoutedEventArgs e)
         {
