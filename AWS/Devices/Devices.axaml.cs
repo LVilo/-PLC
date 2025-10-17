@@ -283,25 +283,22 @@ public partial class DevicesWindow : Window
     {
         try
         {
-            await Task.Run(() =>
-            {
-                while (Work_DO)
-                {
-                    if (devices.DC_Read && devices.mult_is_open)
-                    {
-                        try
-                        {
-                            devices.currentVolt = devices.multimeter.GetVoltage(PortMultimeter.SIGNALTYPE_DC, 100);
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            DevicesCommunication.CreateMessege((ex.Message));
-                        }
-                    }
-                    Thread.Sleep(300);
-                }
-            });
 
+            while (Work_DO)
+            {
+                if (devices.DC_Read && devices.mult_is_open)
+                {
+                    try
+                    {
+                        devices.currentVolt = devices.multimeter.GetVoltage(PortMultimeter.SIGNALTYPE_DC, 100);
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        DevicesCommunication.CreateMessege((ex.Message));
+                    }
+                }
+                await Task.Delay(300);
+            }
         }
         catch (Exception ex)
         {

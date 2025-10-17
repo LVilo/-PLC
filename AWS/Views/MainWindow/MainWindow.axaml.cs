@@ -28,23 +28,23 @@ public partial class MainWindow : Window
     private bool Work_DO = true;
     public MainWindow()
     {
-        InitializeComponent();
-        Loger.OutputBox = LogTextBox;
-        devices = new DevicesCommunication();
-        DevicesWin = new DevicesWindow();
         try
         {
+            InitializeComponent();
+            Loger.OutputBox = LogTextBox;
+            devices = new DevicesCommunication();
+            DevicesWin = new DevicesWindow();
             this.Closing += MainWindow_Closing;
 
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
-                .WriteTo.File($"Log\\log-{DateTime.Now:dd.MM.yyyy}.txt",
-                outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}" )
+                .WriteTo.File($"Log\\log-{DateTime.Now:dd.MM.yyyy}.txt", //настройка названия файла
+                outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}" ) // настройка записи в файл
 
 
                 .WriteTo.File($@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log-{DateTime.Now:dd.MM.yyyy}.txt",
                 outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
-            DevicesCommunication.WriteLog("\n\n ///////////////// Приложение запущено \n\n");
+            DevicesCommunication.WriteLog("///////////////// Приложение запущено \n\n");
         }
         catch (DllNotFoundException)
         {

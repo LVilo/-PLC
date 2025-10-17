@@ -12,6 +12,8 @@ namespace AWS.Views
         {
             DevicesWin.Show();
             DevicesWin.WindowState = WindowState.Normal;
+            DevicesWin.Topmost = true;
+            DevicesWin.Topmost = false;
         }
         private async void Button_Setting_Volt(object? sender, RoutedEventArgs e)
         {
