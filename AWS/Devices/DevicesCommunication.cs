@@ -186,7 +186,7 @@ namespace AWS.Devices
         public float ReadSwFloat(int reg)
         {
             float result = PLC.GetHoldingSwFloat(address, reg, TimeSleep);
-
+            Debug.WriteLine($"Прочитанно {result} из {Registers.Name[reg]}");
             // Thread.Sleep(500);
             return result;
         }
@@ -194,6 +194,7 @@ namespace AWS.Devices
         {
             int result = PLC.GetHoldingValue(address, reg, 1, TimeSleep)[0];
             //  Thread.Sleep(500);
+            Debug.WriteLine($"Прочитанно {result} из {Registers.Name[reg]}");
             return result;
         }
         public void WtiteInt(int reg, int value)
@@ -210,7 +211,7 @@ namespace AWS.Devices
                 {
                     return;
                 }
-                CreateMessege($"{info[312]} пробую {i + 1} Раз из 10");
+                //CreateMessege($"{info[312]} пробую {i + 1} Раз из 10");
 
             }
             throw new Exception(info[300] + Registers.Name[reg]);
@@ -226,10 +227,10 @@ namespace AWS.Devices
                 Save_Change();
                 if (value == ReadSwFloat(reg))
                 {
-                    if (i > 1) CreateMessege($"{info[302]} ");
+                   // if (i > 1) CreateMessege($"{info[302]} ");
                     return;
                 }
-                CreateMessege($"{info[312]} повтор {i + 1} Раз из 10");
+                //CreateMessege($"{info[312]} повтор {i + 1} Раз из 10");
             }
             throw new Exception(info[300] + Registers.Name[reg]);
         }

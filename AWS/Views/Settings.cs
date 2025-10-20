@@ -189,12 +189,11 @@ namespace AWS.Views
                 }
                 else await Seting_IEPE();
             }
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
         }
         public async Task Setting_4_20_Input()
         {
             DevicesCommunication.CreateMessege(devices.info[203]);
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного", "AWS.Images.4-20Input.png");
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного", "AWS.Images.4_20Input.png");
             if (!confirmed)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
@@ -251,19 +250,31 @@ namespace AWS.Views
             //devices.DC_Read = true;
             for (float mA = 4; mA <= 20; mA += 2)
             {
-                if (await Check_Setting_4_20_Input(mA)) return; // если нажали пропустить
+                if (await Check_Setting_4_20_Input(mA))
+                {
+                    if (!await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
+                    {
+                        DevicesCommunication.CreateMessege(devices.info[230]);
+                        return;
+                    }
+                    else
+                    {
+                        await Setting_4_20_Input();
+                        return;
+                    }
+                }
             }
             devices.sg004.WriteOutputSwitch(false);
-            devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
             DevicesCommunication.CreateMessege(devices.info[213]);
         }
 
         private async Task<bool> Check_Setting_4_20_Input(float mA)
         {
-
+            Debug.WriteLine($"запуск функции Check_Setting_4_20_Input {mA}");
             devices.sg004.WriteOutputCurrent(mA);
-            await Task.Delay(4000);
+            await Task.Delay(5000);
             float mA_reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
+            Debug.WriteLine($"прочитанно {mA_reg}");
             if (mA_reg < (mA - 0.2) || mA_reg > (mA + 0.2))
             {
                 DevicesCommunication.CreateMessege(devices.info[200] + $"При заданном значении в {mA} датчик показывает не корректные {mA_reg}");
@@ -280,14 +291,10 @@ namespace AWS.Views
                 devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT, reg);
                 await Task.Delay(3000);
                 mA_reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
+                Debug.WriteLine($"прочитанно {mA_reg}");
                 if (mA_reg < (mA - 0.2) || mA_reg > (mA + 0.2))
                 {
-                    if (!await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
-                    {
-                        DevicesCommunication.CreateMessege(devices.info[230]);
-                        return true;
-                    }
-                    else await Setting_4_20_Input();
+                  return true;
                 }
             }
             return false;
@@ -295,7 +302,7 @@ namespace AWS.Views
         public async Task Setting_4_20_Output()
         {
             DevicesCommunication.CreateMessege(devices.info[204]);
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного", "AWS.Images.4-20Output.png");
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного", "AWS.Images.4_20Output.png");
             if (!confirmed)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
@@ -338,10 +345,21 @@ namespace AWS.Views
             DevicesCommunication.CreateMessege(devices.info[206]);
             for (float mA = 4; mA <= 20; mA += 2)
             {
-                if (await Check_Setting_4_20_Output(mA)) return;
+                if (await Check_Setting_4_20_Output(mA))
+                {
+                    if (!await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
+                    {
+                        DevicesCommunication.CreateMessege(devices.info[230]);
+                        return;
+                    }
+                    else
+                    {
+                        await Setting_4_20_Output();
+                        return;
+                    }
+                }
             }
-            devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.OFF);
-            DevicesCommunication.CreateMessege(devices.info[214]);
+                DevicesCommunication.CreateMessege(devices.info[214]);
         }
         private async Task<bool> Check_Setting_4_20_Output(float mA)
         {
@@ -360,25 +378,20 @@ namespace AWS.Views
                 float reg = 0f;
                 if(reg_4_20 < (mA - 0.2))
                 {
-                    reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT) + 0.008f;
+                    reg = devices.ReadSwFloat(91) + 0.008f;
                 }
                 else if(reg_4_20 > (mA + 0.2))
                 {
-                    reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT) - 0.008f;
+                    reg = devices.ReadSwFloat(91) - 0.008f;
                 }
                 DevicesCommunication.CreateMessege("Переписываю К усиления");
-                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, reg);
+                devices.WtiteSwFloat(91, reg);
                 await Task.Delay(3000);
                 reg_4_20 = devices.sg004.ReadInputCurrent();
                 if (reg_4_20 < (mA - 0.2) || reg_4_20 > (mA + 0.2))
                 {
                     //очень плохо
-                    if (!await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
-                    {
-                        DevicesCommunication.CreateMessege(devices.info[230]);
-                        return true;
-                    }
-                    else await Setting_4_20_Output();
+                   return true;
                 }
             }
             //хорошо

@@ -181,6 +181,7 @@ public partial class DevicesWindow : Window
             }
             //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             //{
+            devices.multimeter = new PortMultimeter();
                 devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
                 Console.WriteLine("yes");
             //}

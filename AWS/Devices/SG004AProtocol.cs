@@ -1,8 +1,10 @@
 ﻿using PortsWork;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -207,7 +209,17 @@ public class SG004AProtocol : Port
     public float ReadInputCurrent()
     {
         ChangeInputSignal(0x0101);
-        return ReadFloat(REG_INPUT_VALUE);
+       float current = ReadFloat(REG_INPUT_VALUE);
+
+        if(Math.Abs(current) < 1e-5)
+        {
+            Debug.WriteLine("Значение очень маленькое. Переподключение SG-004");
+            ClosePort();
+            if (OpenPort())
+               return ReadInputCurrent();
+            else throw new Exception("Ошибка переподключения");
+        }
+        else return current;
     }
 
     public void ChangeInputSignal(ushort signal)

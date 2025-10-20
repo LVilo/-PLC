@@ -12,8 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Images\4-20Input.png" />
-    <EmbeddedResource Include="Images\4-20Output.png" />
+    <None Remove="Images\4_20Input.png" />
+    <None Remove="Images\4_20Output.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<EmbeddedResource Include="Images\4_20Input.png" />
+	<EmbeddedResource Include="Images\4_20Output.png" />
 	<EmbeddedResource Include="Images\IEPE.png" />
   </ItemGroup>
 
