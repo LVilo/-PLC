@@ -54,8 +54,8 @@ namespace AWS.Views
                 DevicesCommunication.CreateMessege(devices.info[230]);
                 return;
             }
-                for (int i = 1; i < 10; i++)
-                {
+            for (int i = 1; i < 10; i++)
+            {
                 float value = 0f;
                 value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
                 if (value <= 24.1 && value >= 23.9)
@@ -64,17 +64,17 @@ namespace AWS.Views
                     return;
                 }
                 devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
-                    value = 0f;
-                    await Task.Delay(2000);
-                    DevicesCommunication.CreateMessege(devices.info[207]);
-                    value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-                    await Task.Delay(500);
-                    Debug.WriteLine(value.ToString());
-                    value = 24f / value;// * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
+                value = 0f;
+                await Task.Delay(2000);
+                DevicesCommunication.CreateMessege(devices.info[207]);
+                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                await Task.Delay(500);
+                Debug.WriteLine(value.ToString());
+                value = 24f / value;// * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
 
-                    devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
                 await Task.Delay(5000);
-                    value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
                 DevicesCommunication.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки.");
                 if (i == 9)
                 {
@@ -85,7 +85,7 @@ namespace AWS.Views
                         return;
                     }
                 }
-                   else if (value >= 24.1 || value <= 23.9)
+                else if (value >= 24.1 || value <= 23.9)
                 {
                     DevicesCommunication.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки. Пробую {i} из 10");
                 }
@@ -94,7 +94,7 @@ namespace AWS.Views
                     DevicesCommunication.CreateMessege(devices.info[211]);
                     return;
                 }
-                }
+            }
         }
         public async Task Seting_IEPE()
         {
@@ -204,7 +204,8 @@ namespace AWS.Views
             float K_4_20_2 = 0f;
             double amper_1 = 0d;
             double amper_2 = 0d;
-            float result = 0f;
+            float coef_1 = 0f;
+            float coef_2 = 0f;
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT, Registers.Coef_1);
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, Registers.Coef_0);
             devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.ON);
@@ -221,7 +222,7 @@ namespace AWS.Views
                 amper_1 += devices.multimeter.GetVoltage("DC", 100) * 10;
             }
             amper_1 /= 10;
-            Debug.WriteLine(amper_1.ToString());
+            Debug.WriteLine(amper_1.ToString() + " 1 значение мА прочитанное с мультиметра");
 
             K_4_20_1 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
 
@@ -234,23 +235,23 @@ namespace AWS.Views
                 amper_2 += devices.multimeter.GetVoltage("DC", 100) * 10;
             }
             amper_2 /= 10;
-            Debug.WriteLine(amper_2.ToString());
+            Debug.WriteLine(amper_2.ToString() + " 2 значение мА прочитанное с мультиметра");
 
             K_4_20_2 += devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
 
-            result = (float)((amper_2 - amper_1) / (K_4_20_2 - K_4_20_1));
-            Debug.WriteLine(result.ToString());
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT, result);
-            result = (float)((K_4_20_2 * amper_1 - K_4_20_1 * amper_2) / (K_4_20_2 - K_4_20_1));
-            Debug.WriteLine(result.ToString());
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, result);
+            coef_1 = (float)((amper_2 - amper_1) / (K_4_20_2 - K_4_20_1));
+            Debug.WriteLine(coef_1.ToString() + " 1 коэф");
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT, coef_1);
+            coef_2 = (float)((K_4_20_2 * amper_1 - K_4_20_1 * amper_2) / (K_4_20_2 - K_4_20_1));
+            Debug.WriteLine(coef_2.ToString() + " 2 коэф");
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, coef_2);
 
             //проверка настройки
             DevicesCommunication.CreateMessege(devices.info[206]);
             //devices.DC_Read = true;
             for (float mA = 4; mA <= 20; mA += 2)
             {
-                if (await Check_Setting_4_20_Input(mA))
+                if (await Check_Setting_4_20_Input(mA, coef_1))
                 {
                     if (!await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
                     {
@@ -268,29 +269,28 @@ namespace AWS.Views
             DevicesCommunication.CreateMessege(devices.info[213]);
         }
 
-        private async Task<bool> Check_Setting_4_20_Input(float mA)
+        private async Task<bool> Check_Setting_4_20_Input(float mA, float coef)
         {
             Debug.WriteLine($"запуск функции Check_Setting_4_20_Input {mA}");
             devices.sg004.WriteOutputCurrent(mA);
-            await Task.Delay(5000);
-            float mA_reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
-            Debug.WriteLine($"прочитанно {mA_reg}");
+            await Task.Delay(3000);
+            float mA_reg = devices.ReadSwFloat(37);
             if (mA_reg < (mA - 0.2) || mA_reg > (mA + 0.2))
             {
                 DevicesCommunication.CreateMessege(devices.info[200] + $"При заданном значении в {mA} датчик показывает не корректные {mA_reg}");
                 float reg = 0f;
                 if (mA_reg < (mA - 0.2))
                 {
-                    reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT) + 0.00008f;
+                    reg = coef + 0.00004f;
                 }
                 else if (mA_reg > (mA + 0.2))
                 {
-                    reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT) - 0.00008f;
+                    reg = coef - 0.00004f;
                 }
                 DevicesCommunication.CreateMessege("Переписываю К усиления");
-                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_INPUT, reg);
+                devices.WtiteSwFloat(52, reg);
                 await Task.Delay(3000);
-                mA_reg = devices.ReadSwFloat(Registers.REGISTER_ADRESS_LVL_mA);
+                mA_reg = devices.ReadSwFloat(37);
                 Debug.WriteLine($"прочитанно {mA_reg}");
                 if (mA_reg < (mA - 0.2) || mA_reg > (mA + 0.2))
                 {
@@ -310,7 +310,8 @@ namespace AWS.Views
             }
             float K_4_20_1 = 0f;
             float K_4_20_2 = 0f;
-            float result = 0f;
+            float coef_1 = 0f;
+            float coef_2 = 0f;
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, Registers.Coef_1);
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT, Registers.Coef_0);
             devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.ON);
@@ -335,17 +336,17 @@ namespace AWS.Views
             K_4_20_2 = devices.sg004.ReadInputCurrent();
 
             Debug.WriteLine(K_4_20_2.ToString() + "   2 значение");
-            result = (20f - 4f) / (K_4_20_2 - K_4_20_1);
-            Debug.WriteLine(result.ToString() + "    1 коэффициент ");
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, result);
-            result = (K_4_20_2 * 4f - K_4_20_1 * 20f) / (K_4_20_2 - K_4_20_1);
-            Debug.WriteLine(result.ToString() + "    2 коэфициент");
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT, result);
+            coef_1 = (20f - 4f) / (K_4_20_2 - K_4_20_1);
+            Debug.WriteLine(coef_1.ToString() + "    1 коэффициент ");
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, coef_1);
+            coef_2 = (K_4_20_2 * 4f - K_4_20_1 * 20f) / (K_4_20_2 - K_4_20_1);
+            Debug.WriteLine(coef_2.ToString() + "    2 коэфициент");
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_OUTPUT, coef_2);
 
             DevicesCommunication.CreateMessege(devices.info[206]);
             for (float mA = 4; mA <= 20; mA += 2)
             {
-                if (await Check_Setting_4_20_Output(mA))
+                if (await Check_Setting_4_20_Output(mA, coef_1))
                 {
                     if (!await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
                     {
@@ -361,10 +362,11 @@ namespace AWS.Views
             }
                 DevicesCommunication.CreateMessege(devices.info[214]);
         }
-        private async Task<bool> Check_Setting_4_20_Output(float mA)
+        private async Task<bool> Check_Setting_4_20_Output(float mA, float coef)
         {
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, mA);
-             await Task.Delay(3000);
+            Debug.WriteLine($"запуск функции Check_Setting_4_20_Output {mA}");
+            devices.WtiteSwFloat(63, mA);
+            await Task.Delay(3000);
             double reg_4_20 = 0d;
             //for (int i = 0; i < 10; i++)
             //{
@@ -378,11 +380,11 @@ namespace AWS.Views
                 float reg = 0f;
                 if(reg_4_20 < (mA - 0.2))
                 {
-                    reg = devices.ReadSwFloat(91) + 0.008f;
+                    reg = coef + 0.008f;
                 }
                 else if(reg_4_20 > (mA + 0.2))
                 {
-                    reg = devices.ReadSwFloat(91) - 0.008f;
+                    reg = coef - 0.008f;
                 }
                 DevicesCommunication.CreateMessege("Переписываю К усиления");
                 devices.WtiteSwFloat(91, reg);

@@ -210,8 +210,8 @@ public class SG004AProtocol : Port
     {
         ChangeInputSignal(0x0101);
        float current = ReadFloat(REG_INPUT_VALUE);
-
-        if(Math.Abs(current) < 1e-5)
+        DevicesCommunication.WriteLog($"Прочитанно с усройства SG-004 значение {current} Входной ток");
+        if (Math.Abs(current) < 1e-5)
         {
             Debug.WriteLine("Значение очень маленькое. Переподключение SG-004");
             ClosePort();

@@ -117,21 +117,21 @@ namespace AWS.Devices
         {
             Debug.WriteLine(mes);
             Loger.Write(mes);
-            Log.Information(Environment.UserName + mes);
+            Log.Information(Environment.UserName + " " + mes);
             Console.WriteLine(mes);
         }
         public static void CreateMessege(Exception ex)
         {
             Debug.WriteLine(ex.Message);
             Loger.Write(ex.Message);
-            Log.Error(Environment.UserName + ex.Message);
+            Log.Error(Environment.UserName + " " + ex.Message);
             Console.WriteLine(ex.StackTrace);
         }
         public static void WriteLog(string mes)
         {
-            Debug.WriteLine(Environment.UserName + mes);
-            Log.Information(Environment.UserName + mes);
-            Console.WriteLine(Environment.UserName + mes);
+            Debug.WriteLine(Environment.UserName + " " + mes);
+            Log.Information(Environment.UserName +" "+ mes);    
+            Console.WriteLine(Environment.UserName + " " + mes);
         }
 
         public Port SetMeasureDeviceName(Port device, string name)
@@ -185,16 +185,30 @@ namespace AWS.Devices
         }
         public float ReadSwFloat(int reg)
         {
-            float result = PLC.GetHoldingSwFloat(address, reg, TimeSleep);
-            Debug.WriteLine($"Прочитанно {result} из {Registers.Name[reg]}");
-            // Thread.Sleep(500);
+            float result = 0f;
+            for (int i = 1; i <=10;i++)
+            {
+                 result = PLC.GetHoldingSwFloat(address, reg, TimeSleep);
+                if ((Math.Abs(result) <= 1E-5 || Math.Abs(result) >= 1E+10) && result != 0) 
+                WriteLog($"Пришел странный ответ {result}, попытка занова прочитать после {i} попытки");
+                else break;
+            }
+            
+            WriteLog($"Прочитанно {result} c регистра {reg}");
+            
             return result;
         }
         public int ReadInt(int reg)
         {
-            int result = PLC.GetHoldingValue(address, reg, 1, TimeSleep)[0];
-            //  Thread.Sleep(500);
-            Debug.WriteLine($"Прочитанно {result} из {Registers.Name[reg]}");
+            int result = 0;
+            for (int i = 1; i <= 10; i++)
+            {
+                result = PLC.GetHoldingValue(address, reg, 1, TimeSleep)[0];
+                if ((Math.Abs(result) <= 1E-5 || Math.Abs(result) >= 1E+10) && result !=0) 
+                WriteLog($"Пришел странный ответ {result}, попытка занова прочитать после {i} попытки");
+                else break;
+            }
+            WriteLog($"Прочитанно {result} c регистра {reg}");
             return result;
         }
         public void WtiteInt(int reg, int value)

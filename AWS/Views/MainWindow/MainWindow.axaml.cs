@@ -279,9 +279,15 @@ public partial class MainWindow : Window
         if (sender is TextBox textBox)
         {
             var cleaned = new string(textBox.Text.Where(char.IsLetterOrDigit).ToArray());
-
+            if (cleaned.Length > 168)
+            {
+                WindowInfo info = new WindowInfo("Слишком большое значение","Ошибка");
+                info.Show();
+                cleaned = textBox.Text.Remove(168);
+            }
             if (textBox.Text != cleaned)
             {
+                
                 var caretIndex = textBox.CaretIndex;
                 textBox.Text = cleaned;
                 textBox.CaretIndex = Math.Min(caretIndex, cleaned.Length);

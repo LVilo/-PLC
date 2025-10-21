@@ -11,7 +11,7 @@
   <DockPanel LastChildFill="True">
     <Button DockPanel.Dock="Bottom"
             Name="OK"
-            Content="ÎÊ"
+            Content="OK"
             Width="80"
             HorizontalAlignment="Center"
             HorizontalContentAlignment="Center"

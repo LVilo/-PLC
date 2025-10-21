@@ -78,7 +78,17 @@ public partial class DevicesWindow : Window
                         Panel_SG004.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#1DEC1D"));
                     });
                 }
-                else DevicesCommunication.CreateMessege(devices.info[114]);
+                else 
+                {
+                    DevicesCommunication.CreateMessege(devices.info[114]);
+                    devices.sg004.ClosePort();
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Panel_SG004.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                        Port_Name_SG004.IsEnabled = true;
+                    });
+                    
+                }
             });
         }
         catch (Exception ex)
@@ -113,7 +123,17 @@ public partial class DevicesWindow : Window
                         Panel_PLC.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#1DEC1D"));
                     });
                 }
-                else DevicesCommunication.CreateMessege(devices.info[113]);
+                else 
+                {
+                    DevicesCommunication.CreateMessege(devices.info[113]);
+                    devices.PLC.ClosePort();
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Panel_PLC.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                        Port_Name_PLC.IsEnabled = true;
+                    });
+                    
+                }
             });
         }
         catch (Exception ex)
@@ -160,7 +180,18 @@ public partial class DevicesWindow : Window
                     });
 
                 }
-                else DevicesCommunication.CreateMessege(devices.info[111]);
+                else
+                {
+                    DevicesCommunication.CreateMessege(devices.info[111]);
+                    devices.generator.ClosePort();
+                    devices.gen_is_open = false;
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Panel_Generator.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                        Port_Name_Generator.IsEnabled = true;
+                    });
+                    
+                }
             });
         }
         catch (Exception ex)
@@ -202,7 +233,18 @@ public partial class DevicesWindow : Window
                         Port_Name_Agiletn.IsEnabled = false;
                     });
                 }
-                else DevicesCommunication.CreateMessege(devices.info[112]);
+                else 
+                {
+                    DevicesCommunication.CreateMessege(devices.info[112]);
+                    devices.multimeter.ClosePort();
+                    devices.mult_is_open = false;
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Panel_Agilent.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                        Port_Name_Agiletn.IsEnabled = true;
+                    });
+                    
+                }
             });
 
 

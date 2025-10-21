@@ -136,7 +136,7 @@
 
 		<StackPanel Margin="0,0,0,10">
 				<Button Name="ShowDiveces"
-							Content="Открыть Подключение устройств"
+							Content="Открыть список устройств"
 								Margin="10"
 								HorizontalContentAlignment="Center"
 								HorizontalAlignment="Center"
@@ -148,17 +148,18 @@
 								BorderBrush="#A0A0A0"/>
 				
 			<TextBox Name="LogTextBox"
-						 Width="330"
-						 Height="455"
-						 FontSize="12"
-             IsReadOnly="True"
-             AcceptsReturn="True"
-             AcceptsTab="True"
-             ScrollViewer.VerticalScrollBarVisibility="Auto"
-             TextWrapping="Wrap"
-					 CornerRadius="10" BorderBrush="#A0A0A0" Background="White">
-
-			</TextBox>
+         Width="330"
+         Height="455"
+         FontSize="12"
+         IsReadOnly="True"
+         AcceptsReturn="True"
+         AcceptsTab="True"
+         TextWrapping="Wrap"
+         CornerRadius="10"
+         BorderBrush="#A0A0A0"
+         Background="White"
+        ScrollViewer.VerticalScrollBarVisibility="Hidden"
+        ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
 			</StackPanel>
 	</DockPanel>
 </Window>
