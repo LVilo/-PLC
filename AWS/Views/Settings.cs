@@ -17,13 +17,15 @@ namespace AWS.Views
 
         private TimeSpan _elapsedTime;
         private CountdownWindow _countdownWindow;
-
+        float range = 0f;
+        float coef_trans = 10f;
         public async Task<bool> ShowConfirmationDialogAsync(string message)
         {
             bool result = await Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 devices.DC_Read = true;
-                var dialog = new Dialog(message);
+                var dialog = new Dialoginfo();
+                dialog.Label_Text.Text = message;
                 await dialog.ShowDialog(this);
                 devices.DC_Read = false;
                 if (dialog.Dialog_Cancel == true) throw new Exception(devices.info[220]);
@@ -36,8 +38,23 @@ namespace AWS.Views
         {
             bool result = await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                var dialog = new Dialog(message, path);
+                var dialog = new Dialog();
+                dialog.Label_Text.Text = message;
+                dialog.SetImageSource(path);
+                if (path.Contains("IEPE"))
+                {
+                    dialog.TextBox_Coef_Trans.IsVisible = true;
+                    dialog.TextBlock_coef.IsVisible = true;
+                }
+                else if (path.Contains("4_20Output"))
+                {
+                    dialog.TextBox_Range.IsVisible = true;
+                    dialog.TextBlock_range.IsVisible = true;
+                }
                 await dialog.ShowDialog(this);
+                range = dialog.Range;
+                coef_trans = dialog.coef_trans;
+                
                 if (dialog.Dialog_Cancel == true) throw new Exception(devices.info[220]);
                 return dialog.Dialog_result;
             });
@@ -151,7 +168,7 @@ namespace AWS.Views
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A, result);
             result = (float)(IEPE_2 * volt_1 - IEPE_1 * volt_2) / (IEPE_2 - IEPE_1);
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, result);
-
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEF_TRANSFORM, coef_trans);
             //провверка настиройки 
             DevicesCommunication.CreateMessege(devices.info[206]);
             devices.Average(0.05);
@@ -163,7 +180,6 @@ namespace AWS.Views
                 if (IEPE_2 < 0.2525 && IEPE_2 > 0.2475)
                 {
                     DevicesCommunication.CreateMessege(devices.info[212]);
-                    devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.OFF);
                     return;
                 }
                 else
@@ -193,7 +209,7 @@ namespace AWS.Views
         public async Task Setting_4_20_Input()
         {
             DevicesCommunication.CreateMessege(devices.info[203]);
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного", "AWS.Images.4_20Input.png");
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного канала", "AWS.Images.4_20Input.png");
             if (!confirmed)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
@@ -302,7 +318,7 @@ namespace AWS.Views
         public async Task Setting_4_20_Output()
         {
             DevicesCommunication.CreateMessege(devices.info[204]);
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного", "AWS.Images.4_20Output.png");
+            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного канала", "AWS.Images.4_20Output.png");
             if (!confirmed)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
@@ -360,12 +376,13 @@ namespace AWS.Views
                     }
                 }
             }
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_RANGE, range);
                 DevicesCommunication.CreateMessege(devices.info[214]);
         }
         private async Task<bool> Check_Setting_4_20_Output(float mA, float coef)
         {
             Debug.WriteLine($"запуск функции Check_Setting_4_20_Output {mA}");
-            devices.WtiteSwFloat(63, mA);
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, mA);
             await Task.Delay(3000);
             double reg_4_20 = 0d;
             //for (int i = 0; i < 10; i++)
@@ -387,7 +404,7 @@ namespace AWS.Views
                     reg = coef - 0.008f;
                 }
                 DevicesCommunication.CreateMessege("Переписываю К усиления");
-                devices.WtiteSwFloat(91, reg);
+                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, reg);
                 await Task.Delay(3000);
                 reg_4_20 = devices.sg004.ReadInputCurrent();
                 if (reg_4_20 < (mA - 0.2) || reg_4_20 > (mA + 0.2))

@@ -115,18 +115,10 @@ namespace AWS.Devices
         
         public static void CreateMessege(string mes)
         {
-            Debug.WriteLine(mes);
             Loger.Write(mes);
-            Log.Information(Environment.UserName + " " + mes);
-            Console.WriteLine(mes);
+            WriteLog(mes);
         }
-        public static void CreateMessege(Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-            Loger.Write(ex.Message);
-            Log.Error(Environment.UserName + " " + ex.Message);
-            Console.WriteLine(ex.StackTrace);
-        }
+        
         public static void WriteLog(string mes)
         {
             Debug.WriteLine(Environment.UserName + " " + mes);

@@ -39,6 +39,7 @@ namespace AWS.Views
         public const int REGISTER_ADRESS_ERROR_CRC = 75;
         public const int REGISTER_ADRESS_ERROR_TIMEOUT = 77;
         public const int REGISTER_ADRESS_TIMEOUT = 77;
+        public const int REGISTER_ADRESS_COEF_TRANSFORM = 14;
 
         public const int PASSWORD = -7035; //   AB           -461045760 ABCD   34276 ДЛЯ DCBA 
         public const int SAVE_CHANGE = 481; //    AB     31522816  ABCD   57601 ДЛЯ DCBA  
@@ -55,6 +56,7 @@ namespace AWS.Views
 
         public static Dictionary<int, string> Name = new()
         {
+            [14] = "[IEPE] Коэф. датчика",
             [99] = "Напряжение питания контроллера",
             [21] = "Коэф. корректировки напряжение питания",
             [108] = "Пароль",
