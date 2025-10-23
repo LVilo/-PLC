@@ -1,4 +1,4 @@
-using Avalonia;
+п»їusing Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -37,14 +37,14 @@ public partial class DevicesWindow : Window
         {
             return;
         }
-        e.Cancel = true;  // отменяем стандартное закрытие
-        this.Hide();      // просто прячем окно
+        e.Cancel = true;  // РѕС‚РјРµРЅСЏРµРј СЃС‚Р°РЅРґР°СЂС‚РЅРѕРµ Р·Р°РєСЂС‹С‚РёРµ
+        this.Hide();      // РїСЂРѕСЃС‚Рѕ РїСЂСЏС‡РµРј РѕРєРЅРѕ
     }
     protected void PortsListReload()
     {
         Console.WriteLine("PortsListReload---------------");
         InitializeAllComboBoxes(devices.GetAllPorts());
-        DevicesCommunication.CreateMessege("Порты обновлены");
+        DevicesCommunication.CreateMessege("РџРѕСЂС‚С‹ РѕР±РЅРѕРІР»РµРЅС‹");
     }
     private void InitializeAllComboBoxes(IEnumerable<string> portItems)
     {
@@ -93,7 +93,7 @@ public partial class DevicesWindow : Window
         }
         catch (Exception ex)
         {
-            DevicesCommunication.CreateMessege($"Ошибка: {ex.Message}");
+            DevicesCommunication.CreateMessege($"РћС€РёР±РєР°: {ex.Message}");
         }
     }
     private void Button_Open_Port_PLC(object? sender, RoutedEventArgs e)
@@ -138,7 +138,7 @@ public partial class DevicesWindow : Window
         }
         catch (Exception ex)
         {
-            DevicesCommunication.CreateMessege($"Ошибка: {ex.Message}");
+            DevicesCommunication.CreateMessege($"РћС€РёР±РєР°: {ex.Message}");
         }
     }
     private void Button_Open_Port_Generator(object? sender, RoutedEventArgs e)
@@ -196,7 +196,7 @@ public partial class DevicesWindow : Window
         }
         catch (Exception ex)
         {
-            DevicesCommunication.CreateMessege($"Ошибка: {ex.Message}");
+            DevicesCommunication.CreateMessege($"РћС€РёР±РєР°: {ex.Message}");
         }
 
     }
@@ -251,7 +251,7 @@ public partial class DevicesWindow : Window
         }
         catch (Exception ex)
         {
-            DevicesCommunication.CreateMessege($"Ошибка: {ex.Message}");
+            DevicesCommunication.CreateMessege($"РћС€РёР±РєР°: {ex.Message}");
         }
     }
     private async void OpenPorts(Port device, string port)

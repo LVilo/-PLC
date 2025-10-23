@@ -1,4 +1,4 @@
-using Avalonia;
+Ôªøusing Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -37,19 +37,23 @@ public partial class Dialog : Window
         foreach (var name in assembly.GetManifestResourceNames())
             Console.WriteLine(name);
         if (stream == null)
-            throw new FileNotFoundException($"–ÂÒÛÒ ÌÂ Ì‡È‰ÂÌ: {resourceName}");
+            throw new FileNotFoundException($"–†–µ—Å—É—Ä—Å –Ω–µ –Ω–∞–π–¥–µ–Ω: {resourceName}");
 
         return new Bitmap(stream);
     }
     private async void OK_Click(object? sender, RoutedEventArgs e)
     {
-        Dialog_result = true;
-        if ((TextBox_Range.Text == null && TextBlock_range.IsVisible) || (TextBox_Coef_Trans.Text == null && TextBox_Coef_Trans.IsVisible))
+        Console.WriteLine("OK_Click");
+        if (((TextBox_Range.Text == null || TextBox_Range.Text == "") && TextBlock_range.IsVisible) || ((TextBox_Coef_Trans.Text == null || TextBox_Coef_Trans.Text == "") && TextBox_Coef_Trans.IsVisible))
         {
-            WindowInfo info = new WindowInfo("¬‚Â‰ËÚÂ ˜ËÒÎÓ","œÂ‰ÛÔÂÊ‰ÂÌËÂ"); 
+            Console.WriteLine("if");
+            WindowInfo info = new WindowInfo("–í–≤–µ–¥–∏—Ç–µ —á–∏—Å–ª–æ","–ü—Ä–µ–¥—É–ø—Ä–µ–∂–¥–µ–Ω–∏–µ");
+            Console.WriteLine("info");
             info.Show();
+            Console.WriteLine("Show");
             return;
         }
+        Dialog_result = true;
         Range = Convert.ToSingle(TextBox_Range.Text);
         coef_trans = Convert.ToSingle(TextBox_Coef_Trans.Text);
         Close();
@@ -93,14 +97,15 @@ public partial class Dialog : Window
             }
         }
     }
-    private string FilterText(string text)
+    private static string FilterText(string text)
     {
         string filteredText = "";
         bool foundComma = false;
         int commaCount = 0;
+        if (text.StartsWith(',')) { text = text[1..]; }
         foreach (char c in text)
         {
-            if (filteredText.Length == 9) break;
+           
             if (char.IsDigit(c) || (c == ',' && !foundComma))
             {
                 filteredText += c;
@@ -110,9 +115,10 @@ public partial class Dialog : Window
                     commaCount++;
                 }
             }
+            if (filteredText.Length == 9) break;
         }
         int commaIndex = filteredText.IndexOf(',');
-        if (commaIndex != -1 && filteredText.Length - commaIndex > 4) // 3, ÔÓÚÓÏÛ ˜ÚÓ Ó‰ËÌ ÒËÏ‚ÓÎ ‰Îˇ Á‡ÔˇÚÓÈ
+        if (commaIndex != -1 && filteredText.Length - commaIndex > 4) // 3, –ø–æ—Ç–æ–º—É —á—Ç–æ –æ–¥–∏–Ω —Å–∏–º–≤–æ–ª –¥–ª—è –∑–∞–ø—è—Ç–æ–π
         {
             filteredText = filteredText.Substring(0, commaIndex + 4);
         }

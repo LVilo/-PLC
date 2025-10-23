@@ -22,10 +22,9 @@ namespace AWS.Settings
         }
         public static void Write(string message)
         {
-            var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
-
             Dispatcher.UIThread.Post(() =>
             {
+                var formattedMessage = $"{DateTime.Now:HH:mm:ss} {message}\r\n";
                 OutputBox.Text += formattedMessage;
                 OutputBox.CaretIndex = OutputBox.Text.Length; // Прокрутка вниз
             });

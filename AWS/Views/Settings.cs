@@ -129,7 +129,7 @@ namespace AWS.Views
             double volt_1 = 0d;
             double volt_2 = 0d;
             float result = 0f;
-            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.ON);
+            devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_IEPE, Registers.ON);
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A, Registers.ON);
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B, Registers.OFF);
 

@@ -265,7 +265,10 @@ public partial class MainWindow : Window
         if (sender is TextBox textBox)
         {
             var digitsOnly = new string(textBox.Text.Where(char.IsDigit).ToArray());
-
+            if (digitsOnly.Length > 20)
+            {
+                digitsOnly = textBox.Text.Remove(20);
+            }
             if (textBox.Text != digitsOnly)
             {
                 var caretIndex = textBox.CaretIndex;
@@ -279,11 +282,9 @@ public partial class MainWindow : Window
         if (sender is TextBox textBox)
         {
             var cleaned = new string(textBox.Text.Where(char.IsLetterOrDigit).ToArray());
-            if (cleaned.Length > 168)
+            if (cleaned.Length > 20)
             {
-                WindowInfo info = new WindowInfo("Слишком большое значение","Ошибка");
-                info.Show();
-                cleaned = textBox.Text.Remove(168);
+                cleaned = textBox.Text.Remove(20);
             }
             if (textBox.Text != cleaned)
             {
