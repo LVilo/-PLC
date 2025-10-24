@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,11 +15,16 @@ namespace AWS.Views
 {
     public partial class MainWindow : Window
     {
-
         private TimeSpan _elapsedTime;
         private CountdownWindow _countdownWindow;
         float range = 0f;
         float coef_trans = 10f;
+        
+        private static TimeSpan ReturnAndStopTimeSpan(Stopwatch stopwatch, TimeSpan time)
+        {
+            stopwatch.Stop();
+            return time;
+        }
         public async Task<bool> ShowConfirmationDialogAsync(string message)
         {
             bool result = await Dispatcher.UIThread.InvokeAsync(async () =>
@@ -62,66 +68,70 @@ namespace AWS.Views
             return result;
         }
         #region Настройка
-        public async Task CheckVoltage()
+        public async Task<TimeSpan> CheckVoltage(Stopwatch stopwatch)
         {
+            stopwatch.Restart();
             DevicesCommunication.CreateMessege(devices.info[201]);
-            bool confirmed = await ShowConfirmationDialogAsync("Убедитесь, что на источнике питания стоит 24В");
-            if (!confirmed)
+            bool skip = await ShowConfirmationDialogAsync("Убедитесь, что на источнике питания стоит 24В");
+            if (skip)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
-                return;
+                return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
             }
-            for (int i = 1; i < 10; i++)
-            {
-                float value = 0f;
-                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-                if (value <= 24.1 && value >= 23.9)
-                {
-                    DevicesCommunication.CreateMessege(Registers.Name[99] + $" показывает {value} В");
-                    return;
-                }
-                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
-                value = 0f;
-                await Task.Delay(2000);
-                DevicesCommunication.CreateMessege(devices.info[207]);
-                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
-                await Task.Delay(500);
-                Debug.WriteLine(value.ToString());
-                value = 24f / value;// * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
 
-                devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
-                await Task.Delay(5000);
-                value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+            float value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+            if (value <= 24.1 && value >= 23.9)
+            {
+                DevicesCommunication.CreateMessege(Registers.Name[99] + $" показывает {value} В");
+                return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
+            }
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, Registers.Coef_1);
+            
+            await Task.Delay(2000);
+            DevicesCommunication.CreateMessege(devices.info[207]);
+            value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+            await Task.Delay(500);
+            Debug.WriteLine(value.ToString());
+            value = 24f / value;// * devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE);
+
+            devices.WtiteSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE, value);
+            await Task.Delay(5000);
+            value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
+            if (value >= 24.1 || value <= 23.9)
+            {
                 DevicesCommunication.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки.");
-                if (i == 9)
+
+                skip = await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?");
+                if (skip)
                 {
-                    confirmed = await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?");
-                    if (!confirmed)
-                    {
-                        DevicesCommunication.CreateMessege(devices.info[230]);
-                        return;
-                    }
-                }
-                else if (value >= 24.1 || value <= 23.9)
-                {
-                    DevicesCommunication.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки. Пробую {i} из 10");
+                    DevicesCommunication.CreateMessege(devices.info[230]);
+                    stopwatch.Stop();
+                    return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
                 }
                 else
                 {
-                    DevicesCommunication.CreateMessege(devices.info[211]);
-                    return;
+                    stopwatch.Stop();
+                    return await CheckVoltage(stopwatch);
                 }
             }
+            else
+            {
+                DevicesCommunication.CreateMessege(devices.info[200] + Registers.Name[99] + $" показывает {value} после настройки.");
+                DevicesCommunication.CreateMessege(devices.info[211]);
+                DevicesCommunication.CreateMessege($"Время заняло {stopwatch.Elapsed:mm\\:ss}");
+                stopwatch.Stop();
+                return stopwatch.Elapsed;
+            }
         }
-        public async Task Seting_IEPE()
+        public async Task<TimeSpan> Seting_IEPE(Stopwatch stopwatch)
         {
+            stopwatch.Restart();
             DevicesCommunication.CreateMessege(devices.info[202]);
-
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки IEPE", "AWS.Images.IEPE.png");
-            if (!confirmed)
+            bool skip = await ShowConfirmationDialogAsync("Соберите схему для настройки IEPE", "AWS.Images.IEPE.png");
+            if (skip)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
-                return;
+                return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
             }
             // hello world
             float IEPE_1 = 0f;
@@ -135,15 +145,13 @@ namespace AWS.Views
 
             devices.DC_Read = true;
             devices.multimeter.VoltmeterMode("DC");
-            await Dispatcher.UIThread.InvokeAsync(async () =>
+
+            skip = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 12 В");
+            if (skip)
             {
-                bool confirmed = await ShowConfirmationDialogAsync("Отрегулируйте напряжение до 12 В");
-                if (!confirmed)
-                {
-                    DevicesCommunication.CreateMessege(devices.info[230]);
-                    return;
-                }
-            });
+                DevicesCommunication.CreateMessege(devices.info[230]);
+                return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
+            }
             devices.DC_Read = false;
             DevicesCommunication.CreateMessege(devices.info[207]);
             devices.multimeter.VoltmeterMode("AC");
@@ -180,40 +188,50 @@ namespace AWS.Views
                 if (IEPE_2 < 0.2525 && IEPE_2 > 0.2475)
                 {
                     DevicesCommunication.CreateMessege(devices.info[212]);
-                    return;
+                    DevicesCommunication.CreateMessege($"Время заняло {stopwatch.Elapsed:mm\\:ss}");
+                    return stopwatch.Elapsed;
                 }
                 else
                 {
                     DevicesCommunication.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_2} после настройки");
-                    confirmed = await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?");
-                    if (!confirmed)
+                    skip = await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?");
+                    if (skip)
                     {
                         DevicesCommunication.CreateMessege(devices.info[230]);
-                        return;
+                        return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
                     }
-                    else await Seting_IEPE();
+                    else
+                    {
+                        return await Seting_IEPE(stopwatch);
+                        
+                    }
                 }
             }
             else
             {
                 DevicesCommunication.CreateMessege(devices.info[200] + $"Регистр IEPE (1) показывает некоректные значение {IEPE_1} после настройки");
-                confirmed = await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?");
-                if (!confirmed)
+                skip = await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?");
+                if (skip)
                 {
                     DevicesCommunication.CreateMessege(devices.info[230]);
-                    return;
+                    return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
                 }
-                else await Seting_IEPE();
+                else
+                {
+                    return await Seting_IEPE(stopwatch);
+                   
+                }
             }
         }
-        public async Task Setting_4_20_Input()
+        public async Task<TimeSpan> Setting_4_20_Input(Stopwatch stopwatch)
         {
+            stopwatch.Restart();
             DevicesCommunication.CreateMessege(devices.info[203]);
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного канала", "AWS.Images.4_20Input.png");
-            if (!confirmed)
+            bool skip = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного канала", "AWS.Images.4_20Input.png");
+            if (skip)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
-                return;
+                return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
             }
 
             float K_4_20_1 = 0f;
@@ -269,20 +287,24 @@ namespace AWS.Views
             {
                 if (await Check_Setting_4_20_Input(mA, coef_1))
                 {
-                    if (!await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
+                    if (await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
                     {
                         DevicesCommunication.CreateMessege(devices.info[230]);
-                        return;
+                        devices.sg004.WriteOutputSwitch(false);
+                        return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
                     }
                     else
                     {
-                        await Setting_4_20_Input();
-                        return;
+                        await Setting_4_20_Input(stopwatch);
+                        return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
                     }
                 }
             }
             devices.sg004.WriteOutputSwitch(false);
             DevicesCommunication.CreateMessege(devices.info[213]);
+            DevicesCommunication.CreateMessege($"Время заняло {stopwatch.Elapsed:mm\\:ss}");
+            return stopwatch.Elapsed;
+
         }
 
         private async Task<bool> Check_Setting_4_20_Input(float mA, float coef)
@@ -315,14 +337,15 @@ namespace AWS.Views
             }
             return false;
         }
-        public async Task Setting_4_20_Output()
+        public async Task<TimeSpan> Setting_4_20_Output(Stopwatch stopwatch)
         {
+            stopwatch.Restart();
             DevicesCommunication.CreateMessege(devices.info[204]);
-            bool confirmed = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного канала", "AWS.Images.4_20Output.png");
-            if (!confirmed)
+            bool skip = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного канала", "AWS.Images.4_20Output.png");
+            if (skip)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
-                return;
+                return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
             }
             float K_4_20_1 = 0f;
             float K_4_20_2 = 0f;
@@ -364,20 +387,22 @@ namespace AWS.Views
             {
                 if (await Check_Setting_4_20_Output(mA, coef_1))
                 {
-                    if (!await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
+                    if (await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
                     {
                         DevicesCommunication.CreateMessege(devices.info[230]);
-                        return;
+                        return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
                     }
                     else
                     {
-                        await Setting_4_20_Output();
-                        return;
+                        return await Setting_4_20_Output(stopwatch);
+                        
                     }
                 }
             }
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_RANGE, range);
                 DevicesCommunication.CreateMessege(devices.info[214]);
+            DevicesCommunication.CreateMessege($"Время заняло {stopwatch.Elapsed:mm\\:ss}");
+            return stopwatch.Elapsed;
         }
         private async Task<bool> Check_Setting_4_20_Output(float mA, float coef)
         {
@@ -416,8 +441,9 @@ namespace AWS.Views
             //хорошо
             return false;
         }
-        private async Task Settig_485()
+        private async Task<TimeSpan> Settig_485(Stopwatch stopwatch)
         {
+            stopwatch.Restart();
             DevicesCommunication.CreateMessege(devices.info[205]);
             float ErCRC = 0f;
             float ErTimeOut = 0f;
@@ -456,7 +482,8 @@ namespace AWS.Views
             ErTimeOut = devices.ReadSwFloat(Registers.REGISTER_ADRESS_ERROR_TIMEOUT);
             DevicesCommunication.CreateMessege("Ошибки CRC " + ErCRC.ToString());
             DevicesCommunication.CreateMessege("Ошибки Timeout " + ErTimeOut.ToString());
-
+            DevicesCommunication.CreateMessege($"Время заняло {stopwatch.Elapsed:mm\\:ss}");
+            return stopwatch.Elapsed;
         }
         #endregion
     }

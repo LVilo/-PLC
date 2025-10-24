@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -25,13 +25,13 @@
 		<StackPanel  Background="LightGray" Height="200" VerticalAlignment="Center">
 			<DockPanel HorizontalAlignment="Center" Margin="5">
 				<TextBox Name="TextBox_Range"   Background="White" Width="100" IsVisible="False"
-			 TextChanged="Range_TextChanged"
+			 TextChanged="Range_TextChanged" Text="20"
 			 Watermark="Введите число"/>
 				<TextBlock Name ="TextBlock_range" Text="Диапазон датчика" VerticalAlignment="Center" Margin="5,0,0,0" IsVisible="False"/>
 			</DockPanel>
 			<DockPanel HorizontalAlignment="Center" Margin="5">
 				<TextBox Name="TextBox_Coef_Trans"  Background="White" Width="100" IsVisible="False"
-			 TextChanged="Coef_TextChanged" Watermark="Введите число"/>
+			 TextChanged="Coef_TextChanged" Watermark="Введите число" Text="10"/>
 				<TextBlock Name="TextBlock_coef" Text="К преобразования" VerticalAlignment="Center" Margin="5,0,0,0" IsVisible="False"/>
 			</DockPanel>
 			<TextBlock Name="Label_Text" Margin="10" Width="300" TextWrapping="Wrap" />

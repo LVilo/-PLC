@@ -186,7 +186,7 @@ namespace AWS.Devices
                 else break;
             }
             
-            WriteLog($"Прочитанно {result} c регистра {reg}");
+            WriteLog($"Прочитанно {result} из регистра {reg}");
             
             return result;
         }
@@ -200,7 +200,7 @@ namespace AWS.Devices
                 WriteLog($"Пришел странный ответ {result}, попытка занова прочитать после {i} попытки");
                 else break;
             }
-            WriteLog($"Прочитанно {result} c регистра {reg}");
+            WriteLog($"Прочитанно {result} из регистра {reg}");
             return result;
         }
         public void WtiteInt(int reg, int value)

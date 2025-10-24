@@ -53,7 +53,7 @@ public partial class Dialog : Window
             Console.WriteLine("Show");
             return;
         }
-        Dialog_result = true;
+        Dialog_result = false;
         Range = Convert.ToSingle(TextBox_Range.Text);
         coef_trans = Convert.ToSingle(TextBox_Coef_Trans.Text);
         Close();
@@ -61,7 +61,7 @@ public partial class Dialog : Window
 
     private async void Skip_Click(object? sender, RoutedEventArgs e)
     {
-        Dialog_result = false;
+        Dialog_result = true;
         Close();
     }
     private async void Canel_Click(object? sender, RoutedEventArgs e)

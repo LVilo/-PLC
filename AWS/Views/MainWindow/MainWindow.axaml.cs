@@ -15,9 +15,12 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using PortsWork;
 using Serilog;
 using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace AWS.Views;
 
@@ -27,6 +30,8 @@ public partial class MainWindow : Window
     DevicesWindow DevicesWin ;
     public DevicesCommunication devices;
     private bool Work_DO = true;
+    Stopwatch stopwatch = new Stopwatch();
+    TimeSpan time = TimeSpan.Zero;
     public MainWindow()
     {
         try
@@ -36,7 +41,7 @@ public partial class MainWindow : Window
             devices = new DevicesCommunication();
             DevicesWin = new DevicesWindow();
             this.Closing += MainWindow_Closing;
-
+            this.Title = "АРМ v:"+ typeof(MainWindow).Assembly.GetName().Version.ToString();
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
                 .WriteTo.File($"Log\\log-{DateTime.Now:dd.MM.yyyy}.txt", //настройка названия файла
                 outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}" ) // настройка записи в файл
@@ -112,12 +117,14 @@ public partial class MainWindow : Window
     bool IsEmpty(string? s) =>string.IsNullOrEmpty(s);
     protected async void Do_Work(int code)
     {
-         
+        time = TimeSpan.Zero;
         Set_Enabled(false);
         await Task.Run(async () =>
         {
+            Stopwatch stopwatch = new Stopwatch();
             try
             {
+                stopwatch.Start();
                 await CheckTextBox(Order_Number);
                 await CheckTextBox(Serial_Number);
                 devices = DevicesWin.devices;
@@ -125,35 +132,35 @@ public partial class MainWindow : Window
                 {
                     case 0://настройка напряжения
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        await CheckVoltage();
+                        await CheckVoltage(stopwatch);
                         break;
                     case 1: // IEPE
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        await Seting_IEPE();
+                        await Seting_IEPE(stopwatch);
                         break;
 
                     case 2:// 4-20
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
-                        await Setting_4_20_Input();
+                        await Setting_4_20_Input(stopwatch);
                         break;
 
                     case 3:
                         //if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
-                        await Setting_4_20_Output();
+                        await Setting_4_20_Output(stopwatch);
                         break;
                     case 4:
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        await Settig_485();
+                        await Settig_485(stopwatch);
                         break;
                     case 5:
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        await MakeReportAsync(Name_PLC.SelectionBoxItem.ToString());
+                        await MakeReportAsync(Name_PLC.SelectionBoxItem.ToString(),TimeSpan.Zero);
                         break;
                 }
             }
@@ -178,14 +185,16 @@ public partial class MainWindow : Window
             {
                 DevicesCommunication.CreateMessege(ex.Message);
             }
-
+            finally
+            {
+                stopwatch.Stop();
+            }
         });
         Set_Enabled(true);
     }
     protected async void Do_Work(string PLC)
     {
-        
-        
+        time = TimeSpan.Zero;
         Set_Enabled(false);
         await (Task.Run(async () =>
         {
@@ -200,39 +209,61 @@ public partial class MainWindow : Window
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
-                        await CheckVoltage();
-                        await Setting_4_20_Input();
-                        await Setting_4_20_Output();
+                        time+= await CheckVoltage(stopwatch);
+                        time += await Setting_4_20_Input(stopwatch);
+                        time += await Setting_4_20_Output(stopwatch);
                         break;
                     case "PLC 121":
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        await CheckVoltage();
-                        await Seting_IEPE(); break;
+                        time += await CheckVoltage(stopwatch);
+                        time += await Seting_IEPE(stopwatch);
+                        break;
 
                     case "PLC 481":
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
-                        await CheckVoltage();
-                        await Seting_IEPE();
-                        await Setting_4_20_Input();
-                        await Setting_4_20_Output();
+                        time += await CheckVoltage(stopwatch);
+                        time += await Seting_IEPE(stopwatch);
+                        time += await Setting_4_20_Input(stopwatch);
+                        time += await Setting_4_20_Output(stopwatch);
                         break;
 
                     case "PLC 991":
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        await CheckVoltage();
-                        await Settig_485();
+                        time += await CheckVoltage(stopwatch);
+                        time += await Settig_485(stopwatch);
                         break;
                 }
-                await MakeReportAsync(PLC);
+                await MakeReportAsync(PLC, time);
+            }
+            catch (InvalidOperationException ex)
+            {
+                devices.CloseConnection();
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    DevicesWin.Panel_SG004.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                    DevicesWin.Port_Name_SG004.IsEnabled = true;
+                    DevicesWin.Panel_PLC.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                    DevicesWin.Port_Name_PLC.IsEnabled = true;
+                    DevicesWin.Panel_Generator.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                    DevicesWin.Port_Name_Generator.IsEnabled = true;
+                    DevicesWin.Panel_Agilent.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                    DevicesWin.Port_Name_Agiletn.IsEnabled = true;
+                });
+                DevicesCommunication.CreateMessege(ex.Message);
+                DevicesCommunication.CreateMessege("Все устройства отключены");
             }
             catch (Exception ex)
             {
                 DevicesCommunication.CreateMessege(ex.Message);
+            }
+            finally
+            {
+                stopwatch.Stop();
             }
         }));
         Set_Enabled(true);
