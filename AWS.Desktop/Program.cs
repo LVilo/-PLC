@@ -23,7 +23,7 @@ namespace AWS.Desktop
             }
             catch(Exception ex)
             {
-                OS.MessageBox(IntPtr.Zero, ex.Message,"Ошибка", 0x00000010 | 0x00000000);
+                 OS.MessageBox(IntPtr.Zero, ex.Message, "Ошибка", 0x00000010 | 0x00000000);
             }
             
         }

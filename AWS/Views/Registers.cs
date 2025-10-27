@@ -8,7 +8,7 @@ namespace AWS.Views
 {
     public static class Registers
     {
-        public const int REGISTER_ADRESS_VOLTAGE= 99;
+        public const int REGISTER_ADRESS_VOLTAGE = 99;
         public const int REGISTER_ADRESS_COEFFICIENT_VOLTAGE = 21;
         public const int REGISTER_ADRESS_PASSWORD = 108;
         public const int REGISTER_ADRESS_ON_CHANNEL_4_20 = 58;

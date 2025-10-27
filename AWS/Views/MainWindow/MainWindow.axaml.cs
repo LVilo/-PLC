@@ -18,16 +18,16 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-
 
 namespace AWS.Views;
 
 public partial class MainWindow : Window
 {
     private bool _showDriverError = false;
-    DevicesWindow DevicesWin ;
+    DevicesWindow DevicesWin;
     public DevicesCommunication devices;
     private bool Work_DO = true;
     Stopwatch stopwatch = new Stopwatch();
@@ -36,15 +36,16 @@ public partial class MainWindow : Window
     {
         try
         {
+            var assembly = Assembly.GetExecutingAssembly();
             InitializeComponent();
             Loger.OutputBox = LogTextBox;
             devices = new DevicesCommunication();
             DevicesWin = new DevicesWindow();
             this.Closing += MainWindow_Closing;
-            this.Title = "АРМ v:"+ typeof(MainWindow).Assembly.GetName().Version.ToString();
+            this.Title = "АРМ v:" + typeof(MainWindow).Assembly.GetName().Version.ToString();
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
                 .WriteTo.File($"Log\\log-{DateTime.Now:dd.MM.yyyy}.txt", //настройка названия файла
-                outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}" ) // настройка записи в файл
+                outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}") // настройка записи в файл
 
 
                 .WriteTo.File($@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки PLC\CommonLogs\log-{DateTime.Now:dd.MM.yyyy}.txt",
@@ -114,7 +115,7 @@ public partial class MainWindow : Window
             if (IsEmpty(textbox.Text)) throw new Exception(textbox.Watermark);
         });
     }
-    bool IsEmpty(string? s) =>string.IsNullOrEmpty(s);
+    bool IsEmpty(string? s) => string.IsNullOrEmpty(s);
     protected async void Do_Work(int code)
     {
         time = TimeSpan.Zero;
@@ -160,16 +161,18 @@ public partial class MainWindow : Window
                         break;
                     case 5:
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        await MakeReportAsync(Name_PLC.SelectionBoxItem.ToString(),TimeSpan.Zero);
+                        await MakeReportAsync(Name_PLC.SelectionBoxItem.ToString(), TimeSpan.Zero);
                         break;
+
                 }
+               
             }
             catch (InvalidOperationException ex)
             {
                 devices.CloseConnection();
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                   DevicesWin.Panel_SG004.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                    DevicesWin.Panel_SG004.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
                     DevicesWin.Port_Name_SG004.IsEnabled = true;
                     DevicesWin.Panel_PLC.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
                     DevicesWin.Port_Name_PLC.IsEnabled = true;
@@ -209,7 +212,7 @@ public partial class MainWindow : Window
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
                         if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
-                        time+= await CheckVoltage(stopwatch);
+                        time += await CheckVoltage(stopwatch);
                         time += await Setting_4_20_Input(stopwatch);
                         time += await Setting_4_20_Output(stopwatch);
                         break;
@@ -319,7 +322,7 @@ public partial class MainWindow : Window
             }
             if (textBox.Text != cleaned)
             {
-                
+
                 var caretIndex = textBox.CaretIndex;
                 textBox.Text = cleaned;
                 textBox.CaretIndex = Math.Min(caretIndex, cleaned.Length);

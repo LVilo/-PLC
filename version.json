@@ -1,0 +1,36 @@
+{
+    "version":  "1.0.7",
+    "versionHeightOffset":  0,
+    "branches":  {
+                     "main":  {
+                                  "versionIncrement":  "minor",
+                                  "publicReleaseRefSpec":  "^refs/heads/main$"
+                              },
+                     "develop":  {
+                                     "versionIncrement":  "minor",
+                                     "preReleaseTag":  "preview"
+                                 },
+                     "release":  {
+                                     "versionIncrement":  "patch",
+                                     "preReleaseTag":  "rc"
+                                 },
+                     "feature":  {
+                                     "versionIncrement":  "minor",
+                                     "preReleaseTag":  "feature-{branchName}"
+                                 }
+                 },
+    "cloudBuild":  {
+                       "setVersionVariables":  true,
+                       "buildNumber":  {
+                                           "enabled":  true,
+                                           "includeCommitId":  {
+                                                                   "when":  "always",
+                                                                   "where":  "buildMetadata"
+                                                               }
+                                       }
+                   },
+    "git":  {
+                "versionOffset":  0,
+                "tagPrefix":  "v"
+            }
+}

@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+	
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -6,23 +7,21 @@
 	  <RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers>
     <LangVersion>latest</LangVersion>
     <OutputType>Library</OutputType>
+	  <VersionPrefix>1.0.0.25</VersionPrefix>
+	  <Version />
   </PropertyGroup>
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
+	
+	<ItemGroup>
+		<EmbeddedResource Include="Images\4_20Input.png" />
+		<EmbeddedResource Include="Images\4_20Output.png" />
+		<EmbeddedResource Include="Images\IEPE.png" />
+  </ItemGroup>	
 
-  <ItemGroup>
-    <None Remove="Images\4_20Input.png" />
-    <None Remove="Images\4_20Output.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-	<EmbeddedResource Include="Images\4_20Input.png" />
-	<EmbeddedResource Include="Images\4_20Output.png" />
-	<EmbeddedResource Include="Images\IEPE.png" />
-  </ItemGroup>
-
+		
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.7" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.7" />
@@ -38,17 +37,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="EasyModbus">
-      <HintPath>..\..\..\AutoSet_New\AutoSet\EasyModbus.dll</HintPath>
-    </Reference>
-    <Reference Include="NationalInstruments.Visa">
-      <HintPath>..\..\..\AutoSet_New\AutoSet\NationalInstruments.Visa.dll</HintPath>
-    </Reference>
     <Reference Include="PortsWork">
       <HintPath>Libs\PortsWork.dll</HintPath>
     </Reference>
     <Reference Include="usbGenericHidCommunications">
-      <HintPath>..\..\..\AutoSet_New\AutoSet\usbGenericHidCommunications.dll</HintPath>
+      <HintPath>Libs\usbGenericHidCommunications.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell -Command &quot;$content = Get-Content 'C:\Users\OvsyannikovID\Desktop\AWSLinux\AWS\AWS\AWS.csproj'; $versionLine = $content | Where-Object { $_ -match '&lt;VersionPrefix&gt;(.*)&lt;/VersionPrefix&gt;' }; if ($versionLine) { $currentVersion = $matches[1]; $parts = $currentVersion.Split('.'); $parts[3] = [int]$parts[3] + 1; $newVersion = $parts -join '.'; $content -replace '&lt;VersionPrefix&gt;.*&lt;/VersionPrefix&gt;', ('&lt;VersionPrefix&gt;' + $newVersion + '&lt;/VersionPrefix&gt;') | Set-Content 'C:\Users\OvsyannikovID\Desktop\AWSLinux\AWS\AWS\AWS.csproj' }&quot;" />
+  </Target>
 </Project>

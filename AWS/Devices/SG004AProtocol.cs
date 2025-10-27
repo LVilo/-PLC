@@ -219,7 +219,7 @@ public class SG004AProtocol : Port
                return ReadInputCurrent();
             else throw new Exception("Ошибка переподключения");
         }
-        else return current;
+        else return Math.Abs( current);
     }
 
     public void ChangeInputSignal(ushort signal)
