@@ -64,13 +64,11 @@ public class SG004AProtocol : Port
     {
         try
         {
-            Console.WriteLine("-----------Open");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) Linux.Acsessusb(PortName);
             Open();
         }
         catch (FileNotFoundException)
         {
-            Console.WriteLine("Порт не найден ");
             return false;
         }
         return IsOpen;

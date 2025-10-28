@@ -14,11 +14,10 @@ namespace AWS.Views
     {
 
         #region Файл
-        private async Task MakeReportAsync(string PLC, TimeSpan time_settings)
+        private async Task MakeReportAsync(string PLC,string starttime,string endtime, TimeSpan time_settings)
         {
             DevicesCommunication.CreateMessege("Сохранение регистров");
             string date = String.Format("{0}.{1}.{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-            string time = String.Format("{0}:{1}", DateTime.Now.Hour, DateTime.Now.Minute);
             string serialNum = "";
             string orderNum = "";
             await Dispatcher.UIThread.InvokeAsync(() =>
@@ -33,7 +32,7 @@ namespace AWS.Views
 
             string coef_volt = devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE).ToString();
 
-            string line = $"{Environment.UserName};{date};{time};{orderNum};{serialNum};{PLC};{time_settings:mm\\:ss};" +
+            string line = $"{Environment.UserName};{date};{starttime};{endtime};{time_settings:mm\\:ss};{orderNum};{serialNum};{PLC};{time_settings:mm\\:ss};" +
                 $"{devices.ReadSwFloat(137)};" +
                 $"{devices.ReadSwFloat(139)};" +
                 $"{devices.ReadSwFloat(5)};" +
@@ -132,7 +131,7 @@ namespace AWS.Views
             if (!File.Exists(fileName))
             {
                 File.WriteAllBytes(fileName, new byte[3] { 0xEF, 0xBB, 0xBF }); //указание на utf-8
-                File.AppendAllText(fileName, "Имя пользователя;Дата;Время;№ заказа;Серийный №;PLC;Общее время настройки;" +
+                File.AppendAllText(fileName, "Имя пользователя;Дата;Время начала;Время конца;PLC;Общее время настройки;№ заказа;Серийный №;" +
     //300137h Float
     //300139h Float
     //300005h Float

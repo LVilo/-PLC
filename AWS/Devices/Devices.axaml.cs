@@ -102,15 +102,7 @@ public partial class DevicesWindow : Window
         try
         {
             if (devices.PLC.IsOpen) return;
-            //
-
-            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            //{
                 devices.PLC = (ModbusRTU)devices.SetMeasureDeviceName(devices.PLC, Port_Name_PLC.SelectedItem.ToString());
-            //}
-            //else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) devices.PLC.SetName(Port_Name_PLC.SelectedItem.ToString());
-            //else throw new PlatformNotSupportedException("Unsupported OS");
-
             devices.PLC.SetParameters(115200, (StopBits)1);
             Task.Run(async () =>
             {
@@ -148,16 +140,7 @@ public partial class DevicesWindow : Window
         try
         {
             if (devices.gen_is_open) return;
-
-            // 
-
-
-            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            //{
                 devices.generator = (PortGenerator)devices.SetMeasureDeviceName(devices.generator, Port_Name_Generator.SelectedItem.ToString());
-            //}
-            //else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) devices.generator.SetName(Port_Name_Generator.SelectedItem.ToString());
-            //else throw new PlatformNotSupportedException("Unsupported OS");
             Task.Run(async () =>
             {
                 if (devices.generator.OpenPort())
@@ -202,7 +185,6 @@ public partial class DevicesWindow : Window
     }
     private void Button_Open_Port_Agilent(object? sender, RoutedEventArgs e)
     {
-        Console.WriteLine("----------Button_Open_Port_Agilent");
         // OpenPorts(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
         try
         {
@@ -210,18 +192,10 @@ public partial class DevicesWindow : Window
             {
                 return;
             }
-            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            //{
             devices.multimeter = new PortMultimeter();
                 devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, Port_Name_Agiletn.SelectedItem.ToString());
-                Console.WriteLine("yes");
-            //}
-            //else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) devices.multimeter.SetName(Port_Name_Agiletn.SelectedItem.ToString());
-            //else throw new PlatformNotSupportedException("Unsupported OS");
             Task.Run(async () =>
             {
-                Console.WriteLine("async");
-                Console.WriteLine(devices.multimeter.GetName());
                 if (devices.multimeter.OpenPort())
                 {
                     DevicesCommunication.CreateMessege(devices.info[102]);
@@ -232,6 +206,7 @@ public partial class DevicesWindow : Window
                         Panel_Agilent.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#1DEC1D"));
                         Port_Name_Agiletn.IsEnabled = false;
                     });
+
                 }
                 else 
                 {
@@ -254,23 +229,51 @@ public partial class DevicesWindow : Window
             DevicesCommunication.CreateMessege($"Ошибка: {ex.Message}");
         }
     }
-    private async void OpenPorts(Port device, string port)
+    private async void OpenPorts(Port device, string port, ComboBox box, Avalonia.Controls.Border border)
     {
         await Task.Run(async () =>
         {
             try
             {
+                if (device.IsOpen is true) return;
                 device.SetName(port);
                 device = (Port)devices.SetMeasureDeviceName(device, port);
                 if (device == devices.PLC) devices.PLC.SetParameters(115200, (StopBits)1);
                 if (device.OpenPort())
                 {
-                    DevicesCommunication.CreateMessege(port);
+                    DevicesCommunication.CreateMessege($"Подключил {port}");
+                    if(device is PortMultimeter || device is MultimeterAgilent || device is MultimeterPicotest || device is UsbTmcDevice) Start_DC_Read_Work();
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        border.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#1DEC1D"));
+                        box.IsEnabled = false;
+                    });
+                    if(device is PortGenerator)
+                    {
+                        if (Option1.IsChecked == true)
+                        {
+                            devices.generator.SetChannel(1);
+                        }
+                        if (Option2.IsChecked == true)
+                        {
+                            devices.generator.SetChannel(2);
+                        }
+                    }
+                }
+                else
+                {
+                    DevicesCommunication.CreateMessege($"Не подключил {port}");
+                    device.ClosePort();
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        border.Background = new SolidColorBrush(Avalonia.Media.Colors.LightGray);
+                        box.IsEnabled = true;
+                    });
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                DevicesCommunication.CreateMessege(devices.info[110]);
+                DevicesCommunication.CreateMessege($"Ошибка: {ex.Message}");
             }
         });
     }

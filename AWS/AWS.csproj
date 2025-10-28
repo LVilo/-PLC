@@ -7,7 +7,7 @@
 	  <RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers>
     <LangVersion>latest</LangVersion>
     <OutputType>Library</OutputType>
-	  <VersionPrefix>1.0.0.25</VersionPrefix>
+	  <VersionPrefix>1.0.0.32</VersionPrefix>
 	  <Version />
   </PropertyGroup>
 

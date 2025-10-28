@@ -118,14 +118,14 @@ public partial class MainWindow : Window
     bool IsEmpty(string? s) => string.IsNullOrEmpty(s);
     protected async void Do_Work(int code)
     {
-        time = TimeSpan.Zero;
+        //time = TimeSpan.Zero;
         Set_Enabled(false);
         await Task.Run(async () =>
         {
             Stopwatch stopwatch = new Stopwatch();
             try
             {
-                stopwatch.Start();
+                //stopwatch.Start();
                 await CheckTextBox(Order_Number);
                 await CheckTextBox(Serial_Number);
                 devices = DevicesWin.devices;
@@ -161,7 +161,7 @@ public partial class MainWindow : Window
                         break;
                     case 5:
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        await MakeReportAsync(Name_PLC.SelectionBoxItem.ToString(), TimeSpan.Zero);
+                        await MakeReportAsync(Name_PLC.SelectionBoxItem.ToString(), "","", TimeSpan.Zero);
                         break;
 
                 }
@@ -203,6 +203,7 @@ public partial class MainWindow : Window
         {
             try
             {
+                string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
                 await CheckTextBox(Order_Number);
                 await CheckTextBox(Serial_Number);
                 devices = DevicesWin.devices;
@@ -241,7 +242,8 @@ public partial class MainWindow : Window
                         time += await Settig_485(stopwatch);
                         break;
                 }
-                await MakeReportAsync(PLC, time);
+                string endtime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
+                await MakeReportAsync(PLC, starttime, endtime, time);
             }
             catch (InvalidOperationException ex)
             {
