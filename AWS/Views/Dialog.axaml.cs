@@ -20,8 +20,8 @@ public partial class Dialog : Window
         switch (Setting)
         {
             case "IEPE": Image_Panel.Source =  LoadEmbeddedImage("AWS.Images.IEPE.png")  ; break; 
-            case "4-20 входное": Image_Panel.Source =  LoadEmbeddedImage("AWS.Images.4-20 Вход.png"); break;
-            case "4-20 выходное": Image_Panel.Source =  LoadEmbeddedImage("AWS.Images.4-20 Выход.png"); break;
+            case "4-20 входное": Image_Panel.Source =  LoadEmbeddedImage("AWS.Images.4-20Input.png"); break;
+            case "4-20 выходное": Image_Panel.Source =  LoadEmbeddedImage("AWS.Images.4-20Output.png"); break;
         }
         Label_Text.Content = Text;
         Title = Setting;

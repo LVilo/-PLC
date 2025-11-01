@@ -103,11 +103,12 @@ namespace AWS.ViewModels
             sg004.delay = 1000;
             sg004.slaveAddr = 1;
 
-            test.ReadTimeout = 1000;
-            test.WriteTimeout = 1000;
+            test.ReadTimeout = 5000;
+            test.WriteTimeout = 5000;
             test.BaudRate = 115200;
             test.Parity = Parity.None;
             test.StopBits = StopBits.One;
+            test.DataBits = 8;
         }
 
         public void CloseConnection()

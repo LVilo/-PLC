@@ -27,7 +27,6 @@ namespace AWS.Views
                 if (dialog.Dialog_Cancel == true) throw new Exception(devices.info[220]);
                 return dialog.Dialog_result;
             });
-
             return result;
         }
         public async Task<bool> ShowConfirmationDialogAsync(string message, string setting)
@@ -56,7 +55,7 @@ namespace AWS.Views
             value = devices.ReadSwFloat(Registers.REGISTER_ADRESS_VOLTAGE);
             if (value <= 24.1 && value >= 23.9)
             {
-                devices.messege.Enqueue(Registers.Name[99] + $" показывает {value} В");
+                devices.CreateMessege(Registers.Name[99] + $" показывает {value} В");
                 return;
             }
             

@@ -18,8 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Images\4-20 Вход.png" />
-    <EmbeddedResource Include="Images\4-20 Выход.png" />
     <EmbeddedResource Include="Images\IEPE.png" />
   </ItemGroup>
 
