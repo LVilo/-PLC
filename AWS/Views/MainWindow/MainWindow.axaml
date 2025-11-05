@@ -1,15 +1,21 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:viewModels="clr-namespace:AWS.ViewModels"
         mc:Ignorable="d"
         x:Class="AWS.Views.MainWindow"
+		x:DataType="viewModels:MainViewModel"
 		Width="693" Height="515"
         Icon="/Assets/avalonia-logo.ico"
-        Title="АРМ v: 0.2.0"
+        Title="{Binding Version, StringFormat='АРМ V: {0}'}"
+		
         FontFamily="Arial"
 		CanResize="False"
 		>
+	<Design.DataContext>
+		<viewModels:MainViewModel />
+	</Design.DataContext>
 
 	<DockPanel Background="#FBFBFB">
 		

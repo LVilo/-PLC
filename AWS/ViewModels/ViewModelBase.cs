@@ -1,7 +1,10 @@
-﻿using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using ReactiveUI;
+using CommunityToolkit.Mvvm.Input;
 
 namespace AWS.ViewModels;
 
-public class ViewModelBase : ReactiveObject
+public class ViewModelBase : ObservableObject
 {
+
 }

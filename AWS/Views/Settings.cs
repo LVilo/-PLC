@@ -244,10 +244,8 @@ namespace AWS.Views
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, Registers.Coef_0);
             devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.ON);
 
-
-            devices.sg004.ChangeOutputSignal(0x0101);
             devices.sg004.WriteOutputCurrent(4f);
-            devices.sg004.WriteOutputSwitch(true);
+            
 
             await Task.Delay(2000);
             DevicesCommunication.CreateMessege(devices.info[207]);

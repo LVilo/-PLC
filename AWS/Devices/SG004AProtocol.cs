@@ -149,15 +149,15 @@ public class SG004AProtocol : Port
     }
     private void WriteFloat(ushort register, float value)
     {
-        // --- 1. Разбиваем float на 2 регистра ---
+        
         byte[] floatBytes = BitConverter.GetBytes(value * 1000);
         if (BitConverter.IsLittleEndian)
-            Array.Reverse(floatBytes); // Big-endian для Modbus
+            Array.Reverse(floatBytes);
 
         ushort high = (ushort)((floatBytes[0] << 8) | floatBytes[1]);
         ushort low = (ushort)((floatBytes[2] << 8) | floatBytes[3]);
 
-        // --- 2. Формируем payload ---
+        
         ushort[] values = new ushort[] { high, low };
         byte[] payload = new byte[5 + values.Length * 2];
         payload[0] = (byte)(register >> 8);
@@ -172,24 +172,19 @@ public class SG004AProtocol : Port
             payload[6 + i * 2] = (byte)(values[i] & 0xFF);
         }
 
-        // --- 3. Формируем команду (slave + func + payload) ---
-        byte functionCode = 0x67; // твой кастомный код
+        
+        byte functionCode = 0x67;
         byte[] command = new byte[2 + payload.Length];
         command[0] = slaveAddr;
         command[1] = functionCode;
         Array.Copy(payload, 0, command, 2, payload.Length);
 
-        // --- 4. CRC ---
         ushort crc = ComputeCRC(command, command.Length);
         byte[] commandWithCrc = command.Concat(new byte[] { (byte)(crc & 0xFF), (byte)(crc >> 8) }).ToArray();
 
-        // --- 5. Отправка ---
         Write(commandWithCrc, 0, commandWithCrc.Length);
         Sleep(delay);
-        // ⚠️ Если нужно — можно раскомментировать обработку ответа
-        // byte[] response = new byte[8];
-        // int read = _port.Read(response, 0, response.Length);
-        // if (read < 8) throw new Exception("Response too short");
+        
     }
     public void WriteOutputSwitch(bool enabled)
     {
@@ -198,9 +193,11 @@ public class SG004AProtocol : Port
     }
     public void WriteOutputCurrent(float value)
     {
+        ChangeOutputSignal(0x0101);
         WriteFloat(REG_OUTPUT_VALUE, value);
+        WriteOutputSwitch(true);
     }
-    public void ChangeOutputSignal(ushort signal)
+    private void ChangeOutputSignal(ushort signal)
     {
         WriteUint16(REG_OUTPUT_SIGNAL, signal);
     }
@@ -208,7 +205,7 @@ public class SG004AProtocol : Port
     {
         ChangeInputSignal(0x0101);
        float current = ReadFloat(REG_INPUT_VALUE);
-        DevicesCommunication.WriteLog($"Прочитанно с усройства SG-004 значение {current} Входной ток");
+        //DevicesCommunication.WriteLog($"Прочитанно с усройства SG-004 значение {current} Входной ток");
         if (Math.Abs(current) < 1e-5)
         {
             Debug.WriteLine("Значение очень маленькое. Переподключение SG-004");
@@ -220,7 +217,7 @@ public class SG004AProtocol : Port
         else return Math.Abs( current);
     }
 
-    public void ChangeInputSignal(ushort signal)
+    private void ChangeInputSignal(ushort signal)
     {
         WriteUint16(REG_INPUT_SIGNAL, signal);
     }

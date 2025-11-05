@@ -42,7 +42,6 @@ public partial class MainWindow : Window
             devices = new DevicesCommunication();
             DevicesWin = new DevicesWindow();
             this.Closing += MainWindow_Closing;
-            this.Title = "АРМ v:" + typeof(MainWindow).Assembly.GetName().Version.ToString();
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
                 .WriteTo.File($"Log\\log-{DateTime.Now:dd.MM.yyyy}.txt", //настройка названия файла
                 outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}") // настройка записи в файл
@@ -73,9 +72,9 @@ public partial class MainWindow : Window
     {
         var textBlock = new TextBlock
         {
-            Text = "Для работы приложения требуется драйвер RS VISA 5.5.5.\n\n" +
+            Text = "Для корректной работы приложения необходим драйвер RS VISA 5.5.5.\n\n" +
                     "Пожалуйста, установите RS_VISA_Setup_Win_5_5_5 и перезапустите приложение.\n\n" +
-                    "Драйвер можно установить с папки приложения.",
+                    "Установочный файл драйвера доступен в папке приложения.",
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             Margin = new Thickness(20)
         };
@@ -90,7 +89,8 @@ public partial class MainWindow : Window
         {
             Title = "Ошибка",
             Width = 400,
-            Height = 150,
+            Height = 270,
+            CanResize = false,
             Content = new StackPanel
             {
                 Children =
