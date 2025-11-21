@@ -7,12 +7,17 @@
 	  <RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers>
     <LangVersion>latest</LangVersion>
     <OutputType>Library</OutputType>
-	  <VersionPrefix>1.0.0.40</VersionPrefix>
+	  <VersionPrefix>1.0.0.57</VersionPrefix>
 	  <Version />
   </PropertyGroup>
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Images\4_20InputWithoutSG004.png" />
+    <None Remove="Images\4_20OutputWithoutSG004.png" />
   </ItemGroup>
 
 
@@ -27,7 +32,9 @@
 	
 	<ItemGroup>
 		<EmbeddedResource Include="Images\4_20Input.png" />
+		<EmbeddedResource Include="Images\4_20InputWithoutSG004.png" />
 		<EmbeddedResource Include="Images\4_20Output.png" />
+		<EmbeddedResource Include="Images\4_20OutputWithoutSG004.png" />
 		<EmbeddedResource Include="Images\IEPE.png" />
   </ItemGroup>	
 

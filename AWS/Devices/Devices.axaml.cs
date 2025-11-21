@@ -19,13 +19,12 @@ namespace AWS.Devices;
 
 public partial class DevicesWindow : Window
 {
-   public DevicesCommunication devices;
+   public DevicesCommunication devices = DevicesCommunication.Instance;
    public bool Work_DO = true;
    public bool _reallyClose = false;
     public DevicesWindow()
     {
         InitializeComponent();
-        devices = new DevicesCommunication();
         devices.address = 10;
         devices.TimeSleep = 2;
         PortsListReload();
@@ -140,6 +139,7 @@ public partial class DevicesWindow : Window
         try
         {
             if (devices.gen_is_open) return;
+            devices.generator = new PortGenerator();
                 devices.generator = (PortGenerator)devices.SetMeasureDeviceName(devices.generator, Port_Name_Generator.SelectedItem.ToString());
             Task.Run(async () =>
             {

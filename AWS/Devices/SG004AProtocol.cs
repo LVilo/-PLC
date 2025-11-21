@@ -58,7 +58,8 @@ public class SG004AProtocol : Port
         Parity = Parity.None;
         DataBits = 8;
         StopBits = StopBits.One;
-
+        delay = 1000;
+        slaveAddr = 1;
     }
     public override bool OpenPort()
     {

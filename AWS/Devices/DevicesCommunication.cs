@@ -19,11 +19,19 @@ namespace AWS.Devices
 {
    public class DevicesCommunication
     {
-        public PortMultimeter multimeter;
-        public PortGenerator generator;
-        public ModbusRTU PLC;
+        private static readonly Lazy<DevicesCommunication> _instance = new Lazy<DevicesCommunication>(() => new DevicesCommunication());
+        public static DevicesCommunication Instance => _instance.Value;
+
+        public PortMultimeter multimeter = new PortMultimeter();
+        public PortGenerator generator = new PortGenerator();
+        public ModbusRTU PLC = new ModbusRTU()
+        {
+            ReadTimeout = 1000,
+            WriteTimeout = 1000,
+        };
+        public SG004AProtocol sg004 = new SG004AProtocol();
+
         public List<VisaDeviceInformation> usbDevicesInfo;
-        public SG004AProtocol sg004;
         public byte address { get; set; }
         public int TimeSleep { get; set; }
         public bool Correct_Setting { get; set; } = true;
@@ -37,6 +45,7 @@ namespace AWS.Devices
 
 
         public Queue<string> fail_settings = new Queue<string>();
+       
 
         public Dictionary<int, string> info = new Dictionary<int, string>
 {
@@ -92,19 +101,7 @@ namespace AWS.Devices
 {302, "Сохраненно "},
 {312, "Не сохраненно Значение " },
 };
-        public DevicesCommunication()
-        {
-
-            multimeter = new PortMultimeter();
-            generator = new PortGenerator();
-            sg004 = new SG004AProtocol();
-            PLC = new ModbusRTU();
-            PLC.ReadTimeout = 1000;
-            PLC.WriteTimeout = 1000;
-            sg004.delay = 1000;
-            sg004.slaveAddr = 1;
-        }
-
+        
         public void CloseConnection()
         {
             multimeter.ClosePort();

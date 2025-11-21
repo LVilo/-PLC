@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
 using AWS.Devices;
+using AWS.Settings.Setting_4_20;
 using DocumentFormat.OpenXml.Drawing;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace AWS.Views
         float range = 0f;
         float coef_trans = 10f;
         
+        private ISettting_4_20 _settting_4_20;
+
         private static TimeSpan ReturnAndStopTimeSpan(Stopwatch stopwatch, TimeSpan time)
         {
             stopwatch.Stop();
@@ -227,7 +230,7 @@ namespace AWS.Views
         {
             stopwatch.Restart();
             DevicesCommunication.CreateMessege(devices.info[203]);
-            bool skip = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного канала", "AWS.Images.4_20Input.png");
+            bool skip = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 входного канала", _settting_4_20.ImageSettingInput);
             if (skip)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
@@ -244,8 +247,8 @@ namespace AWS.Views
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_B_4_20_INPUT, Registers.Coef_0);
             devices.WtiteInt(Registers.REGISTER_ADRESS_ON_CHANNEL_4_20, Registers.ON);
 
-            devices.sg004.WriteOutputCurrent(4f);
-            
+            //////////devices.sg004.WriteOutputCurrent(4f);
+           await _settting_4_20.SetCurrent(4f,this);
 
             await Task.Delay(2000);
             DevicesCommunication.CreateMessege(devices.info[207]);
@@ -260,7 +263,8 @@ namespace AWS.Views
 
             Debug.WriteLine(K_4_20_1.ToString());
 
-            devices.sg004.WriteOutputCurrent(20f);
+            /////////////devices.sg004.WriteOutputCurrent(20f);
+            await _settting_4_20.SetCurrent(20f,this);
             await Task.Delay(2000);
             for (int i = 0; i < 10; i++)
             {
@@ -288,7 +292,8 @@ namespace AWS.Views
                     if (await ShowConfirmationDialogAsync("Настройка не удалась. Повторить ?"))
                     {
                         DevicesCommunication.CreateMessege(devices.info[230]);
-                        devices.sg004.WriteOutputSwitch(false);
+                        /////////////devices.sg004.WriteOutputSwitch(false);
+                        _settting_4_20.SetOutputSwtich(false);
                         return ReturnAndStopTimeSpan(stopwatch, TimeSpan.Zero);
                     }
                     else
@@ -298,7 +303,8 @@ namespace AWS.Views
                     }
                 }
             }
-            devices.sg004.WriteOutputSwitch(false);
+            //////////////devices.sg004.WriteOutputSwitch(false);
+            _settting_4_20.SetOutputSwtich(false);
             DevicesCommunication.CreateMessege(devices.info[213]);
             DevicesCommunication.CreateMessege($"Время заняло {stopwatch.Elapsed:mm\\:ss}");
             return stopwatch.Elapsed;
@@ -308,8 +314,13 @@ namespace AWS.Views
         private async Task<bool> Check_Setting_4_20_Input(float mA, float coef)
         {
             Debug.WriteLine($"запуск функции Check_Setting_4_20_Input {mA}");
-            devices.sg004.WriteOutputCurrent(mA);
-            await Task.Delay(3000);
+            //devices.sg004.WriteOutputCurrent(mA);
+            if(await _settting_4_20.SetCurrent(mA,this)is true)
+            {
+                DevicesCommunication.CreateMessege("Пропуск проверки");
+                return false;
+            }
+                await Task.Delay(3000);
             float mA_reg = devices.ReadSwFloat(37);
             if (mA_reg < (mA - 0.2) || mA_reg > (mA + 0.2))
             {
@@ -339,7 +350,7 @@ namespace AWS.Views
         {
             stopwatch.Restart();
             DevicesCommunication.CreateMessege(devices.info[204]);
-            bool skip = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного канала", "AWS.Images.4_20Output.png");
+            bool skip = await ShowConfirmationDialogAsync("Соберите схему для настройки 4-20 выходного канала", _settting_4_20.ImageSettingOutput);
             if (skip)
             {
                 DevicesCommunication.CreateMessege(devices.info[230]);
@@ -361,7 +372,8 @@ namespace AWS.Views
             //{
             //    K_4_20_1 += devices.multimeter.GetVoltage("DC", 100) * 10;
             //}
-            K_4_20_1 = devices.sg004.ReadInputCurrent();
+            /////////// K_4_20_1 = devices.sg004.ReadInputCurrent();
+            K_4_20_1 = _settting_4_20.ReadCurrent();
             Debug.WriteLine(K_4_20_1.ToString() + "   1 значение");
             devices.WtiteSwFloat(Registers.REGISTER_ADRESS_Output_mA, 20f);
             await Task.Delay(3000);
@@ -370,8 +382,8 @@ namespace AWS.Views
             //{
             //    K_4_20_2 += devices.multimeter.GetVoltage("DC", 100) * 10;
             //}
-            K_4_20_2 = devices.sg004.ReadInputCurrent();
-
+            ///////////// K_4_20_2 = devices.sg004.ReadInputCurrent();
+            K_4_20_2 = _settting_4_20.ReadCurrent();
             Debug.WriteLine(K_4_20_2.ToString() + "   2 значение");
             coef_1 = (20f - 4f) / (K_4_20_2 - K_4_20_1);
             Debug.WriteLine(coef_1.ToString() + "    1 коэффициент ");
@@ -412,7 +424,8 @@ namespace AWS.Views
             //{
             //    reg_4_20 += devices.multimeter.GetVoltage("DC", 100) * 10;
             //}
-            reg_4_20 = devices.sg004.ReadInputCurrent();
+            /////////////// reg_4_20 = devices.sg004.ReadInputCurrent();
+            reg_4_20 = _settting_4_20.ReadCurrent();
             if (reg_4_20 < (mA - 0.2) || reg_4_20 > (mA + 0.2)) // проверка по метрологии 
             {
                 // плохо
@@ -429,7 +442,8 @@ namespace AWS.Views
                 DevicesCommunication.CreateMessege("Переписываю К усиления");
                 devices.WtiteSwFloat(Registers.REGISTER_ADRESS_K_A_4_20_OUTPUT, reg);
                 await Task.Delay(3000);
-                reg_4_20 = devices.sg004.ReadInputCurrent();
+                ////////////////// reg_4_20 = devices.sg004.ReadInputCurrent();
+                reg_4_20 = _settting_4_20.ReadCurrent();
                 if (reg_4_20 < (mA - 0.2) || reg_4_20 > (mA + 0.2))
                 {
                     //очень плохо

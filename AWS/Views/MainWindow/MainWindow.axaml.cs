@@ -8,6 +8,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using AWS.Devices;
 using AWS.Settings;
+using AWS.Settings.Setting_4_20;
 using AWS.ViewModels;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.EMMA;
@@ -28,7 +29,7 @@ public partial class MainWindow : Window
 {
     private bool _showDriverError = false;
     DevicesWindow DevicesWin;
-    public DevicesCommunication devices;
+    public DevicesCommunication devices = DevicesCommunication.Instance;
     private bool Work_DO = true;
     Stopwatch stopwatch = new Stopwatch();
     TimeSpan time = TimeSpan.Zero;
@@ -39,7 +40,6 @@ public partial class MainWindow : Window
             var assembly = Assembly.GetExecutingAssembly();
             InitializeComponent();
             Loger.OutputBox = LogTextBox;
-            devices = new DevicesCommunication();
             DevicesWin = new DevicesWindow();
             this.Closing += MainWindow_Closing;
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
@@ -145,14 +145,38 @@ public partial class MainWindow : Window
                     case 2:// 4-20
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
+                        if (!devices.sg004.IsOpen)
+                        {
+                            if (await ShowConfirmationDialogAsync("настройка будет осуществляться без SG004.Продолжить ?") is true)
+                            {
+                                _settting_4_20 = new Setting_4_20_With_SG004();
+                                throw new Exception(devices.info[124]);
+                            }
+
+                            else
+                            {
+                                _settting_4_20 = new Setting_4_20_Without_SG004();
+                            }
+                        }
                         await Setting_4_20_Input(stopwatch);
                         break;
 
                     case 3:
                         //if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
+                        if (!devices.sg004.IsOpen)
+                        {
+                            if(await ShowConfirmationDialogAsync("настройка будет осуществляться без SG004.Продолжить ?") is true)
+                            {
+                                _settting_4_20 = new Setting_4_20_With_SG004();
+                                throw new Exception(devices.info[124]);
+                            }
+                                
+                            else
+                            {
+                                _settting_4_20 = new Setting_4_20_Without_SG004();
+                            }
+                        }
                         await Setting_4_20_Output(stopwatch);
                         break;
                     case 4:
@@ -212,7 +236,19 @@ public partial class MainWindow : Window
                     case "PLC 112":
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
+                        if (!devices.sg004.IsOpen)
+                        {
+                            if (await ShowConfirmationDialogAsync("настройка будет осуществляться без SG004.Продолжить ?") is true)
+                            {
+                                _settting_4_20 = new Setting_4_20_With_SG004();
+                                throw new Exception(devices.info[124]);
+                            }
+
+                            else
+                            {
+                                _settting_4_20 = new Setting_4_20_Without_SG004();
+                            }
+                        }
                         time += await CheckVoltage(stopwatch);
                         time += await Setting_4_20_Input(stopwatch);
                         time += await Setting_4_20_Output(stopwatch);
@@ -229,7 +265,19 @@ public partial class MainWindow : Window
                         if (!devices.mult_is_open) throw new Exception(devices.info[122]);
                         if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
                         if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        if (!devices.sg004.IsOpen) throw new Exception(devices.info[124]);
+                        if (!devices.sg004.IsOpen)
+                        {
+                            if (await ShowConfirmationDialogAsync("настройка будет осуществляться без SG004.Продолжить ?") is true)
+                            {
+                                _settting_4_20 = new Setting_4_20_With_SG004();
+                                throw new Exception(devices.info[124]);
+                            }
+
+                            else
+                            {
+                                _settting_4_20 = new Setting_4_20_Without_SG004();
+                            }
+                        }
                         time += await CheckVoltage(stopwatch);
                         time += await Seting_IEPE(stopwatch);
                         time += await Setting_4_20_Input(stopwatch);
