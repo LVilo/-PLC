@@ -32,7 +32,7 @@ namespace AWS.Views
 
             string coef_volt = devices.ReadSwFloat(Registers.REGISTER_ADRESS_COEFFICIENT_VOLTAGE).ToString();
 
-            string line = $"{Environment.UserName};{date};{starttime};{endtime};{time_settings:mm\\:ss};{orderNum};{serialNum};{PLC};{time_settings:mm\\:ss};" +
+            string line = $"{Environment.UserName};{date};{starttime};{endtime};{PLC};{time_settings:mm\\:ss};{orderNum};{serialNum};{time_settings:mm\\:ss};" +
                 $"{devices.ReadSwFloat(137)};" +
                 $"{devices.ReadSwFloat(139)};" +
                 $"{devices.ReadSwFloat(5)};" +
