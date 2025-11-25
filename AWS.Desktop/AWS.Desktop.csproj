@@ -8,7 +8,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
 	  <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
 	  <PublishSingleFile>true</PublishSingleFile>
-	  <VersionPrefix>1.0.0.57</VersionPrefix>
+	  <VersionPrefix>1.0.0.56</VersionPrefix>
 	  <Version>$(VersionPrefix)</Version>
   </PropertyGroup>
 
