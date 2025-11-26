@@ -132,20 +132,20 @@ public partial class MainWindow : Window
                 switch (code)
                 {
                     case 0://настройка напряжения
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
                         await CheckVoltage(stopwatch);
                         break;
                     case 1: // IEPE
-                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
-                        if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.multimeter.IsOpened()) throw new Exception(devices.info[122]);
+                        if (!devices.generator.IsOpened()) throw new Exception(devices.info[121]);
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
                         await Seting_IEPE(stopwatch);
                         break;
 
                     case 2:// 4-20
-                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        if (!devices.sg004.IsOpen)
+                        if (!devices.multimeter.IsOpened()) throw new Exception(devices.info[122]);
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpened())
                         {
                             if (await ShowConfirmationDialogAsync("настройка будет осуществляться без SG004.Продолжить ?") is true)
                             {
@@ -163,8 +163,8 @@ public partial class MainWindow : Window
 
                     case 3:
                         //if (!devices.mult_is_open) throw new Exception(devices.info[122]);
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        if (!devices.sg004.IsOpen)
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpened())
                         {
                             if(await ShowConfirmationDialogAsync("настройка будет осуществляться без SG004.Продолжить ?") is true)
                             {
@@ -180,11 +180,11 @@ public partial class MainWindow : Window
                         await Setting_4_20_Output(stopwatch);
                         break;
                     case 4:
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
                         await Settig_485(stopwatch);
                         break;
                     case 5:
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
                         await MakeReportAsync(Name_PLC.SelectionBoxItem.ToString(), "","", TimeSpan.Zero);
                         break;
 
@@ -234,9 +234,9 @@ public partial class MainWindow : Window
                 switch (PLC)
                 {
                     case "PLC 112":
-                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        if (!devices.sg004.IsOpen)
+                        if (!devices.multimeter.IsOpened()) throw new Exception(devices.info[122]);
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpened())
                         {
                             if (await ShowConfirmationDialogAsync("настройка будет осуществляться без SG004.Продолжить ?") is true)
                             {
@@ -254,18 +254,18 @@ public partial class MainWindow : Window
                         time += await Setting_4_20_Output(stopwatch);
                         break;
                     case "PLC 121":
-                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
-                        if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.multimeter.IsOpened()) throw new Exception(devices.info[122]);
+                        if (!devices.generator.IsOpened()) throw new Exception(devices.info[121]);
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
                         time += await CheckVoltage(stopwatch);
                         time += await Seting_IEPE(stopwatch);
                         break;
 
                     case "PLC 481":
-                        if (!devices.mult_is_open) throw new Exception(devices.info[122]);
-                        if (!devices.generator.IsOpen) throw new Exception(devices.info[121]);
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
-                        if (!devices.sg004.IsOpen)
+                        if (!devices.multimeter.IsOpened()) throw new Exception(devices.info[122]);
+                        if (!devices.generator.IsOpened()) throw new Exception(devices.info[121]);
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
+                        if (!devices.sg004.IsOpened())
                         {
                             if (await ShowConfirmationDialogAsync("настройка будет осуществляться без SG004.Продолжить ?") is true)
                             {
@@ -285,7 +285,7 @@ public partial class MainWindow : Window
                         break;
 
                     case "PLC 991":
-                        if (!devices.PLC.IsOpen) throw new Exception(devices.info[123]);
+                        if (!devices.PLC.IsOpened()) throw new Exception(devices.info[123]);
                         time += await CheckVoltage(stopwatch);
                         time += await Settig_485(stopwatch);
                         break;
