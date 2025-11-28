@@ -13,9 +13,9 @@
 		FontFamily="Arial"
 		CanResize="False">
 
-    <!--<Design.DataContext> 
+    <Design.DataContext> 
         <vm:MainWindowViewModel/>
-    </Design.DataContext>-->
+    </Design.DataContext>
   
     <Panel>
       <DockPanel Background="#FBFBFB">

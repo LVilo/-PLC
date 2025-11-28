@@ -10,9 +10,9 @@
 		Width="330"
 		Height="405">
 
-	<!--<Design.DataContext>
+	<Design.DataContext>
        <viewModels:DevicesViewModel/>
-    </Design.DataContext>-->
+    </Design.DataContext>
 
 	<UserControl.Resources>
         <conv:PortStatusConverter x:Key="PortStatusConverter"/>
