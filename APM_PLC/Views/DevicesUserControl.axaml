@@ -8,7 +8,7 @@
         x:Class="APM_PLC.Views.DevicesUserControl"
 		x:DataType="viewModels:DevicesViewModel"
 		Width="330"
-		Height="405">
+		Height="505">
 
 	<Design.DataContext>
        <viewModels:DevicesViewModel/>
@@ -156,7 +156,6 @@
 							Grid.Column="1"
 							Grid.Row="0"
 							CornerRadius="10">
-
 						</ComboBox>
 						<Label
 							Grid.Column="0"
@@ -182,7 +181,50 @@
 						</Button>
 					</Grid>
 				</Border>
+				<Border Background="{Binding Controller.SelectedColor, Converter={StaticResource PortStatusConverter}}"
+			Margin="5" CornerRadius="10">
 
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto, Auto"
+			  ColumnSpacing="20"
+			  RowSpacing="5">
+
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт SG-004"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+							SelectedItem="{Binding SG004.PortItem}"
+							ItemsSource="{Binding Ports}"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0"
+							CornerRadius="10">
+						</ComboBox>
+						<Button
+							Command="{Binding OpenSG004Command}"
+							Content="Подключить"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="2">
+
+						</Button>
+						<Button
+							Command="{Binding CloseSG004Command}"
+							Content="Отключить"
+							Width="130"
+							Grid.Column="0"
+							Grid.Row="2">
+
+						</Button>
+					</Grid>
+				</Border>
 
 			</StackPanel>
 		</Border>

@@ -32,6 +32,7 @@ namespace APM_PLC.ViewModels
         public AgilentViewModel Agilent { get; } = new AgilentViewModel();
         public ControllerViewModel Controller { get; } = new ControllerViewModel();
         public GeneratorViewModel Generator { get; } = new GeneratorViewModel();
+        public SG004ViewModel SG004 { get; } = new SG004ViewModel();
         LogerViewModel LogerViewModel { get; } = LogerViewModel.Instance;
 
 
@@ -41,11 +42,12 @@ namespace APM_PLC.ViewModels
             OpenGeneratorCommand = new AsyncRelayCommand(() => OpenPort(Generator));
             OpenAgilentCommand = new AsyncRelayCommand(() => OpenPort(Agilent));
             OpenPLCCommand = new AsyncRelayCommand(() => OpenPort(Controller));
+            OpenSG004Command = new AsyncRelayCommand(() => OpenPort(SG004));
 
             CloseGeneratorCommand = new AsyncRelayCommand(() => ClosePort(Generator));
             CloseAgilentCommand = new AsyncRelayCommand(() => ClosePort(Agilent));
             ClosePLCCommand = new AsyncRelayCommand(() => ClosePort(Controller));
-
+            CloseSG004Command = new AsyncRelayCommand(() => ClosePort(SG004));
             UpdatesPorts();
         }
 
@@ -88,6 +90,7 @@ namespace APM_PLC.ViewModels
                 if (Devices.Instance.multimeter.IsOpened() is false) Agilent.PortItem = Ports[0];
                 if (Devices.Instance.generator.IsOpened() is false) Generator.PortItem = Ports[0];
                 if (Devices.Instance.controller.IsOpened() is false) Controller.PortItem = Ports[0];
+                if (Devices.Instance.sg004.IsOpened() is false) SG004.PortItem = Ports[0];
             }
             catch (Exception ex)
             {

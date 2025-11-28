@@ -108,28 +108,9 @@ namespace APM_PLC.Models.Settings
                 Devices.Instance.generator.SetVoltage(value);
             }
         }
-        public static async Task ShowParamDialog(ParamCNV157DialogViewModel param)
+        public static async Task ShowDialogBuild(BuildSchemeViewModel build, string setting)
         {
-            param.Show();
-            await param.WaitAsync();
-            if (param.Confirmed is false) throw new Exception("Отмена");
-        }
-        public static async Task ShowParamDialog(ParamCNV127DialogViewModel param, ParamCapacityDialogViewModel paramcapacity)
-        {
-            paramcapacity.Show();
-            await paramcapacity.WaitAsync();
-            param.Show();
-            await param.WaitAsync();
-        }
-        public static async Task ShowParamDialog(ParamCNVOtherDialogViewModel param)
-        {
-            param.Show();
-            await param.WaitAsync();
-            if (param.Confirmed is false) throw new Exception("Отмена");
-        }
-        public static async Task ShowDialogBuild(BuildSchemeViewModel build, string param,string typeCNV)
-        {
-            build.SetBitmap($"avares://APM_CNV/Assets/{typeCNV}{param}.png");
+            build.SetBitmap($"avares://APM_CNV/Assets/{setting}.png");
             build.Show();
             await build.WaitAsync();
             if (build.Confirmed is false) throw new Exception("Отмена");

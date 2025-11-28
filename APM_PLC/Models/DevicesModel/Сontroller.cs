@@ -18,8 +18,7 @@ namespace APM_PLC.Models.DevicesModel
     public class Сontroller : ModbusRTU
     {
         LogerViewModel LogerViewModel { get; } = LogerViewModel.Instance;
-        public ISetting settings { get; set; }
-
+       
         public ushort Model
         {
             get;

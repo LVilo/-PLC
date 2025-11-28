@@ -79,49 +79,6 @@ namespace APM_PLC.Models.DevicesModel
                 throw new PlatformNotSupportedException("Неподдерживаемая ОС");
             }
         }
-        //public void SetSetting(string model)
-        //{
-        //    switch (model)
-        //    {
-        //        case "CNV1171": controller.settings = new SettingCNV117(); break;
-        //        case "CNV1176": controller.settings = new SettingCNV117(); break;
-        //        case "CNV127": controller.settings = new SettingCNV127(); break;
-        //        case "CNV1371": controller.settings = new SettingCNV137(); break;
-        //        case "CNV1376": controller.settings = new SettingCNV137(); break;
-        //        case "CNV1471": controller.settings = new SettingCNV147(); break;
-        //        case "CNV1476": controller.settings = new SettingCNV147(); break;
-        //        case "CNV1571": controller.settings = new SettingCNV157(); break;
-        //        case "CNV1576": controller.settings = new SettingCNV157(); break;
-        //    }
-        //    devices.cnv.settings.SetType(model);
-        //}
-        //public async Task<ISetting> IdentifySetting()
-        //{
-        //    try
-        //    {
-        //        Model = await Task.Run(() => ReadUint16(2171, 0x03));
-        //        ISetting setting = Model switch
-        //        {
-        //            10 => new SettingCNV117(),
-        //            20 => new SettingCNV127(),
-        //            21 => new SettingCNV127(),
-        //            30 => new SettingCNV137(),
-        //            40 => new SettingCNV147(),
-        //            50 => new SettingCNV157(),
-        //            _ => new SettingsALL()
-        //        };
-        //        if (setting is SettingsALL)
-        //        {
-        //            LogerViewModel.Write("Тип CNV не определен. Выберите нужный тип из предложенного");
-        //        }
-        //        return setting;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogerViewModel.Write(ex.Message);
-        //        LogerViewModel.Write("Тип CNV не определен. Выберите нужный тип из предложенного");
-        //        return new SettingsALL();
-        //    }
-        //}
+        
     }
 }

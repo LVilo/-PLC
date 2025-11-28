@@ -21,20 +21,21 @@ namespace APM_PLC.ViewModels.DevicesViewModels
     public partial class ControllerViewModel : DevicesContext
     {
 
-        [ObservableProperty] private string? _settingtext0;
-        [ObservableProperty] private string? _settingtext1 = "Авто настройка";
-        [ObservableProperty] private string? _settingtext2 = "Настройка DC";
-        [ObservableProperty] private string? _settingtext3 = "Настройка AC";
-        [ObservableProperty] private string? _settingtext4 = "Проверка";
-        [ObservableProperty] private string? _settingtext5 = "Сохранить в файл";
+        [ObservableProperty] private string? _settingAllText = "Начать настройку";
+        [ObservableProperty] private string? _settingVoltegeText = "Настроить напряжение питания" ;
+        [ObservableProperty] private string? _settingIEPEText = "Настроить канал IEPE";
+        [ObservableProperty] private string? _settingInput4_20Text = "Настроить входной канал 4-20";
+        [ObservableProperty] private string? _settingOutput4_20Text = "Настроить выходной канал 4-20";
+        [ObservableProperty] private string? _settingRS485Text = "Настроить RS-485";
+        [ObservableProperty] private string? _saveToFileText = "Сохранить регистры в файл";
 
         [ObservableProperty] private string? _orderNumber = "0";
         [ObservableProperty] private string? _serialNumber = "0";
 
         [ObservableProperty] private string? _addressController = Devices.Instance.controller.address.ToString();
 
-        [ObservableProperty] private string[] _modelController = ["CNV117","CNV127","CNV137","CNV147","CNV157"];
-        [ObservableProperty] private string _selectedModel = "CNV117";
+        [ObservableProperty] private string[] _modelController = ["PLC112","PLC121","PLC481","PLC991"];
+        [ObservableProperty] private string _selectedModel = "PLC481";
 
         [ObservableProperty] private bool _isWait= true;
 
@@ -74,7 +75,7 @@ namespace APM_PLC.ViewModels.DevicesViewModels
             CheckSettingCommand = new AsyncRelayCommand(CheckSetting);
             WriteFileCommand = new AsyncRelayCommand(WriteFile);
 
-            //ItemChangedCommand = new RelayCommand<string?>(OnItemChanged);
+            ItemChangedCommand = new RelayCommand<string?>(OnItemChanged);
 
             //devices.cnv.settings = await devices.cnv.IdentifySetting();
             //Devices.Instance.controller.settings = new SettingsALL();
@@ -91,8 +92,6 @@ namespace APM_PLC.ViewModels.DevicesViewModels
             Devices.Instance.controller = (Сontroller)Devices.Instance.SetMeasureDeviceName(Devices.Instance.controller, PortItem);
             if (await Devices.Instance.OpenPort(Devices.Instance.controller) is true)
             {
-               // Devices.Instance.controller.settings = await Devices.Instance.controller.IdentifySetting();
-                //SetText();
                 return true;
             }
             return false;
@@ -105,23 +104,31 @@ namespace APM_PLC.ViewModels.DevicesViewModels
         //    Settingtext2 = Devices.Instance.controller.settings.textsetting_2;
         //    Settingtext3 = Devices.Instance.controller.settings.textsetting_3;
         //}
-        //partial void OnSelectedModelChanged(string? value)
-        //{
-        //    ItemChangedCommand.Execute(value);
-        //}
-        //public IRelayCommand<string?> ItemChangedCommand { get; }
-        //private void OnItemChanged(string? newModel)
-        //{
-        //   // Devices.Instance.controller.SetSetting(newModel);
-        //    Settingtext0 = Devices.Instance.controller.settings.textsetting_0;
-        //    Settingtext2 = Devices.Instance.controller.settings.textsetting_2;
-        //    Settingtext3 = Devices.Instance.controller.settings.textsetting_3;
-        //}
+        partial void OnSelectedModelChanged(string? value)
+        {
+            ItemChangedCommand.Execute(value);
+        }
+        public IRelayCommand<string?> ItemChangedCommand { get; }
+        private void OnItemChanged(string? newModel)
+        {
+             Devices.Instance.controller.SetSetting(newModel);
+        }
 
         public override async Task ClosePort()
         {
             Devices.Instance.ClosePort(Devices.Instance.controller);
         }
+        public void SetSetting(string model)
+        {
+            switch (model)
+            {
+                case "PLC112": settings = new SettingPLC112(); break;
+                case "PLC121": settings = new SettingPLC121(); break;
+                case "PLC481": settings = new SettingPLC481(); break;
+                case "PLC991": settings = new SettingPLC991(); break;
+            }
+        }
+        public static ISetting settings { get; set; } = new 
         public async Task Setting()
         {
             try
@@ -150,13 +157,10 @@ namespace APM_PLC.ViewModels.DevicesViewModels
                 string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
                 stopwatch.Restart();
                 LogerViewModel.Write($"Начата настройка {SelectedModel}");
-                await Devices.Instance.controller.settings.ALLSetting(
+                await Voltege.Do(BuildSchemeViewModel, ConfirmDialogViewModel);
+                await settings.ALLSetting(
                     BuildSchemeViewModel,
-                    ConfirmDialogViewModel,
-                    ParamOtherDialogViewModel,
-                    ParamCNV127DialogViewModel,
-                    ParamCNV157DialogViewModel,
-                    ParamCapacityDialogViewModel);
+                    ConfirmDialogViewModel);
                 stopwatch.Stop();
                 string endtime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
                 string result = await SaveRegistersModel.MakeReportAsync(SelectedModel, OrderNumber, SerialNumber,"Полная", starttime, endtime, stopwatch.Elapsed, ConfirmDialogViewModel);

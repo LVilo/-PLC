@@ -3,10 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:APM_PLC.ViewModels.DevicesViewModels"
-             mc:Ignorable="d" d:DesignWidth="330" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="330" d:DesignHeight="490"
              x:Class="APM_PLC.Views.SettingUserControl"
 			 x:DataType="vm:ControllerViewModel"
-			 Width="330" Height="450">
+			 Width="330" Height="490">
 
 	<Design.DataContext>
        <vm:ControllerViewModel/>
@@ -21,35 +21,38 @@
 					<StackPanel Classes="Setting">
 
 						<Button 
-						Content="{Binding Settingtext1}"
+						Content="{Binding SettingAllText}"
 							Command="{Binding SettingALL_Command}"
 							IsEnabled="{Binding IsWait}"/>
 
 						<Button 
 							Command="{Binding Setting_ParamCommand}"
-							Content="{Binding Settingtext0}"
+							Content="{Binding SettingVoltegeText}"
 							IsEnabled="{Binding IsWait}"/>
 
 						<Button  
 							Command="{Binding Setting_1Command}"
-							Content="{Binding Settingtext2}"
+							Content="{Binding SettingIEPEText}"
 							IsEnabled="{Binding IsWait}"/>
 
 						<Button 
 							Command="{Binding Setting_2Command}"
-							Content="{Binding Settingtext3}"
+							Content="{Binding SettingInput4_20Text}"
 							IsEnabled="{Binding IsWait}"/>
 
 						<Button
 								Command="{Binding CheckSettingCommand}"
-								Content="{Binding Settingtext4}"
+								Content="{Binding SettingOutput4_20Text}"
 								IsEnabled="{Binding IsWait}"/>
 						
 						<Button 
 								Command="{Binding WriteFileCommand}"
-								Content="{Binding Settingtext5}"
+								Content="{Binding SettingRS485Text}"
 								IsEnabled="{Binding IsWait}"/>
-
+						<Button 
+								Command="{Binding WriteFileCommand}"
+								Content="{Binding SaveToFileText}"
+								IsEnabled="{Binding IsWait}"/>
 
 						<Border Background="LightGray" Margin="5" Name="Serial_Border"  CornerRadius="10">
 
