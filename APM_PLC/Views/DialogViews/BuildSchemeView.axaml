@@ -1,0 +1,53 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:APM_PLC.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="900"
+             xmlns:viewmodels="using:APM_PLC.ViewModels.DialogViewModels"
+             x:Class="APM_PLC.Views.DialogViews.BuildSchemeView"
+             x:DataType="viewmodels:BuildSchemeViewModel"
+             Foreground="Black"
+             Width="370"
+             Height="530">
+
+    <Design.DataContext>
+      <viewmodels:BuildSchemeViewModel/>
+  </Design.DataContext>
+
+  <Border Background="{DynamicResource PrimaryColorBackgroundBorder}" CornerRadius="20" ClipToBounds="True" Margin="10">
+		<StackPanel>
+			<Border Background="LightGray" >
+				<TextBlock
+                Text="Схема"
+                Padding="10"
+                FontSize="18"
+                FontWeight="Bold"/>
+            </Border>
+
+            <Border Padding="20">
+                <StackPanel Spacing="10">
+					<StackPanel Spacing="10">
+                    <TextBlock Text="{Binding Messege}"
+                               TextWrapping="Wrap"
+                               MaxWidth="300"/>
+                        <Image Source="{Binding PathPNG}" Height="360"/>
+                    
+                </StackPanel>
+                    <StackPanel HorizontalAlignment="Center">
+						
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Spacing="10">
+						<Button Content="{Binding ConfirmText}"
+                            Command="{Binding ConfirmCommand}"/>
+
+                    <Button Content="{Binding CancelText}"
+                            Command="{Binding CancelCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Border>
+</UserControl>

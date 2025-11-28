@@ -1,0 +1,99 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:APM_PLC.ViewModels.DevicesViewModels"
+             mc:Ignorable="d" d:DesignWidth="330" d:DesignHeight="450"
+             x:Class="APM_PLC.Views.SettingUserControl"
+			 x:DataType="vm:ControllerViewModel"
+			 Width="330" Height="450">
+
+	<Design.DataContext>
+       <vm:ControllerViewModel/>
+    </Design.DataContext>
+
+	<Panel>
+		
+		 <StackPanel >
+				<Border BorderBrush="{DynamicResource PrimaryColorBorderBrush}"
+		  Background="{DynamicResource PrimaryColorBackgroundBorder}"
+                BorderThickness="1" CornerRadius="10" Padding="10">
+					<StackPanel Classes="Setting">
+
+						<Button 
+						Content="{Binding Settingtext1}"
+							Command="{Binding SettingALL_Command}"
+							IsEnabled="{Binding IsWait}"/>
+
+						<Button 
+							Command="{Binding Setting_ParamCommand}"
+							Content="{Binding Settingtext0}"
+							IsEnabled="{Binding IsWait}"/>
+
+						<Button  
+							Command="{Binding Setting_1Command}"
+							Content="{Binding Settingtext2}"
+							IsEnabled="{Binding IsWait}"/>
+
+						<Button 
+							Command="{Binding Setting_2Command}"
+							Content="{Binding Settingtext3}"
+							IsEnabled="{Binding IsWait}"/>
+
+						<Button
+								Command="{Binding CheckSettingCommand}"
+								Content="{Binding Settingtext4}"
+								IsEnabled="{Binding IsWait}"/>
+						
+						<Button 
+								Command="{Binding WriteFileCommand}"
+								Content="{Binding Settingtext5}"
+								IsEnabled="{Binding IsWait}"/>
+
+
+						<Border Background="LightGray" Margin="5" Name="Serial_Border"  CornerRadius="10">
+
+							<Grid ColumnDefinitions="Auto,Auto" Margin="10" >
+								<Label Content="Серийный номер" Grid.Column="0" Margin="0,5,10,0"></Label>
+								<TextBox Name="Serial_Number" Width="150" Grid.Column="1" 
+									 Text="{Binding SerialNumber}"
+									 TextChanged="FilterTextOnlyDigits"
+										 Watermark="Введите серийный номер"
+										 CornerRadius="10">
+								</TextBox>
+
+							</Grid>
+						</Border>
+						<Border Background="LightGray" Margin="5" Name="Order_Border"  CornerRadius="10" >
+							<Grid ColumnDefinitions="Auto,Auto" Margin="10" >
+								<Label Content="Номер заказа" Grid.Column="0" Margin="0,5,32,0"></Label>
+								<TextBox Name="Order_Number" Width="150" Grid.Column="1" 
+									 Text="{Binding OrderNumber}"
+									 TextChanged="FilterTextOnlyDigitsOrLitteral"
+										 Watermark="Введите номер заказа"
+										 CornerRadius="10">
+								</TextBox>
+
+							</Grid>
+						</Border>
+						<Border Background="LightGray" Margin="5" Name="PLC_Border"  CornerRadius="10">
+							<Grid ColumnDefinitions="Auto,Auto" Margin="10" >
+								<Label Content="Контроллер" Grid.Column="0" Margin="0,5,45,0"></Label>
+								<ComboBox Name="Name_PLC" Width="150" Grid.Column="1" 
+									SelectedIndex="0"  CornerRadius="10"
+									ItemsSource="{Binding ModelController}"
+									SelectedItem="{Binding SelectedModel, Mode=TwoWay}">
+									
+								</ComboBox>
+
+							</Grid>
+						</Border>
+					</StackPanel>
+					
+				</Border>
+			</StackPanel>
+		
+		
+	</Panel>
+ 
+</UserControl>

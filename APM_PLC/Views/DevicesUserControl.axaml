@@ -1,0 +1,190 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:viewModels="clr-namespace:APM_PLC.ViewModels"
+		xmlns:conv="clr-namespace:APM_PLC.Converters"
+        mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="550"
+        x:Class="APM_PLC.Views.DevicesUserControl"
+		x:DataType="viewModels:DevicesViewModel"
+		Width="330"
+		Height="405">
+
+	<!--<Design.DataContext>
+       <viewModels:DevicesViewModel/>
+    </Design.DataContext>-->
+
+	<UserControl.Resources>
+        <conv:PortStatusConverter x:Key="PortStatusConverter"/>
+    </UserControl.Resources>
+
+	<StackPanel >
+		<Border BorderBrush="{DynamicResource PrimaryColorBorderBrush}"
+		  Background="{DynamicResource PrimaryColorBackgroundBorder}"
+		BorderThickness="1"  Padding="10"
+		CornerRadius="10">
+			<StackPanel Classes="Devices">
+				<Button 
+					Command="{Binding UpdatesPortsCommand}"
+					Content="Обновить порты"
+					Width="300"
+					Margin="5">
+				</Button>
+				<Border Background="{Binding Generator.SelectedColor, Converter={StaticResource PortStatusConverter}}"
+				 Margin="5" CornerRadius="10">
+					
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto, Auto"
+			  ColumnSpacing="20"
+			  >
+
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт генератора"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+						SelectedItem="{Binding Generator.PortItem}"
+						ItemsSource="{Binding Ports}"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0"
+							CornerRadius="10"
+							Margin="5,0">
+						</ComboBox>
+						<RadioButton x:Name="Option1"
+									 Grid.Column="0"
+									 Grid.Row="1"
+									 IsChecked="{Binding Generator.Chanel_1}"
+						 Content="Канал 1"
+						 GroupName="OptionsGroup"/>
+						<RadioButton x:Name="Option2"
+									 Grid.Column="1"
+									 Grid.Row="1"
+						 Content="Канал 2"
+						 IsChecked="{Binding Generator.Chanel_2}"
+						 GroupName="OptionsGroup"
+									 Margin="5,0"/>
+
+						<Button
+							Command="{Binding OpenGeneratorCommand}"
+							Content="Подключить"
+							Grid.Column="1"
+							Grid.Row="2"
+							Margin="5">
+
+						</Button>
+						<Button
+							Command="{Binding CloseGeneratorCommand}"
+							Content="Отключить"
+							Grid.Column="0"
+							Grid.Row="2">
+
+						</Button>
+					</Grid>
+
+				</Border>
+				<Border  Background="{Binding Agilent.SelectedColor, Converter={StaticResource PortStatusConverter}}"
+			Margin="5" CornerRadius="10">
+
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto"
+			  ColumnSpacing="15">
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт мультиметра"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+						SelectedItem="{Binding Agilent.PortItem}"
+							ItemsSource="{Binding Ports}"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0"
+							CornerRadius="10"
+						Margin="5,0">
+
+						</ComboBox>
+						<Button
+							Command="{Binding OpenAgilentCommand}"
+							Content="Подключить"
+							Grid.Column="1"
+							Grid.Row="1"
+							Margin="5">
+
+						</Button>
+						<Button
+							Command="{Binding CloseAgilentCommand}"
+							Content="Отключить"
+							Grid.Column="0"
+							Grid.Row="1">
+						</Button>
+					</Grid>
+				</Border>
+				<Border  Background="{Binding Controller.SelectedColor, Converter={StaticResource PortStatusConverter}}"
+			Margin="5" CornerRadius="10">
+
+
+					<Grid
+						ShowGridLines="False"
+						Margin="5"
+			  ColumnDefinitions="Auto, Auto"
+			  RowDefinitions="Auto, Auto, Auto"
+			  ColumnSpacing="20"
+			  RowSpacing="5">
+
+						<Label
+							Grid.Column="0"
+							Grid.Row="0"
+							Content="Порт RS-485"
+							Margin="0,5,0,0">
+						</Label>
+						<ComboBox
+						SelectedItem="{Binding Controller.PortItem}"
+							ItemsSource="{Binding Ports}"
+							Width="130"
+							Grid.Column="1"
+							Grid.Row="0"
+							CornerRadius="10">
+
+						</ComboBox>
+						<Label
+							Grid.Column="0"
+							Grid.Row="1"
+							Content="Адрес"
+							Margin="0,5,0,0">
+						</Label>
+						<TextBox Grid.Column="1" Grid.Row="1"
+							Text="{Binding Controller.AddressController}"
+							TextChanged="FilterTextOnlyDigits"
+						/>
+						<Button
+							Command="{Binding OpenPLCCommand}"
+							Content="Подключить"
+							Grid.Column="1"
+							Grid.Row="2">
+						</Button>
+						<Button
+							Command="{Binding ClosePLCCommand}"
+							Content="Отключить"
+							Grid.Column="0"
+							Grid.Row="2">
+						</Button>
+					</Grid>
+				</Border>
+
+
+			</StackPanel>
+		</Border>
+	</StackPanel>
+</UserControl>

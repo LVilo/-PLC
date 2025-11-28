@@ -1,0 +1,69 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      
+        <DockPanel>
+            <StackPanel >
+                <Label Content="Стандартная кнопка"/>
+			<Button />
+            </StackPanel>
+            
+            <StackPanel Classes="Setting">
+                <Label Content="Класс Setting"/>
+				<Button Content="Кнопка" />
+                <Button Content="Кнопка" />
+            </StackPanel>
+            <StackPanel Classes="Devices">
+                <Label Content="Класс Devices"/>
+				<Button Content="Кнопка" />
+                <Button Content="Кнопка" />
+            </StackPanel>
+        </DockPanel>
+    </Border>
+  </Design.PreviewWith>
+
+   <Styles.Resources>
+       <Color x:Key="PrimaryColorBackgroundBorder">#F0F0F0</Color>
+    <SolidColorBrush x:Key="PrimaryBrushBorder" Color="{DynamicResource PrimaryColorBackgroundBorder}"/>
+    <Color x:Key="PrimaryColorBackground">#E1E1E1</Color>
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{DynamicResource PrimaryColorBackground}"/>
+       <Color x:Key="PrimaryColorBorderBrush">#A0A0A0</Color>
+    <SolidColorBrush x:Key="PrimaryBorderBrush" Color="{DynamicResource PrimaryColorBorderBrush}"/>
+  </Styles.Resources>
+
+    <Style Selector="TextBox">
+		<Setter Property="Background" Value="White"/>
+    </Style>
+
+    <Style Selector="ComboBox">
+		<Setter Property="Background" Value="White"/>
+    </Style>
+
+  <Style Selector="Button">
+      
+      <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Foreground" Value="Black"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="MinHeight" Value="30"/>
+      <Setter Property="MinWidth" Value="70"/>
+
+  </Style>
+
+    <Style Selector="StackPanel.Setting Button">
+        <Setter Property="Width" Value="300"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
+
+    <Style Selector="StackPanel.Devices Button">
+        <Setter Property="Width" Value="130"/>
+    </Style>
+
+    <Style Selector="Grid.Param TextBox">
+        <Setter Property="MaxWidth" Value="60"/>
+    </Style>
+
+</Styles>

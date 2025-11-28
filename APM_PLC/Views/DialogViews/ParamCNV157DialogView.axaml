@@ -1,0 +1,60 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:APM_PLC.ViewModels.DialogViewModels"
+             x:DataType="vm:ParamCNV157DialogViewModel"
+             x:Class="APM_PLC.Views.DialogViews.ParamCNV157DialogView"
+             Foreground="Black"
+             Width="310"
+             Height="230">
+
+
+  <Design.DataContext>
+      <vm:ParamCNV157DialogViewModel/>
+  </Design.DataContext>
+
+    <Border Background="{DynamicResource PrimaryColorBackgroundBorder}" CornerRadius="20" ClipToBounds="True" Margin="10">
+		<StackPanel>
+
+            <!--Заголовок-->
+			<Border Background="LightGray" >
+				<TextBlock
+                Text="{Binding Title}"
+                Padding="10"
+                FontSize="18"
+                FontWeight="Bold"/>
+            </Border>
+
+            <Border Padding="10">
+                <StackPanel Spacing="30">
+                    <!-- Текст-->
+					<StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Запишите прараметры согласно заказу"
+                               TextWrapping="Wrap"
+                               MaxWidth="300"/>
+                </StackPanel>
+
+                    <!--Тело-->
+                     <StackPanel Spacing="5" Orientation="Horizontal">
+						<TextBlock Text="{Binding TermoType}" Margin="0,5,0,0"/>
+                        <ComboBox ItemsSource="{Binding ItemsTermo}"
+                                  SelectedItem="{Binding SelectedTermo}"/>
+                    </StackPanel>
+
+                    <!--Кнопки-->
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Spacing="10">
+						<Button Content="{Binding ConfirmText}"
+                            Command="{Binding ConfirmCommand}"/>
+
+                    <Button Content="{Binding CancelText}"
+                            Command="{Binding CancelCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Border>
+</UserControl>

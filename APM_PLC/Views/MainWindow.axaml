@@ -1,0 +1,118 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:APM_PLC.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="using:APM_PLC.Views"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="510"
+        x:Class="APM_PLC.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+		Width="700" Height="510"
+        Title="APM_PLC"
+		FontFamily="Arial"
+		CanResize="False">
+
+    <!--<Design.DataContext> 
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>-->
+  
+    <Panel>
+      <DockPanel Background="#FBFBFB">
+		<!--Тело-->
+			<TabControl >
+				<TabItem Header="Устройства">
+					<local:DevicesUserControl DataContext="{Binding DevicesViewModel}" VerticalAlignment="Top"/>
+                </TabItem>
+                <TabItem Header="Настройка" >
+					<local:SettingUserControl DataContext="{Binding DevicesViewModel.Controller}" VerticalAlignment="Top"/>
+                </TabItem>
+            </TabControl>
+
+          <!--Лог-->
+		<StackPanel Margin="10,50,10,10" 
+              DataContext="{Binding LogerViewModel}">
+			<TextBox Name="LogTextBox"
+			TextChanged="WriteTextCommand"
+            Text="{Binding LogText}"
+         Width="330"
+         Height="450"
+         FontSize="12"
+         IsReadOnly="True"
+         AcceptsReturn="True"
+         AcceptsTab="True"
+         TextWrapping="Wrap"
+         CornerRadius="10"
+         BorderBrush="#A0A0A0"
+         Background="White"
+        ScrollViewer.VerticalScrollBarVisibility="Hidden"
+        ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+            
+			</StackPanel>
+          
+	</DockPanel>
+
+		<!--Диалоги-->
+        <Panel DataContext="{Binding DevicesViewModel.Controller}"
+		IsVisible="{Binding Dialog.IsDialogOpen, FallbackValue=False}">
+			<Grid Grid.Column="0" Grid.ColumnSpan="2">
+				<Border Background="Black" Opacity="0.5"></Border>
+			<ContentControl Content="{Binding Dialog}"
+				  HorizontalAlignment="Center"
+				  VerticalAlignment="Center"/>
+			</Grid>
+			
+		</Panel>
+        <Panel DataContext="{Binding DevicesViewModel.Controller}"
+		IsVisible="{Binding Build.IsDialogOpen, FallbackValue=False}">
+			<Grid Grid.Column="0" Grid.ColumnSpan="2">
+				<Border Background="Black" Opacity="0.5"></Border>
+			<ContentControl Content="{Binding Build}"
+				  HorizontalAlignment="Center"
+				  VerticalAlignment="Center"/>
+			</Grid>
+			
+		</Panel>
+
+        <Panel DataContext="{Binding DevicesViewModel.Controller}"
+		IsVisible="{Binding ParamOther.IsDialogOpen, FallbackValue=False}">
+			<Grid Grid.Column="0" Grid.ColumnSpan="2">
+				<Border Background="Black" Opacity="0.5"></Border>
+			<ContentControl Content="{Binding ParamOther}"
+				  HorizontalAlignment="Center"
+				  VerticalAlignment="Center"/>
+			</Grid>
+			
+		</Panel>
+        <Panel DataContext="{Binding DevicesViewModel.Controller}"
+		IsVisible="{Binding ParamCNV127.IsDialogOpen, FallbackValue=False}">
+			<Grid Grid.Column="0" Grid.ColumnSpan="2">
+				<Border Background="Black" Opacity="0.5"></Border>
+			<ContentControl Content="{Binding ParamCNV127}"
+				  HorizontalAlignment="Center"
+				  VerticalAlignment="Center"/>
+			</Grid>
+			
+		</Panel>
+		<Panel DataContext="{Binding DevicesViewModel.Controller}"
+		IsVisible="{Binding ParamCNV157.IsDialogOpen, FallbackValue=False}">
+			<Grid Grid.Column="0" Grid.ColumnSpan="2">
+				<Border Background="Black" Opacity="0.5"></Border>
+			<ContentControl Content="{Binding ParamCNV157}"
+				  HorizontalAlignment="Center"
+				  VerticalAlignment="Center"/>
+			</Grid>
+			
+		</Panel>
+		<Panel DataContext="{Binding DevicesViewModel.Controller}"
+		IsVisible="{Binding ParamCapacity.IsDialogOpen, FallbackValue=False}">
+			<Grid Grid.Column="0" Grid.ColumnSpan="2">
+				<Border Background="Black" Opacity="0.5"></Border>
+			<ContentControl Content="{Binding ParamCapacity}"
+				  HorizontalAlignment="Center"
+				  VerticalAlignment="Center"/>
+			</Grid>
+			
+		</Panel>
+        </Panel>
+</Window>

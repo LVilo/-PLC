@@ -1,0 +1,51 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:viewmodels="using:APM_PLC.ViewModels.DialogViewModels"
+             x:Class="APM_PLC.Views.DialogViews.ConfirmTypeDeviceView"
+             x:DataType="viewmodels:ConfirmTypeDeviceViewModel"
+             Foreground="Black"
+             Width="300"
+             Height="250">
+
+  <Design.DataContext>
+      <viewmodels:ConfirmTypeDeviceViewModel/>
+  </Design.DataContext>
+
+    <Border Background="{DynamicResource PrimaryColorBackgroundBorder}" CornerRadius="20" ClipToBounds="True" Margin="10">
+		<StackPanel>
+			<Border Background="LightGray" >
+				<TextBlock
+                Text="Тип CNV"
+                Padding="10"
+                FontSize="18"
+                FontWeight="Bold"/>
+            </Border>
+
+            <Border Padding="20">
+                <StackPanel Spacing="20">
+					<StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Messege}"
+                               TextWrapping="Wrap"
+                               MaxWidth="300"/>
+                    
+                </StackPanel>
+                    <StackPanel HorizontalAlignment="Center">
+						<ComboBox  MinWidth="100"
+                 SelectedItem="{Binding SelectedDevice}"
+                 ItemsSource="{Binding Devices}">
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Spacing="10">
+						<Button Content="{Binding ConfirmText}"
+                            Command="{Binding ConfirmCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Border>
+</UserControl>
