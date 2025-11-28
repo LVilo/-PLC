@@ -74,11 +74,11 @@ namespace APM_PLC.ViewModels.DevicesViewModels
             CheckSettingCommand = new AsyncRelayCommand(CheckSetting);
             WriteFileCommand = new AsyncRelayCommand(WriteFile);
 
-            ItemChangedCommand = new RelayCommand<string?>(OnItemChanged);
+            //ItemChangedCommand = new RelayCommand<string?>(OnItemChanged);
 
             //devices.cnv.settings = await devices.cnv.IdentifySetting();
             //Devices.Instance.controller.settings = new SettingsALL();
-            SetText();
+            //SetText();
         }
         public override async Task<bool?> OpenPort()
         {
@@ -92,31 +92,31 @@ namespace APM_PLC.ViewModels.DevicesViewModels
             if (await Devices.Instance.OpenPort(Devices.Instance.controller) is true)
             {
                // Devices.Instance.controller.settings = await Devices.Instance.controller.IdentifySetting();
-                SetText();
+                //SetText();
                 return true;
             }
             return false;
         }
-        private void SetText()
-        {
-            ModelController = Devices.Instance.controller.settings.TypeItems;
-            SelectedModel = Devices.Instance.controller.settings.selectedText;
-            Settingtext0 = Devices.Instance.controller.settings.textsetting_0;
-            Settingtext2 = Devices.Instance.controller.settings.textsetting_2;
-            Settingtext3 = Devices.Instance.controller.settings.textsetting_3;
-        }
-        partial void OnSelectedModelChanged(string? value)
-        {
-            ItemChangedCommand.Execute(value);
-        }
-        public IRelayCommand<string?> ItemChangedCommand { get; }
-        private void OnItemChanged(string? newModel)
-        {
-           // Devices.Instance.controller.SetSetting(newModel);
-            Settingtext0 = Devices.Instance.controller.settings.textsetting_0;
-            Settingtext2 = Devices.Instance.controller.settings.textsetting_2;
-            Settingtext3 = Devices.Instance.controller.settings.textsetting_3;
-        }
+        //private void SetText()
+        //{
+        //    ModelController = Devices.Instance.controller.settings.TypeItems;
+        //    SelectedModel = Devices.Instance.controller.settings.selectedText;
+        //    Settingtext0 = Devices.Instance.controller.settings.textsetting_0;
+        //    Settingtext2 = Devices.Instance.controller.settings.textsetting_2;
+        //    Settingtext3 = Devices.Instance.controller.settings.textsetting_3;
+        //}
+        //partial void OnSelectedModelChanged(string? value)
+        //{
+        //    ItemChangedCommand.Execute(value);
+        //}
+        //public IRelayCommand<string?> ItemChangedCommand { get; }
+        //private void OnItemChanged(string? newModel)
+        //{
+        //   // Devices.Instance.controller.SetSetting(newModel);
+        //    Settingtext0 = Devices.Instance.controller.settings.textsetting_0;
+        //    Settingtext2 = Devices.Instance.controller.settings.textsetting_2;
+        //    Settingtext3 = Devices.Instance.controller.settings.textsetting_3;
+        //}
 
         public override async Task ClosePort()
         {
